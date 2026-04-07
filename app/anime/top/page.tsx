@@ -111,27 +111,31 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                       </span>
                     </td>
                     <td className="px-6 py-4 align-middle">
-                      {anime.imageUrl ? (
-                        <div className="relative h-28 w-20 overflow-hidden rounded border border-zinc-200 shadow-sm dark:border-zinc-800">
-                          <Image
-                            src={anime.imageUrl}
-                            alt={anime.title}
-                            fill
-                            className="object-cover"
-                            sizes="80px"
-                          />
-                        </div>
-                      ) : (
-                        <div className="flex h-28 w-20 items-center justify-center rounded bg-zinc-200 dark:bg-zinc-800">
-                          <span className="text-[10px] text-zinc-400">No image</span>
-                        </div>
-                      )}
+                      <Link href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`}>
+                        {anime.imageUrl ? (
+                          <div className="relative h-28 w-20 overflow-hidden rounded border border-zinc-200 shadow-sm dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+                            <Image
+                              src={anime.imageUrl}
+                              alt={anime.title}
+                              fill
+                              className="object-cover"
+                              sizes="80px"
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex h-28 w-20 items-center justify-center rounded bg-zinc-200 dark:bg-zinc-800">
+                            <span className="text-[10px] text-zinc-400">No image</span>
+                          </div>
+                        )}
+                      </Link>
                     </td>
                     <td className="px-6 py-4 align-middle">
                       <div className="flex flex-col gap-1">
-                        <h3 className="text-lg font-bold leading-tight text-zinc-900 dark:text-zinc-50">
-                          {anime.title}
-                        </h3>
+                        <Link href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                          <h3 className="text-lg font-bold leading-tight text-zinc-900 dark:text-zinc-50">
+                            {anime.title}
+                          </h3>
+                        </Link>
                         {anime.titleJapanese && (
                           <p className="text-xs text-zinc-500 dark:text-zinc-400">
                             {anime.titleJapanese}

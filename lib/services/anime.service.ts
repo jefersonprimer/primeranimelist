@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { ensureDatabase } from "@/lib/db/bootstrap";
 import { anime } from "@/lib/db/schema";
-import { asc, count, desc, gt } from "drizzle-orm";
+import { asc, count, desc, eq, gt } from "drizzle-orm";
 
 type ListAnimeOptions = {
   page?: number;
@@ -36,4 +36,16 @@ export async function listAnime({ page = 1, limit = 50 }: ListAnimeOptions = {})
     total,
     totalPages: Math.max(1, Math.ceil(total / safeLimit)),
   };
+}
+
+export async function getAnimeByMalId(malId: number) {
+  await ensureDatabase();
+
+  const result = await db
+    .select()
+    .from(anime)
+    .where(eq(anime.malId, malId))
+    .limit(1);
+
+  return result[0] ?? null;
 }
