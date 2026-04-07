@@ -1,6 +1,16 @@
 import Link from 'next/link';
 
+function getCurrentSeason(date = new Date()) {
+  const month = date.getMonth(); // 0-11
+  if (month <= 2) return "winter";
+  if (month <= 5) return "spring";
+  if (month <= 8) return "summer";
+  return "fall";
+}
+
 export default function Header() {
+  const currentYear = new Date().getFullYear();
+  const currentSeason = getCurrentSeason();
   return (
     <header className="bg-zinc-100 border-b border-zinc-200 py-4 px-6 dark:bg-zinc-900 dark:border-zinc-800">
       <div className="max-w-7xl mx-auto flex flex-row items-center justify-between">
@@ -24,6 +34,14 @@ export default function Header() {
             <li>
               <Link href="/anime/top" className="text-lg font-semibold text-zinc-600 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 transition-colors">
                 Top Anime
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={`/anime/season/${currentYear}/${currentSeason}`}
+                className="text-lg font-semibold text-zinc-600 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 transition-colors"
+              >
+                Season Anime
               </Link>
             </li>
           </ul>
