@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { ensureDatabase } from "@/lib/db/bootstrap";
 import { anime } from "@/lib/db/schema";
-import { asc, count, isNotNull } from "drizzle-orm";
+import { asc, count, desc, gt } from "drizzle-orm";
 
 type ListAnimeOptions = {
   page?: number;
@@ -19,14 +19,14 @@ export async function listAnime({ page = 1, limit = 50 }: ListAnimeOptions = {})
     db
       .select()
       .from(anime)
-      .where(isNotNull(anime.rank))
-      .orderBy(asc(anime.rank))
+      .where(gt(anime.rank, 0))
+      .orderBy(asc(anime.rank), desc(anime.members))
       .limit(safeLimit)
       .offset(offset),
     db
       .select({ total: count() })
       .from(anime)
-      .where(isNotNull(anime.rank)),
+      .where(gt(anime.rank, 0)),
   ]);
 
   return {

@@ -13,7 +13,7 @@ export default function Home() {
         </p>
         <div className="pt-8">
           <Link
-            href="/anime"
+            href="http://localhost:3000/anime/top"
             className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-indigo-600 rounded-full hover:bg-indigo-700 transition-all shadow-xl hover:scale-105"
           >
             Explore Top Anime

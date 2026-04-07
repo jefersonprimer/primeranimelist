@@ -6,13 +6,6 @@ import { anime } from "@/lib/db/schema";
 
 const JIKAN_BASE = "https://api.jikan.moe/v4";
 
-const endpoints = [
-  { url: "/top/anime", label: "top geral" },
-  { url: "/top/anime?filter=bypopularity", label: "mais populares" },
-  { url: "/top/anime?filter=airing", label: "em exibição" },
-];
-
-const MAX_PAGES = 3;
 const REQUEST_DELAY = 2500; // 2.5s entre requests (Jikan tem rate limit)
 
 function sleep(ms: number) {
@@ -90,52 +83,63 @@ async function fetchPage(endpoint: string, page: number) {
   return res.json();
 }
 
-async function processEndpoint(endpoint: string, label: string) {
-  console.log(`\n📌 Processando: ${label}`);
+async function run() {
+  console.log("🚀 Iniciando ingestão de animes do Jikan API (top/anime)\n");
+  await ensureDatabase();
 
   let page = 1;
   let hasNext = true;
-  let total = 0;
+  let totalNew = 0;
+  let totalUpdated = 0;
+  let totalSkipped = 0;
 
-  while (hasNext && page <= MAX_PAGES) {
-    console.log(`  Página ${page}/${MAX_PAGES}...`);
+  while (hasNext) {
+    console.log(`📄 Página ${page}...`);
 
-    const json = await fetchPage(endpoint, page);
+    const json = await fetchPage("/top/anime", page);
+    const items = json.data;
 
-    for (const item of json.data) {
-      await saveAnime(item);
-      total++;
+    for (const item of items) {
+      const malId = item.mal_id;
+      const rank = item.rank;
+
+      // Verifica se já existe no banco
+      const existing = await db
+        .select()
+        .from(anime)
+        .where(eq(anime.malId, malId))
+        .limit(1);
+
+      if (existing.length > 0) {
+        // Já existe - atualiza apenas se necessário
+        await db
+          .update(anime)
+          .set({ ...parseAnime(item), updatedAt: new Date() })
+          .where(eq(anime.malId, malId));
+        totalUpdated++;
+      } else {
+        // Novo anime - insere
+        await db.insert(anime).values(parseAnime(item));
+        totalNew++;
+        console.log(`  ✨ Novo: #${rank} - ${item.title}`);
+      }
     }
 
     hasNext = json.pagination?.has_next_page ?? false;
     page++;
 
-    if (hasNext && page <= MAX_PAGES) {
+    console.log(
+      `  📊 Página ${page - 1}: ${items.length} animes (novos: ${totalNew}, atualizados: ${totalUpdated})`
+    );
+
+    if (hasNext) {
       await sleep(REQUEST_DELAY);
     }
   }
 
-  console.log(`  ✅ ${total} animes salvos`);
-  return total;
-}
-
-async function run() {
-  console.log("🚀 Iniciando ingestão de animes do Jikan API\n");
-  await ensureDatabase();
-
-  let totalGeral = 0;
-
-  for (const [index, { url, label }] of endpoints.entries()) {
-    const count = await processEndpoint(url, label);
-    totalGeral += count;
-
-    if (index < endpoints.length - 1) {
-      console.log("⏳ Aguardando 5s antes do próximo endpoint...");
-      await sleep(5000);
-    }
-  }
-
-  console.log(`\n✅ Conclusão! Total: ${totalGeral} animes processados`);
+  console.log(`\n✅ Conclusão!`);
+  console.log(`  Novos: ${totalNew}`);
+  console.log(`  Atualizados: ${totalUpdated}`);
   process.exit(0);
 }
 
