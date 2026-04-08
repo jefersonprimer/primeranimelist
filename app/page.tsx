@@ -12,12 +12,20 @@ export default function Home() {
           Your ultimate destination for everything anime.
         </p>
         <div className="pt-8">
-          <Link
-            href="http://localhost:3000/anime/top"
-            className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-indigo-600 rounded-full hover:bg-indigo-700 transition-all shadow-xl hover:scale-105"
-          >
-            Explore Top Anime
-          </Link>
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link
+              href="/anime/top"
+              className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-indigo-600 rounded-full hover:bg-indigo-700 transition-all shadow-xl hover:scale-105"
+            >
+              Explore Top Anime
+            </Link>
+            <Link
+              href="/manga/top"
+              className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-full hover:bg-indigo-100 transition-all shadow-xl hover:scale-105 dark:bg-indigo-950 dark:border-indigo-800 dark:text-indigo-300 dark:hover:bg-indigo-900"
+            >
+              Explore Top Manga
+            </Link>
+          </div>
         </div>
       </div>
     </div>

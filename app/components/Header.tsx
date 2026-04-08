@@ -37,6 +37,11 @@ export default function Header() {
               </Link>
             </li>
             <li>
+              <Link href="/manga/top" className="text-lg font-semibold text-zinc-600 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 transition-colors">
+                Top Manga
+              </Link>
+            </li>
+            <li>
               <Link
                 href={`/anime/season/${currentYear}/${currentSeason}`}
                 className="text-lg font-semibold text-zinc-600 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 transition-colors"
