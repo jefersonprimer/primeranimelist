@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PrimerAnimeList",
+  title: "PrimerAnimeList - Anime and Manga database",
   description: "Your personalized anime list tracker",
 };
 
