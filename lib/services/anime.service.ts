@@ -6,33 +6,134 @@ import { asc, count, desc, eq, gt, isNotNull, and } from "drizzle-orm";
 type ListAnimeOptions = {
   page?: number;
   limit?: number;
+  filter?: string;
 };
 
-export async function listAnime({ page = 1, limit = 50 }: ListAnimeOptions = {}) {
+const VALID_TOP_ANIME_FILTERS = [
+  "airing",
+  "upcoming",
+  "tv",
+  "movie",
+  "ova",
+  "ona",
+  "special",
+  "bypopularity",
+  "favorite",
+] as const;
+
+export type TopAnimeFilter = (typeof VALID_TOP_ANIME_FILTERS)[number];
+
+export function parseTopAnimeFilter(value: string | string[] | undefined): TopAnimeFilter | null {
+  const rawValue = Array.isArray(value) ? value[0] : value;
+  if (!rawValue) return null;
+  return (VALID_TOP_ANIME_FILTERS as readonly string[]).includes(rawValue) ? (rawValue as TopAnimeFilter) : null;
+}
+
+function buildTopAnimeQuery(filter: TopAnimeFilter | null) {
+  if (!filter) {
+    return {
+      where: and(isNotNull(anime.rank), gt(anime.rank, 0)),
+      orderBy: [asc(anime.rank), desc(anime.members)] as const,
+    };
+  }
+
+  const now = new Date();
+  const month = now.getUTCMonth() + 1; // 1-12
+  const year = now.getUTCFullYear();
+  const currentSeason = month <= 3 ? "winter" : month <= 6 ? "spring" : month <= 9 ? "summer" : "fall";
+  const nextSeason =
+    currentSeason === "winter"
+      ? "spring"
+      : currentSeason === "spring"
+        ? "summer"
+        : currentSeason === "summer"
+          ? "fall"
+          : "winter";
+  const nextYear = currentSeason === "fall" ? year + 1 : year;
+
+  switch (filter) {
+    case "airing":
+      return {
+        where: and(
+          eq(anime.season, currentSeason),
+          eq(anime.year, year),
+          eq(anime.isAiring, true),
+          isNotNull(anime.score),
+          gt(anime.score, 0)
+        ),
+        orderBy: [desc(anime.score), desc(anime.members)] as const,
+      };
+    case "upcoming":
+      return {
+        where: and(eq(anime.season, nextSeason), eq(anime.year, nextYear)),
+        orderBy: [desc(anime.members), desc(anime.favorites)] as const,
+      };
+    case "tv":
+      return {
+        where: and(isNotNull(anime.rank), gt(anime.rank, 0), eq(anime.type, "TV")),
+        orderBy: [asc(anime.rank), desc(anime.members)] as const,
+      };
+    case "movie":
+      return {
+        where: and(isNotNull(anime.rank), gt(anime.rank, 0), eq(anime.type, "Movie")),
+        orderBy: [asc(anime.rank), desc(anime.members)] as const,
+      };
+    case "ova":
+      return {
+        where: and(isNotNull(anime.rank), gt(anime.rank, 0), eq(anime.type, "OVA")),
+        orderBy: [asc(anime.rank), desc(anime.members)] as const,
+      };
+    case "ona":
+      return {
+        where: and(isNotNull(anime.rank), gt(anime.rank, 0), eq(anime.type, "ONA")),
+        orderBy: [asc(anime.rank), desc(anime.members)] as const,
+      };
+    case "special":
+      return {
+        where: and(isNotNull(anime.rank), gt(anime.rank, 0), eq(anime.type, "Special")),
+        orderBy: [asc(anime.rank), desc(anime.members)] as const,
+      };
+    case "bypopularity":
+      return {
+        where: and(isNotNull(anime.popularity), gt(anime.popularity, 0)),
+        orderBy: [asc(anime.popularity), desc(anime.members)] as const,
+      };
+    case "favorite":
+      return {
+        where: and(isNotNull(anime.favorites), gt(anime.favorites, 0)),
+        orderBy: [desc(anime.favorites), desc(anime.members)] as const,
+      };
+  }
+}
+
+export async function listAnime({ page = 1, limit = 50, filter }: ListAnimeOptions = {}) {
   await ensureDatabase();
 
   const safePage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
   const safeLimit = Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : 50;
   const offset = (safePage - 1) * safeLimit;
+  const parsedFilter = parseTopAnimeFilter(filter);
+  const { where, orderBy } = buildTopAnimeQuery(parsedFilter);
 
   const [items, [{ total }]] = await Promise.all([
     db
       .select()
       .from(anime)
-      .where(gt(anime.rank, 0))
-      .orderBy(asc(anime.rank), desc(anime.members))
+      .where(where)
+      .orderBy(...orderBy)
       .limit(safeLimit)
       .offset(offset),
     db
       .select({ total: count() })
       .from(anime)
-      .where(gt(anime.rank, 0)),
+      .where(where),
   ]);
 
   return {
     items,
     limit: safeLimit,
     page: safePage,
+    filter: parsedFilter,
     total,
     totalPages: Math.max(1, Math.ceil(total / safeLimit)),
   };

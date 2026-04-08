@@ -1,4 +1,4 @@
-import { listAnime } from "@/lib/services/anime.service";
+import { listAnime, parseTopAnimeFilter, type TopAnimeFilter } from "@/lib/services/anime.service";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -17,22 +17,41 @@ function getPageNumber(value: string | string[] | undefined) {
   return page;
 }
 
-function getPageHref(page: number) {
-  return page <= 1 ? "/anime/top" : `/anime/top?page=${page}`;
+function getPageHref(page: number, filter: TopAnimeFilter | null) {
+  if (!filter) {
+    return page <= 1 ? "/anime/top" : `/anime/top?page=${page}`;
+  }
+
+  return page <= 1 ? `/anime/top?filter=${filter}` : `/anime/top?filter=${filter}&page=${page}`;
 }
 
 export default async function AnimeListPage(props: PageProps<"/anime/top">) {
-  const { page: pageParam } = await props.searchParams;
+  const { page: pageParam, filter: filterParam } = await props.searchParams;
   const page = getPageNumber(pageParam);
+  const filter = parseTopAnimeFilter(filterParam);
   const { items: animeList, total, totalPages } = await listAnime({
     page,
     limit: PAGE_SIZE,
+    filter: filter ?? undefined,
   });
   const currentPage = Math.min(page, totalPages);
   const startRank = total === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
   const endRank = total === 0 ? 0 : startRank + animeList.length - 1;
   const hasPreviousPage = currentPage > 1;
   const hasNextPage = currentPage < totalPages;
+
+  const FILTERS: Array<{ label: string; value: TopAnimeFilter | null }> = [
+    { label: "All Anime", value: null },
+    { label: "Top Airing", value: "airing" },
+    { label: "Top Upcoming", value: "upcoming" },
+    { label: "Top TV Series", value: "tv" },
+    { label: "Top Movies", value: "movie" },
+    { label: "Top OVAs", value: "ova" },
+    { label: "Top ONAs", value: "ona" },
+    { label: "Top Speciais", value: "special" },
+    { label: "Most Popular", value: "bypopularity" },
+    { label: "Most Favorited", value: "favorite" },
+  ];
 
   return (
     <div className="max-w-7xl mx-auto py-12 px-6">
@@ -60,7 +79,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
 
           <div className="flex items-center gap-3 self-start md:self-auto">
             <Link
-              href={hasPreviousPage ? getPageHref(currentPage - 1) : "/anime/top"}
+              href={hasPreviousPage ? getPageHref(currentPage - 1, filter) : getPageHref(1, filter)}
               aria-disabled={!hasPreviousPage}
               className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
                 hasPreviousPage
@@ -77,7 +96,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
             </span>
 
             <Link
-              href={hasNextPage ? getPageHref(currentPage + 1) : getPageHref(currentPage)}
+              href={hasNextPage ? getPageHref(currentPage + 1, filter) : getPageHref(currentPage, filter)}
               aria-disabled={!hasNextPage}
               className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
                 hasNextPage
@@ -89,6 +108,30 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
               <span aria-hidden="true">→</span>
             </Link>
           </div>
+        </div>
+
+        <div className="rounded-xl border border-zinc-200 bg-white/80 px-2 py-2 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/80">
+          <nav className="flex items-center gap-2 overflow-x-auto whitespace-nowrap px-1 py-1">
+            {FILTERS.map((item) => {
+              const isActive = item.value === filter;
+              const href = item.value ? `/anime/top?filter=${item.value}` : "/anime/top";
+
+              return (
+                <Link
+                  key={item.value ?? "all"}
+                  href={href}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-bold transition-colors ${
+                    isActive
+                      ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
+                      : "border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
         <div className="w-full overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
@@ -103,11 +146,11 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
               {animeList.length > 0 ? (
-                animeList.map((anime) => (
+                animeList.map((anime, index) => (
                   <tr key={anime.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
                     <td className="px-6 py-8 align-middle">
                       <span className="text-3xl font-black text-zinc-400 dark:text-zinc-600">
-                        #{anime.rank || anime.popularity || "-"}
+                        #{filter ? startRank + index : anime.rank || anime.popularity || startRank + index}
                       </span>
                     </td>
                     <td className="px-6 py-4 align-middle">
