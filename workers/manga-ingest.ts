@@ -1,8 +1,8 @@
 import "dotenv/config";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { ensureDatabase } from "@/lib/db/bootstrap";
-import { anime } from "@/lib/db/schema";
+import { ensureMangaDatabase } from "@/lib/db/bootstrap";
+import { manga } from "@/lib/db/schema";
 
 const JIKAN_BASE = "https://api.jikan.moe/v4";
 
@@ -12,58 +12,34 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function parseAnime(item: any) {
+function parseManga(item: any) {
   return {
     malId: item.mal_id,
     title: item.title,
     titleJapanese: item.title_japanese,
+    titleEnglish: item.title_english,
     imageUrl: item.images?.jpg?.image_url,
     synopsis: item.synopsis,
+    background: item.background,
     score: item.score,
     scoredBy: item.scored_by,
     rank: item.rank,
     popularity: item.popularity,
-    episodes: item.episodes,
+    chapters: item.chapters,
+    volumes: item.volumes,
     status: item.status,
-    rating: item.rating,
-    source: item.source,
-    season: item.season,
-    year: item.year,
+    publishing: item.publishing,
     genres: item.genres?.map((g: any) => g.name) || [],
-    studios: item.studios?.map((s: any) => s.name) || [],
-    airedFrom: item.aired?.from ? new Date(item.aired.from) : null,
-    airedTo: item.aired?.to ? new Date(item.aired.to) : null,
-    isAiring: item.aired?.prop?.from?.day !== null || item.status === "Currently Airing",
-    trailerUrl: item.trailer?.url,
+    themes: item.themes?.map((t: any) => t.name) || [],
+    demographics: item.demographics?.map((d: any) => d.name) || [],
+    authors: item.authors?.map((a: any) => ({ name: a.name, type: a.type })) || [],
+    serializations: item.serializations?.map((s: any) => s.name) || [],
+    publishedFrom: item.published?.from ? new Date(item.published.from) : null,
+    publishedTo: item.published?.to ? new Date(item.published.to) : null,
     type: item.type,
     members: item.members,
     favorites: item.favorites,
-    duration: item.duration,
   };
-}
-
-async function saveAnime(data: any) {
-  const malId = data.mal_id || data.malId;
-
-  if (!malId) {
-    console.warn("⚠️ Item sem mal_id, pulando:", data.title || data.mal_id);
-    return;
-  }
-
-  const existing = await db
-    .select()
-    .from(anime)
-    .where(eq(anime.malId, malId))
-    .limit(1);
-
-  if (existing.length > 0) {
-    await db
-      .update(anime)
-      .set({ ...parseAnime(data), updatedAt: new Date() })
-      .where(eq(anime.malId, malId));
-  } else {
-    await db.insert(anime).values(parseAnime(data));
-  }
 }
 
 async function fetchPage(endpoint: string, page: number) {
@@ -84,19 +60,18 @@ async function fetchPage(endpoint: string, page: number) {
 }
 
 export async function run() {
-  console.log("🚀 Iniciando ingestão de animes do Jikan API (top/anime)\n");
-  await ensureDatabase();
+  console.log("🚀 Iniciando ingestão de mangás do Jikan API (top/manga)\n");
+  await ensureMangaDatabase();
 
   let page = 1;
   let hasNext = true;
   let totalNew = 0;
   let totalUpdated = 0;
-  let totalSkipped = 0;
 
   while (hasNext) {
     console.log(`📄 Página ${page}...`);
 
-    const json = await fetchPage("/top/anime", page);
+    const json = await fetchPage("/top/manga", page);
     const items = json.data;
 
     for (const item of items) {
@@ -106,20 +81,20 @@ export async function run() {
       // Verifica se já existe no banco
       const existing = await db
         .select()
-        .from(anime)
-        .where(eq(anime.malId, malId))
+        .from(manga)
+        .where(eq(manga.malId, malId))
         .limit(1);
 
       if (existing.length > 0) {
-        // Já existe - atualiza apenas se necessário
+        // Já existe - atualiza
         await db
-          .update(anime)
-          .set({ ...parseAnime(item), updatedAt: new Date() })
-          .where(eq(anime.malId, malId));
+          .update(manga)
+          .set({ ...parseManga(item), updatedAt: new Date() })
+          .where(eq(manga.malId, malId));
         totalUpdated++;
       } else {
-        // Novo anime - insere
-        await db.insert(anime).values(parseAnime(item));
+        // Novo manga - insere
+        await db.insert(manga).values(parseManga(item));
         totalNew++;
         console.log(`  ✨ Novo: #${rank} - ${item.title}`);
       }
@@ -129,7 +104,7 @@ export async function run() {
     page++;
 
     console.log(
-      `  📊 Página ${page - 1}: ${items.length} animes (novos: ${totalNew}, atualizados: ${totalUpdated})`
+      `  📊 Página ${page - 1}: ${items.length} mangás (novos: ${totalNew}, atualizados: ${totalUpdated})`
     );
 
     if (hasNext) {
