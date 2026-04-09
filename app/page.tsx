@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { AnimeCarousel } from "@/app/components/AnimeCarousel";
+import { MangaCarousel } from "@/app/components/MangaCarousel";
+import { SeasonAnimeCarousel } from "@/app/components/SeasonAnimeCarousel";
 
 export default function Home() {
   return (
@@ -34,6 +36,9 @@ export default function Home() {
 
       <div className="w-full pb-20">
         <AnimeCarousel title="Top Airing Anime" filter="airing" />
+        <SeasonAnimeCarousel title="Anime da Temporada Atual" />
+        <MangaCarousel title="Top Popular Manga" filter="bypopularity" />
+        <AnimeCarousel title="Top Popular Anime" filter="bypopularity" />
         <AnimeCarousel title="Upcoming Anime" filter="upcoming" />
       </div>
     </div>

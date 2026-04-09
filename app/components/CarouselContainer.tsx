@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 
 interface CarouselContainerProps {
@@ -45,16 +46,7 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
           className="absolute left-0 top-0 z-10 flex h-full w-16 items-center justify-center bg-gradient-to-r from-background via-background/50 to-transparent text-zinc-900 transition-all hover:text-indigo-600 dark:text-zinc-50 dark:hover:text-indigo-400 hover:cursor-pointer"
           aria-label="Scroll left"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-            stroke="currentColor"
-            className="h-8 w-8"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
+          <ChevronLeft size={30}/>
         </button>
       )}
 
@@ -74,16 +66,7 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
           className="absolute right-0 top-0 z-10 flex h-full w-16 items-center justify-center bg-gradient-to-l from-background via-background/50 to-transparent text-zinc-900 transition-all hover:text-indigo-600 dark:text-zinc-50 dark:hover:text-indigo-400 hover:cursor-pointer"
           aria-label="Scroll right"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-            stroke="currentColor"
-            className="h-8 w-8"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
+          <ChevronRight size={30}/>
         </button>
       )}
     </div>
