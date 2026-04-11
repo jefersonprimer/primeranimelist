@@ -16,17 +16,143 @@ function titleCase(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
+type SeasonAnimeItem = {
+  id: number;
+  malId: number;
+  title: string;
+  imageUrl: string | null;
+  type: string | null;
+  /** ISO string from API; used to split TV into New vs Continuing */
+  airedFrom?: string | Date | null;
+};
+
 type SeasonApiResponse = {
-  items: Array<{
-    id: number;
-    malId: number;
-    title: string;
-    imageUrl: string | null;
-  }>;
+  items: SeasonAnimeItem[];
   season: Season;
   year: number;
   availableYears: number[];
 };
+
+type SeasonSectionKey =
+  | "tv_new"
+  | "tv_continuing"
+  | "ona"
+  | "ova"
+  | "movie"
+  | "special"
+  | "other";
+
+const SECTION_ORDER: SeasonSectionKey[] = [
+  "tv_new",
+  "tv_continuing",
+  "ona",
+  "ova",
+  "movie",
+  "special",
+  "other",
+];
+
+const SECTION_LABELS: Record<SeasonSectionKey, string> = {
+  tv_new: "TV - New",
+  tv_continuing: "TV - Continuing",
+  ona: "ONA",
+  ova: "OVA",
+  movie: "Move",
+  special: "Special",
+  other: "Other",
+};
+
+/** First day of the seasonal window (MAL-style), UTC, for New vs Continuing. */
+function seasonChartStartUtc(season: Season, year: number): Date {
+  switch (season) {
+    case "winter":
+      return new Date(Date.UTC(year - 1, 11, 1));
+    case "spring":
+      return new Date(Date.UTC(year, 3, 1));
+    case "summer":
+      return new Date(Date.UTC(year, 6, 1));
+    case "fall":
+      return new Date(Date.UTC(year, 9, 1));
+  }
+}
+
+function isTvContinuing(item: SeasonAnimeItem, season: Season, year: number): boolean {
+  const raw = item.airedFrom;
+  if (raw == null) return false;
+  const aired = typeof raw === "string" ? new Date(raw) : raw;
+  if (Number.isNaN(aired.getTime())) return false;
+  return aired.getTime() < seasonChartStartUtc(season, year).getTime();
+}
+
+type NonTvSectionKey = Exclude<SeasonSectionKey, "tv_new" | "tv_continuing">;
+
+function nonTvSectionKeyForType(type: string | null): NonTvSectionKey {
+  const t = (type ?? "").trim().toLowerCase();
+  if (t === "ona") return "ona";
+  if (t === "ova") return "ova";
+  if (t === "movie") return "movie";
+  if (t === "special") return "special";
+  return "other";
+}
+
+function groupSeasonItems(items: SeasonAnimeItem[], season: Season, year: number) {
+  const buckets: Record<SeasonSectionKey, SeasonAnimeItem[]> = {
+    tv_new: [],
+    tv_continuing: [],
+    ona: [],
+    ova: [],
+    movie: [],
+    special: [],
+    other: [],
+  };
+  for (const item of items) {
+    const t = (item.type ?? "").trim().toLowerCase();
+    if (t === "tv") {
+      const key = isTvContinuing(item, season, year) ? "tv_continuing" : "tv_new";
+      buckets[key].push(item);
+    } else {
+      buckets[nonTvSectionKeyForType(item.type)].push(item);
+    }
+  }
+  return SECTION_ORDER.map((key) => ({
+    key,
+    label: SECTION_LABELS[key],
+    items: buckets[key],
+  })).filter((s) => s.items.length > 0);
+}
+
+type SeasonSection = ReturnType<typeof groupSeasonItems>[number];
+
+const TYPE_FILTERS = ["all", "tv", "ona", "ova", "movie", "special"] as const;
+type TypeFilter = (typeof TYPE_FILTERS)[number];
+
+const TYPE_FILTER_LABELS: Record<TypeFilter, string> = {
+  all: "All",
+  tv: "TV",
+  ona: "ONA",
+  ova: "OVA",
+  movie: "Movie",
+  special: "Special",
+};
+
+function parseTypeFilter(raw: string | string[] | undefined): TypeFilter {
+  const v = (Array.isArray(raw) ? raw[0] : raw)?.trim().toLowerCase() ?? "";
+  return (TYPE_FILTERS as readonly string[]).includes(v) ? (v as TypeFilter) : "all";
+}
+
+function seasonPagePath(year: number, season: string, typeFilter: TypeFilter): string {
+  const path = `/anime/season/${year}/${season}`;
+  if (typeFilter === "all") return path;
+  return `${path}?type=${typeFilter}`;
+}
+
+function filterSectionsByType(sections: SeasonSection[], filter: TypeFilter): SeasonSection[] {
+  if (filter === "all") return sections;
+  if (filter === "tv") {
+    return sections.filter((s) => s.key === "tv_new" || s.key === "tv_continuing");
+  }
+  return sections.filter((s) => s.key === filter);
+}
 
 export default async function AnimeSeasonByYearPage({
   params,
@@ -36,7 +162,8 @@ export default async function AnimeSeasonByYearPage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { year: yearParam, season: seasonParam } = await params;
-  await searchParams;
+  const sp = (await searchParams) ?? {};
+  const typeFilter = parseTypeFilter(sp.type);
 
   const seasonCandidate = decodeURIComponent(seasonParam).toLowerCase();
   if (!isSeason(seasonCandidate)) {
@@ -70,6 +197,9 @@ export default async function AnimeSeasonByYearPage({
   const showBackToCurrent = year !== new Date().getFullYear();
   const currentYear = new Date().getFullYear();
 
+  const allSections = groupSeasonItems(data.items, season, year);
+  const visibleSections = filterSectionsByType(allSections, typeFilter);
+
   return (
     <div className="max-w-7xl mx-auto py-12 px-6">
       <div className="flex flex-col gap-8">
@@ -85,7 +215,7 @@ export default async function AnimeSeasonByYearPage({
             <div className="flex items-center gap-3">
               {previousAvailableYear ? (
                 <Link
-                  href={`/anime/season/${previousAvailableYear}/${season}`}
+                  href={seasonPagePath(previousAvailableYear, season, typeFilter)}
                   className="inline-flex items-center justify-center rounded-full border border-zinc-200 px-3 py-2 text-sm font-black text-zinc-700 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-900"
                   aria-label="Go to previous year"
                   title="Go to previous year"
@@ -112,7 +242,7 @@ export default async function AnimeSeasonByYearPage({
 
               {showBackToCurrent && (
                 <Link
-                  href={`/anime/season/${currentYear}/${season}`}
+                  href={seasonPagePath(currentYear, season, typeFilter)}
                   className="ml-1 inline-flex items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm font-black text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 dark:hover:bg-indigo-900"
                   aria-label="Back to current year"
                   title="Back to current year"
@@ -128,7 +258,7 @@ export default async function AnimeSeasonByYearPage({
                 return (
                   <Link
                     key={s}
-                    href={`/anime/season/${year}/${s}`}
+                    href={seasonPagePath(year, s, typeFilter)}
                     className={`inline-flex items-center rounded-full border px-4 py-2 text-sm font-black uppercase tracking-wide transition-colors ${
                       active
                         ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
@@ -141,41 +271,85 @@ export default async function AnimeSeasonByYearPage({
               })}
             </div>
           </div>
+
+          <div className="border-t border-zinc-200 pt-4 dark:border-zinc-800">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">Type</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {TYPE_FILTERS.map((tf) => {
+                const active = tf === typeFilter;
+                return (
+                  <Link
+                    key={tf}
+                    href={seasonPagePath(year, season, tf)}
+                    className={`inline-flex items-center rounded-full border px-4 py-2 text-sm font-black tracking-wide transition-colors ${
+                      active
+                        ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
+                        : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900"
+                    }`}
+                  >
+                    {TYPE_FILTER_LABELS[tf]}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {data.items.length === 0 ? (
           <div className="rounded-xl border border-zinc-200 bg-white px-6 py-12 text-center text-sm font-medium text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400">
             No anime found for {titleCase(season)} {year}.
           </div>
+        ) : visibleSections.length === 0 ? (
+          <div className="rounded-xl border border-zinc-200 bg-white px-6 py-12 text-center text-sm font-medium text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400">
+            No {TYPE_FILTER_LABELS[typeFilter]} titles for {titleCase(season)} {year}.{" "}
+            <Link
+              href={seasonPagePath(year, season, "all")}
+              className="font-bold text-indigo-600 underline-offset-2 hover:underline dark:text-indigo-400"
+            >
+              Show all
+            </Link>
+          </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {data.items.map((anime) => (
-              <Link
-                key={anime.id}
-                href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`}
-                className="group rounded-xl border border-zinc-200 bg-white shadow-sm transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 overflow-hidden"
-              >
-                <div className="relative aspect-[3/4] w-full bg-zinc-100 dark:bg-zinc-900">
-                  {anime.imageUrl ? (
-                    <Image
-                      src={anime.imageUrl}
-                      alt={anime.title}
-                      fill
-                      className="object-cover transition-transform group-hover:scale-[1.02]"
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs font-bold text-zinc-400">No image</span>
-                    </div>
-                  )}
+          <div className="flex flex-col gap-12">
+            {visibleSections.map((section) => (
+              <section key={section.key} aria-labelledby={`season-section-${section.key}`}>
+                <h2
+                  id={`season-section-${section.key}`}
+                  className="mb-4 text-lg font-black uppercase tracking-wide text-zinc-800 dark:text-zinc-200"
+                >
+                  {section.label}
+                </h2>
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                  {section.items.map((anime) => (
+                    <Link
+                      key={anime.id}
+                      href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`}
+                      className="group border border-zinc-200 bg-white shadow-sm transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 overflow-hidden"
+                    >
+                      <div className="relative aspect-[3/4] w-full bg-zinc-100 dark:bg-zinc-900">
+                        {anime.imageUrl ? (
+                          <Image
+                            src={anime.imageUrl}
+                            alt={anime.title}
+                            fill
+                            className="object-cover transition-transform group-hover:scale-[1.02]"
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-xs font-bold text-zinc-400">No image</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3">
+                        <p className="text-sm font-black leading-tight text-zinc-900 dark:text-zinc-50 overflow-hidden text-ellipsis whitespace-nowrap">
+                          {anime.title}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-                <div className="p-3">
-                  <p className="text-sm font-black leading-tight text-zinc-900 dark:text-zinc-50 overflow-hidden text-ellipsis whitespace-nowrap">
-                    {anime.title}
-                  </p>
-                </div>
-              </Link>
+              </section>
             ))}
           </div>
         )}

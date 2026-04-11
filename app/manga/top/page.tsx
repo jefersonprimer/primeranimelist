@@ -29,6 +29,11 @@ function getPageHrefWithFilter(page: number, filter: TopMangaFilter | null) {
   return page <= 1 ? `/manga/top?filter=${filter}` : `/manga/top?filter=${filter}&page=${page}`;
 }
 
+function formatDate(date: Date | null | undefined) {
+  if (!date) return null;
+  return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(date);
+}
+
 export default async function MangaListPage(props: PageProps<"/manga/top">) {
   const { page: pageParam, filter: filterParam } = await props.searchParams;
   const page = getPageNumber(pageParam);
@@ -198,15 +203,10 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
                             {manga.titleJapanese}
                           </p>
                         )}
-                        <div className="mt-1.5 flex flex-wrap gap-2">
+                        <div className="mt-1 flex flex-wrap gap-2">
                           {manga.type && (
                             <span className="rounded border border-indigo-100 bg-indigo-50 px-1.5 py-0.5 text-[9px] font-black uppercase text-indigo-600 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-400">
                               {manga.type}
-                            </span>
-                          )}
-                          {manga.chapters && (
-                            <span className="rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
-                              {manga.chapters} ch
                             </span>
                           )}
                           {manga.volumes && (
@@ -214,7 +214,23 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
                               {manga.volumes} vol
                             </span>
                           )}
+                          {manga.chapters && (
+                            <span className="rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+                              {manga.chapters} ch
+                            </span>
+                          )}
                         </div>
+                        {(manga.publishedFrom || manga.publishedTo) && (
+                          <p className="mt-0.5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">
+                            {formatDate(manga.publishedFrom)}
+                            {manga.publishedTo ? ` - ${formatDate(manga.publishedTo)}` : ""}
+                          </p>
+                        )}
+                        {manga.members !== null && manga.members !== undefined && (
+                          <p className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500">
+                            {new Intl.NumberFormat("en-US").format(manga.members)} members
+                          </p>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-center align-middle">

@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { ensureDatabase } from "@/lib/db/bootstrap";
 import { anime } from "@/lib/db/schema";
-import { asc, count, desc, eq, gt, isNotNull, and } from "drizzle-orm";
+import { asc, and, count, desc, eq, gt, isNotNull } from "drizzle-orm";
 
 type ListAnimeOptions = {
   page?: number;

@@ -1,4 +1,5 @@
 import { listAnime, parseTopAnimeFilter, type TopAnimeFilter } from "@/lib/services/anime.service";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -23,6 +24,11 @@ function getPageHref(page: number, filter: TopAnimeFilter | null) {
   }
 
   return page <= 1 ? `/anime/top?filter=${filter}` : `/anime/top?filter=${filter}&page=${page}`;
+}
+
+function formatDate(date: Date | null | undefined) {
+  if (!date) return null;
+  return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(date);
 }
 
 export default async function AnimeListPage(props: PageProps<"/anime/top">) {
@@ -87,7 +93,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                   : "pointer-events-none border-zinc-200 text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
               }`}
             >
-              <span aria-hidden="true">←</span>
+              <ChevronLeft/>
               Previous 50
             </Link>
 
@@ -105,7 +111,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
               }`}
             >
               Next 50
-              <span aria-hidden="true">→</span>
+              <ChevronRight/>
             </Link>
           </div>
         </div>
@@ -156,7 +162,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                     <td className="px-6 py-4 align-middle">
                       <Link href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`}>
                         {anime.imageUrl ? (
-                          <div className="relative h-28 w-20 overflow-hidden rounded border border-zinc-200 shadow-sm dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+                          <div className="relative h-28 w-20 overflow-hidden border border-zinc-200 shadow-sm dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
                             <Image
                               src={anime.imageUrl}
                               alt={anime.title}
@@ -196,6 +202,17 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                             </span>
                           )}
                         </div>
+                        {(anime.airedFrom || anime.airedTo) && (
+                          <p className="mt-0.5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">
+                            {formatDate(anime.airedFrom)}
+                            {anime.airedTo ? ` - ${formatDate(anime.airedTo)}` : ""}
+                          </p>
+                        )}
+                        {anime.members !== null && anime.members !== undefined && (
+                          <p className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500">
+                            {new Intl.NumberFormat("en-US").format(anime.members)} members
+                          </p>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-center align-middle">
