@@ -74,9 +74,35 @@ async function createMangaTable() {
   `);
 }
 
+async function createAuthTables() {
+  await db.execute(sql`
+    create table if not exists "users" (
+      "id" serial primary key,
+      "email" text not null unique,
+      "password_hash" text not null,
+      "full_name" text,
+      "created_at" timestamp default now(),
+      "updated_at" timestamp default now()
+    )
+  `);
+
+  await db.execute(sql`
+    create table if not exists "sessions" (
+      "id" serial primary key,
+      "user_id" integer not null references "users"("id") on delete cascade,
+      "session_token" text not null unique,
+      "expires_at" timestamp not null,
+      "created_at" timestamp default now()
+    )
+  `);
+}
+
 export async function ensureDatabase() {
   if (!databaseReady) {
-    databaseReady = createAnimeTable();
+    databaseReady = (async () => {
+      await createAnimeTable();
+      await createAuthTables();
+    })();
   }
 
   await databaseReady;

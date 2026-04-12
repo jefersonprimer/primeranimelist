@@ -61,3 +61,20 @@ export const manga = pgTable("manga", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  email: text("email").unique().notNull(),
+  passwordHash: text("password_hash").notNull(),
+  fullName: text("full_name"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const sessions = pgTable("sessions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  sessionToken: text("session_token").unique().notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
