@@ -45,4 +45,3 @@ export async function SeasonAnimeCarousel({ title, limit = 15 }: SeasonAnimeCaro
     </section>
   );
 }
-

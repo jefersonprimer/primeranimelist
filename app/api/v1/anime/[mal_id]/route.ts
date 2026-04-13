@@ -1,4 +1,4 @@
-import { getAnimeByMalId } from "@/lib/services/anime.service";
+import { getAnimeByMalId, serializeSingleAnimeResponse } from "@/lib/services/anime.service";
 
 export async function GET(
   _request: Request,
@@ -17,5 +17,5 @@ export async function GET(
     return Response.json({ error: "Anime not found" }, { status: 404 });
   }
 
-  return Response.json(anime);
+  return Response.json(serializeSingleAnimeResponse(anime));
 }

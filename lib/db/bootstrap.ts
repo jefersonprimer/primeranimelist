@@ -11,6 +11,7 @@ async function createAnimeTable() {
       "mal_id" integer not null unique,
       "title" text not null,
       "title_japanese" text,
+      "title_english" text,
       "image_url" text,
       "synopsis" text,
       "score" real,
@@ -25,6 +26,10 @@ async function createAnimeTable() {
       "year" integer,
       "genres" jsonb,
       "studios" jsonb,
+      "producers" jsonb,
+      "licensors" jsonb,
+      "themes" jsonb,
+      "demographics" jsonb,
       "aired_from" timestamp,
       "aired_to" timestamp,
       "is_airing" boolean,
@@ -37,6 +42,17 @@ async function createAnimeTable() {
       "updated_at" timestamp default now()
     )
   `);
+
+  // Migration: Add missing columns if they don't exist
+  try {
+    await db.execute(sql`alter table "anime" add column if not exists "title_english" text`);
+    await db.execute(sql`alter table "anime" add column if not exists "producers" jsonb`);
+    await db.execute(sql`alter table "anime" add column if not exists "licensors" jsonb`);
+    await db.execute(sql`alter table "anime" add column if not exists "themes" jsonb`);
+    await db.execute(sql`alter table "anime" add column if not exists "demographics" jsonb`);
+  } catch (err) {
+    console.error("Migration error:", err);
+  }
 }
 
 async function createMangaTable() {

@@ -1,4 +1,9 @@
-import { isValidAnimeSeason, listAnimeBySeasonYear, listAvailableAnimeYears } from "@/lib/services/anime.service";
+import {
+  isValidAnimeSeason,
+  listAnimeBySeasonYear,
+  listAvailableAnimeYears,
+  serializeAnimeListResponse,
+} from "@/lib/services/anime.service";
 
 function getCurrentSeason(date = new Date()) {
   const month = date.getMonth(); // 0-11
@@ -28,8 +33,13 @@ export async function GET(request: Request) {
   ]);
 
   return Response.json({
-    ...data,
+    ...serializeAnimeListResponse(data.items, {
+      page: 1,
+      limit: data.limit,
+      total: data.items.length,
+    }),
+    season: data.season,
+    year: data.year,
     availableYears,
   });
 }
-

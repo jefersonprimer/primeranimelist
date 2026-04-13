@@ -2,12 +2,268 @@ import { db } from "@/lib/db";
 import { ensureDatabase } from "@/lib/db/bootstrap";
 import { anime } from "@/lib/db/schema";
 import { asc, and, count, desc, eq, gt, isNotNull } from "drizzle-orm";
+import type { InferSelectModel } from "drizzle-orm";
 
 type ListAnimeOptions = {
   page?: number;
   limit?: number;
   filter?: string;
 };
+
+type AnimeRow = InferSelectModel<typeof anime>;
+type AnimeRelationValue =
+  | string
+  | {
+      mal_id?: number | null;
+      type?: string | null;
+      name?: string | null;
+      url?: string | null;
+    };
+
+function formatDateISOString(date: Date | null) {
+  return date ? date.toISOString() : null;
+}
+
+function buildDateProp(date: Date | null) {
+  if (!date) {
+    return { day: null, month: null, year: null };
+  }
+
+  return {
+    day: date.getUTCDate(),
+    month: date.getUTCMonth() + 1,
+    year: date.getUTCFullYear(),
+  };
+}
+
+function formatAiredString(from: Date | null, to: Date | null) {
+  if (!from && !to) return null;
+
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+
+  const fromText = from ? formatter.format(from) : "?";
+  const toText = to ? formatter.format(to) : "?";
+
+  return `${fromText} to ${toText}`;
+}
+
+function slugifyMalTitle(title: string) {
+  return title
+    .normalize("NFKD")
+    .replace(/[^\w\s-]/g, "")
+    .trim()
+    .replace(/[-\s]+/g, "_");
+}
+
+function buildMalAnimeUrl(malId: number, title: string) {
+  return `https://myanimelist.net/anime/${malId}/${slugifyMalTitle(title)}`;
+}
+
+function deriveImageUrls(imageUrl: string | null) {
+  if (!imageUrl) {
+    return {
+      jpg: {
+        image_url: null,
+        small_image_url: null,
+        large_image_url: null,
+      },
+      webp: {
+        image_url: null,
+        small_image_url: null,
+        large_image_url: null,
+      },
+    };
+  }
+
+  const jpg = {
+    image_url: imageUrl,
+    small_image_url: imageUrl.replace(/(\.[a-z]+)$/i, "t$1"),
+    large_image_url: imageUrl.replace(/(\.[a-z]+)$/i, "l$1"),
+  };
+
+  const webpBase = imageUrl.replace(/\.jpg$/i, ".webp");
+  const webp = {
+    image_url: webpBase,
+    small_image_url: webpBase.replace(/(\.[a-z]+)$/i, "t$1"),
+    large_image_url: webpBase.replace(/(\.[a-z]+)$/i, "l$1"),
+  };
+
+  return { jpg, webp };
+}
+
+function extractYoutubeId(url: string | null) {
+  if (!url) return null;
+
+  try {
+    const parsed = new URL(url);
+
+    if (parsed.hostname.includes("youtu.be")) {
+      return parsed.pathname.slice(1) || null;
+    }
+
+    if (parsed.hostname.includes("youtube.com")) {
+      return parsed.searchParams.get("v");
+    }
+  } catch {}
+
+  return null;
+}
+
+function buildTrailer(trailerUrl: string | null) {
+  const youtubeId = extractYoutubeId(trailerUrl);
+
+  return {
+    youtube_id: youtubeId,
+    url: trailerUrl,
+    embed_url: youtubeId
+      ? `https://www.youtube-nocookie.com/embed/${youtubeId}?enablejsapi=1&wmode=opaque&autoplay=1`
+      : null,
+    images: {
+      image_url: null,
+      small_image_url: null,
+      medium_image_url: null,
+      large_image_url: null,
+      maximum_image_url: null,
+    },
+  };
+}
+
+function serializeRelationItem(kind: "producer" | "studio" | "genre", value: AnimeRelationValue) {
+  if (typeof value === "string") {
+    const encoded = encodeURIComponent(value.replace(/\s+/g, "_"));
+    const basePath =
+      kind === "producer"
+        ? "producer"
+        : kind === "studio"
+          ? "producer"
+          : "genre";
+
+    return {
+      mal_id: null,
+      type: "anime",
+      name: value,
+      url: `https://myanimelist.net/anime/${basePath}/${encoded}`,
+    };
+  }
+
+  return {
+    mal_id: value.mal_id ?? null,
+    type: value.type ?? "anime",
+    name: value.name ?? "",
+    url: value.url ?? null,
+  };
+}
+
+function serializeRelationList(values: AnimeRow["genres"], kind: "producer" | "studio" | "genre") {
+  if (!Array.isArray(values)) return [];
+  return values.map((value) => serializeRelationItem(kind, value as AnimeRelationValue));
+}
+
+function buildTitles(row: AnimeRow) {
+  const titles = [{ type: "Default", title: row.title }];
+
+  if (row.titleEnglish && row.titleEnglish !== row.title) {
+    titles.push({ type: "English", title: row.titleEnglish });
+  }
+
+  if (row.titleJapanese && row.titleJapanese !== row.title) {
+    titles.push({ type: "Japanese", title: row.titleJapanese });
+  }
+
+  return titles;
+}
+
+export function serializeAnime(row: AnimeRow) {
+  return {
+    mal_id: row.malId,
+    url: buildMalAnimeUrl(row.malId, row.title),
+    images: deriveImageUrls(row.imageUrl),
+    trailer: buildTrailer(row.trailerUrl),
+    approved: true,
+    titles: buildTitles(row),
+    title: row.title,
+    title_english: row.titleEnglish,
+    title_japanese: row.titleJapanese,
+    title_synonyms: [],
+    type: row.type,
+    source: row.source,
+    episodes: row.episodes,
+    status: row.status,
+    airing: row.isAiring,
+    aired: {
+      from: formatDateISOString(row.airedFrom),
+      to: formatDateISOString(row.airedTo),
+      prop: {
+        from: buildDateProp(row.airedFrom),
+        to: buildDateProp(row.airedTo),
+      },
+      string: formatAiredString(row.airedFrom, row.airedTo),
+    },
+    duration: row.duration,
+    rating: row.rating,
+    score: row.score,
+    scored_by: row.scoredBy,
+    rank: row.rank,
+    popularity: row.popularity,
+    members: row.members,
+    favorites: row.favorites,
+    synopsis: row.synopsis,
+    background: null,
+    season: row.season,
+    year: row.year,
+    broadcast: {
+      day: null,
+      time: null,
+      timezone: null,
+      string: null,
+    },
+    producers: serializeRelationList(row.producers, "producer"),
+    licensors: serializeRelationList(row.licensors, "producer"),
+    studios: serializeRelationList(row.studios, "studio"),
+    genres: serializeRelationList(row.genres, "genre"),
+    explicit_genres: [],
+    themes: serializeRelationList(row.themes, "genre"),
+    demographics: serializeRelationList(row.demographics, "genre"),
+  };
+}
+
+export function serializeAnimeListResponse(
+  rows: AnimeRow[],
+  {
+    page,
+    limit,
+    total,
+  }: {
+    page: number;
+    limit: number;
+    total: number;
+  }
+) {
+  return {
+    pagination: {
+      last_visible_page: Math.max(1, Math.ceil(total / limit)),
+      has_next_page: page * limit < total,
+      current_page: page,
+      items: {
+        count: rows.length,
+        total,
+        per_page: limit,
+      },
+    },
+    data: rows.map(serializeAnime),
+  };
+}
+
+export function serializeSingleAnimeResponse(row: AnimeRow) {
+  return {
+    data: serializeAnime(row),
+  };
+}
 
 const VALID_TOP_ANIME_FILTERS = [
   "airing",

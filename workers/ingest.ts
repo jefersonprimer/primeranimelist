@@ -7,6 +7,8 @@ import { anime } from "@/lib/db/schema";
 const JIKAN_BASE = "https://api.jikan.moe/v4";
 
 const REQUEST_DELAY = 2500; // 2.5s entre requests (Jikan tem rate limit)
+const FETCH_RETRIES = 5;
+const FETCH_TIMEOUT_MS = 15000;
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -17,6 +19,7 @@ function parseAnime(item: any) {
     malId: item.mal_id,
     title: item.title,
     titleJapanese: item.title_japanese,
+    titleEnglish: item.title_english,
     imageUrl: item.images?.jpg?.image_url,
     synopsis: item.synopsis,
     score: item.score,
@@ -31,6 +34,10 @@ function parseAnime(item: any) {
     year: item.year,
     genres: item.genres?.map((g: any) => g.name) || [],
     studios: item.studios?.map((s: any) => s.name) || [],
+    producers: item.producers?.map((p: any) => p.name) || [],
+    licensors: item.licensors?.map((l: any) => l.name) || [],
+    themes: item.themes?.map((t: any) => t.name) || [],
+    demographics: item.demographics?.map((d: any) => d.name) || [],
     airedFrom: item.aired?.from ? new Date(item.aired.from) : null,
     airedTo: item.aired?.to ? new Date(item.aired.to) : null,
     isAiring: item.aired?.prop?.from?.day !== null || item.status === "Currently Airing",
@@ -69,18 +76,47 @@ async function saveAnime(data: any) {
 async function fetchPage(endpoint: string, page: number) {
   const separator = endpoint.includes("?") ? "&" : "?";
   const url = `${JIKAN_BASE}${endpoint}${separator}page=${page}`;
-  const res = await fetch(url);
 
-  if (!res.ok) {
-    if (res.status === 429) {
-      console.log("Rate limit, aguardando 5s...");
-      await sleep(5000);
-      return fetchPage(endpoint, page);
+  for (let attempt = 1; attempt <= FETCH_RETRIES; attempt++) {
+    try {
+      const res = await fetch(url, {
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      });
+
+      if (!res.ok) {
+        if (res.status === 429) {
+          const waitMs = 5000 * attempt;
+          console.log(`Rate limit na página ${page}, aguardando ${waitMs / 1000}s...`);
+          await sleep(waitMs);
+          continue;
+        }
+
+        if (res.status >= 500 && attempt < FETCH_RETRIES) {
+          const waitMs = 2000 * attempt;
+          console.log(`Erro ${res.status} na página ${page}, retry em ${waitMs / 1000}s...`);
+          await sleep(waitMs);
+          continue;
+        }
+
+        throw new Error(`Jikan API error: ${res.status}`);
+      }
+
+      return res.json();
+    } catch (error) {
+      const isLastAttempt = attempt === FETCH_RETRIES;
+      if (isLastAttempt) {
+        throw error;
+      }
+
+      const message = error instanceof Error ? error.message : String(error);
+      const waitMs = 2000 * attempt;
+      console.log(`Falha de rede na página ${page} (tentativa ${attempt}/${FETCH_RETRIES}): ${message}`);
+      console.log(`Aguardando ${waitMs / 1000}s para tentar novamente...`);
+      await sleep(waitMs);
     }
-    throw new Error(`Jikan API error: ${res.status}`);
   }
 
-  return res.json();
+  throw new Error(`Falha ao buscar página ${page} após ${FETCH_RETRIES} tentativas`);
 }
 
 export async function run() {

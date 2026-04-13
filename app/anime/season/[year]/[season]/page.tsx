@@ -1,7 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { SeasonAnimeCard } from "@/app/components/SeasonAnimeCard";
 
 export const dynamic = "force-dynamic";
 
@@ -17,21 +17,113 @@ function titleCase(value: string) {
 }
 
 type SeasonAnimeItem = {
-  id: number;
   malId: number;
   title: string;
+  titleJapanese: string | null;
+  titleEnglish: string | null;
+  title_english?: string | null;
   imageUrl: string | null;
   type: string | null;
-  /** ISO string from API; used to split TV into New vs Continuing */
-  airedFrom?: string | Date | null;
+  season: string | null;
+  year: number | null;
+  episodes: number | null;
+  duration: string | null;
+  producers: string[] | null;
+  licensors: string[] | null;
+  genres: string[] | null;
+  synopsis: string | null;
+  studios: string[] | null;
+  source: string | null;
+  themes: string[] | null;
+  demographics: string[] | null;
+  score: number | null;
+  members: number | null;
+  airedFrom: string | Date | null;
 };
 
 type SeasonApiResponse = {
-  items: SeasonAnimeItem[];
+  items?: SeasonAnimeItem[];
+  data?: JikanSeasonAnimeItem[];
   season: Season;
   year: number;
   availableYears: number[];
 };
+
+type NamedRelation = {
+  name?: string | null;
+};
+
+type JikanSeasonAnimeItem = {
+  mal_id: number;
+  title: string;
+  title_japanese: string | null;
+  title_english: string | null;
+  images?: {
+    jpg?: {
+      image_url?: string | null;
+    } | null;
+  } | null;
+  type: string | null;
+  season: string | null;
+  year: number | null;
+  episodes: number | null;
+  duration: string | null;
+  producers?: NamedRelation[] | null;
+  licensors?: NamedRelation[] | null;
+  genres?: NamedRelation[] | null;
+  synopsis: string | null;
+  studios?: NamedRelation[] | null;
+  source: string | null;
+  themes?: NamedRelation[] | null;
+  demographics?: NamedRelation[] | null;
+  score: number | null;
+  members: number | null;
+  aired?: {
+    from?: string | null;
+  } | null;
+};
+
+function normalizeNames(values: NamedRelation[] | string[] | null | undefined) {
+  if (!Array.isArray(values)) return [];
+  return values
+    .map((value) => (typeof value === "string" ? value : value.name))
+    .filter((value): value is string => typeof value === "string" && value.trim().length > 0);
+}
+
+function normalizeSeasonItems(payload: SeasonApiResponse): SeasonAnimeItem[] {
+  if (Array.isArray(payload.items)) {
+    return payload.items;
+  }
+
+  if (!Array.isArray(payload.data)) {
+    return [];
+  }
+
+  return payload.data.map((item) => ({
+    malId: item.mal_id,
+    title: item.title,
+    titleJapanese: item.title_japanese,
+    titleEnglish: item.title_english,
+    title_english: item.title_english,
+    imageUrl: item.images?.jpg?.image_url ?? null,
+    type: item.type,
+    season: item.season,
+    year: item.year,
+    episodes: item.episodes,
+    duration: item.duration,
+    producers: normalizeNames(item.producers),
+    licensors: normalizeNames(item.licensors),
+    genres: normalizeNames(item.genres),
+    synopsis: item.synopsis,
+    studios: normalizeNames(item.studios),
+    source: item.source,
+    themes: normalizeNames(item.themes),
+    demographics: normalizeNames(item.demographics),
+    score: item.score,
+    members: item.members,
+    airedFrom: item.aired?.from ?? null,
+  }));
+}
 
 type SeasonSectionKey =
   | "tv_new"
@@ -57,12 +149,11 @@ const SECTION_LABELS: Record<SeasonSectionKey, string> = {
   tv_continuing: "TV - Continuing",
   ona: "ONA",
   ova: "OVA",
-  movie: "Move",
+  movie: "Movie",
   special: "Special",
   other: "Other",
 };
 
-/** First day of the seasonal window (MAL-style), UTC, for New vs Continuing. */
 function seasonChartStartUtc(season: Season, year: number): Date {
   switch (season) {
     case "winter":
@@ -192,23 +283,21 @@ export default async function AnimeSeasonByYearPage({
   }
 
   const data = (await res.json()) as SeasonApiResponse;
+  const seasonItems = normalizeSeasonItems(data);
   const availableYears = Array.isArray(data.availableYears) ? data.availableYears : [];
   const previousAvailableYear = availableYears.filter((y) => y < year).sort((a, b) => b - a)[0];
   const showBackToCurrent = year !== new Date().getFullYear();
   const currentYear = new Date().getFullYear();
 
-  const allSections = groupSeasonItems(data.items, season, year);
+  const allSections = groupSeasonItems(seasonItems, season, year);
   const visibleSections = filterSectionsByType(allSections, typeFilter);
 
   return (
     <div className="max-w-7xl mx-auto py-12 px-6">
       <div className="flex flex-col gap-8">
-        <div>
-          <h1 className="text-4xl font-black tracking-tight text-zinc-900 dark:text-zinc-50 uppercase italic">
-            Anime by Season
-          </h1>
-          <p className="mt-2 text-lg text-zinc-600 dark:text-zinc-400">Browse anime by season and year</p>
-        </div>
+        <h1 className="text-4xl font-black tracking-tight text-zinc-900 dark:text-zinc-50 uppercase italic">
+          Season Anime
+        </h1>
 
         <div className="flex flex-col gap-4 rounded-xl border border-zinc-200 bg-white/80 px-4 py-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/80">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -295,7 +384,7 @@ export default async function AnimeSeasonByYearPage({
           </div>
         </div>
 
-        {data.items.length === 0 ? (
+        {seasonItems.length === 0 ? (
           <div className="rounded-xl border border-zinc-200 bg-white px-6 py-12 text-center text-sm font-medium text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400">
             No anime found for {titleCase(season)} {year}.
           </div>
@@ -315,38 +404,19 @@ export default async function AnimeSeasonByYearPage({
               <section key={section.key} aria-labelledby={`season-section-${section.key}`}>
                 <h2
                   id={`season-section-${section.key}`}
-                  className="mb-4 text-lg font-black uppercase tracking-wide text-zinc-800 dark:text-zinc-200"
+                  className="flex items-center justify-center mb-4 text-sm bg-[#333333] tracking-wide text-[#e0e0e0] p-2"
                 >
                   {section.label}
                 </h2>
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {section.items.map((anime) => (
-                    <Link
-                      key={anime.id}
-                      href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`}
-                      className="group border border-zinc-200 bg-white shadow-sm transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 overflow-hidden"
-                    >
-                      <div className="relative aspect-[3/4] w-full bg-zinc-100 dark:bg-zinc-900">
-                        {anime.imageUrl ? (
-                          <Image
-                            src={anime.imageUrl}
-                            alt={anime.title}
-                            fill
-                            className="object-cover transition-transform group-hover:scale-[1.02]"
-                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-xs font-bold text-zinc-400">No image</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-3">
-                        <p className="text-sm font-black leading-tight text-zinc-900 dark:text-zinc-50 overflow-hidden text-ellipsis whitespace-nowrap">
-                          {anime.title}
-                        </p>
-                      </div>
-                    </Link>
+                    <SeasonAnimeCard
+                      key={anime.malId}
+                      anime={{
+                        ...anime,
+                        airedFrom: anime.airedFrom ? new Date(anime.airedFrom) : null
+                      }}
+                    />
                   ))}
                 </div>
               </section>
@@ -357,4 +427,3 @@ export default async function AnimeSeasonByYearPage({
     </div>
   );
 }
-

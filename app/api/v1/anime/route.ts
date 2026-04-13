@@ -1,4 +1,10 @@
-import { isValidAnimeSeason, listAnime, listAnimeBySeasonYear } from "@/lib/services/anime.service";
+import {
+  isValidAnimeSeason,
+  listAnime,
+  listAnimeBySeasonYear,
+  parseTopAnimeFilter,
+  serializeAnimeListResponse,
+} from "@/lib/services/anime.service";
 
 function getCurrentSeason(date = new Date()) {
   const month = date.getMonth(); // 0-11
@@ -14,6 +20,7 @@ export async function GET(request: Request) {
   const yearRaw = url.searchParams.get("year");
   const pageRaw = url.searchParams.get("page");
   const limitRaw = url.searchParams.get("limit");
+  const filterRaw = url.searchParams.get("filter");
 
   const year = yearRaw ? Number.parseInt(yearRaw, 10) : undefined;
   const page = pageRaw ? Number.parseInt(pageRaw, 10) : undefined;
@@ -30,10 +37,28 @@ export async function GET(request: Request) {
       return Response.json({ error: "Invalid year" }, { status: 400 });
     }
 
-    const data = await listAnimeBySeasonYear({ season, year: year as number, limit: limit ?? 200 });
-    return Response.json(data);
+    const result = await listAnimeBySeasonYear({ season, year: year as number, limit: limit ?? 200 });
+    return Response.json(
+      serializeAnimeListResponse(result.items, {
+        page: 1,
+        limit: result.limit,
+        total: result.items.length,
+      })
+    );
   }
 
-  const data = await listAnime({ page, limit });
-  return Response.json(data);
+  const result = await listAnime({
+    page,
+    limit,
+    filter: filterRaw ?? undefined,
+  });
+
+  return Response.json({
+    ...serializeAnimeListResponse(result.items, {
+      page: result.page,
+      limit: result.limit,
+      total: result.total,
+    }),
+    filter: parseTopAnimeFilter(filterRaw ?? undefined),
+  });
 }
