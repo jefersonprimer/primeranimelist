@@ -15,15 +15,13 @@ export async function MangaCarousel({ title, filter }: MangaCarouselProps) {
 
   return (
     <section className="relative w-full overflow-hidden bg-zinc-50 py-20 dark:bg-zinc-950/40">
-      {/* Background Pattern - Halftone / Screentone style */}
+      {/* Background Pattern */}
       <div className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:20px_20px]" />
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent" />
-      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent" />
-
-      <div className="relative z-10 max-w-7xl px-6 mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+      
+      {/* Header Container - Restricted to max-w-7xl for alignment */}
+      <div className="relative z-20 max-w-7xl px-6 mx-auto mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="relative">
-            {/* Manga Magazine Header Style */}
             <div className="absolute -left-4 -top-6 h-12 w-12 bg-indigo-600/10 dark:bg-indigo-400/10 rounded-full blur-2xl" />
             <span className="block text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 dark:text-indigo-400 mb-2">
               Hot Collection
@@ -46,7 +44,10 @@ export async function MangaCarousel({ title, filter }: MangaCarouselProps) {
             <span className="transition-transform group-hover:translate-x-1">→</span>
           </Link>
         </div>
-        
+      </div>
+      
+      {/* Carousel Container - Full width with internal dynamic padding */}
+      <div className="relative z-10 w-full">
         <MangaCarouselContainer>
           {mangaList.map((manga, index) => (
             <div key={manga.malId} className="snap-start shrink-0 w-[160px] sm:w-[200px] lg:w-[220px]">

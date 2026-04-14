@@ -46,39 +46,62 @@ export function MangaCarouselContainer({ children }: MangaCarouselContainerProps
     }
   };
 
+  const dynamicPadding = "calc(max(1.5rem, (100vw - 1280px) / 2 + 1.5rem))";
+
   return (
     <div className="group/carousel relative w-full overflow-visible">
-      {/* Integrated Navigation Buttons - "Offset" Style */}
-      <div className="absolute -top-16 right-0 flex items-center gap-0 z-20">
-        <button
-          onClick={() => scroll("left")}
-          disabled={!canScrollLeft}
-          className="flex h-12 w-12 items-center justify-center border-2 border-zinc-900 bg-white text-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-zinc-100 active:shadow-none active:translate-x-1 active:translate-y-1 disabled:opacity-20 disabled:pointer-events-none dark:border-white dark:bg-zinc-900 dark:text-white dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
-          aria-label="Scroll left"
+      {/* Left Navigation - Manga Punk Style */}
+      {canScrollLeft && (
+        <div 
+          style={{ width: dynamicPadding }}
+          className="absolute left-0 top-0 z-30 flex h-[calc(100%-3rem)] items-center justify-start pointer-events-none"
         >
-          <ArrowLeft size={20} strokeWidth={3} />
-        </button>
-        <button
-          onClick={() => scroll("right")}
-          disabled={!canScrollRight}
-          className="flex h-12 w-12 items-center justify-center border-2 border-l-0 border-zinc-900 bg-white text-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-zinc-100 active:shadow-none active:translate-x-1 active:translate-y-1 disabled:opacity-20 disabled:pointer-events-none dark:border-white dark:bg-zinc-900 dark:text-white dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
-          aria-label="Scroll right"
+          <button
+            onClick={() => scroll("left")}
+            className="pointer-events-auto ml-2 flex h-14 w-14 items-center justify-center border-[3px] border-zinc-900 bg-white text-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-zinc-100 active:shadow-none active:translate-x-1 active:translate-y-1 dark:border-white dark:bg-zinc-900 dark:text-white dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+            aria-label="Scroll left"
+          >
+            <ArrowLeft size={28} strokeWidth={3} />
+          </button>
+        </div>
+      )}
+
+      {/* Right Navigation - Manga Punk Style */}
+      {canScrollRight && (
+        <div 
+          style={{ width: dynamicPadding }}
+          className="absolute right-0 top-0 z-30 flex h-[calc(100%-3rem)] items-center justify-end pointer-events-none"
         >
-          <ArrowRight size={20} strokeWidth={3} />
-        </button>
-      </div>
+          <button
+            onClick={() => scroll("right")}
+            className="pointer-events-auto mr-2 flex h-14 w-14 items-center justify-center border-[3px] border-zinc-900 bg-white text-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-zinc-100 active:shadow-none active:translate-x-1 active:translate-y-1 dark:border-white dark:bg-zinc-900 dark:text-white dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+            aria-label="Scroll right"
+          >
+            <ArrowRight size={28} strokeWidth={3} />
+          </button>
+        </div>
+      )}
 
       {/* Scrollable Area */}
       <div
         ref={scrollRef}
         onScroll={checkScroll}
+        style={{
+          paddingLeft: dynamicPadding,
+          paddingRight: dynamicPadding,
+          scrollPaddingLeft: dynamicPadding,
+          scrollPaddingRight: dynamicPadding,
+        }}
         className="flex gap-8 overflow-x-auto pb-12 pt-4 scrollbar-hide snap-x snap-mandatory scroll-smooth"
       >
         {children}
       </div>
       
-      {/* Manga Progress Indicator - Custom Style */}
-      <div className="mt-4 flex items-center gap-4">
+      {/* Manga Progress Indicator */}
+      <div 
+        style={{ paddingLeft: dynamicPadding, paddingRight: dynamicPadding }}
+        className="mt-4 flex items-center gap-4"
+      >
         <div className="h-2 flex-1 bg-zinc-200 dark:bg-zinc-800 rounded-none overflow-hidden border border-zinc-900 dark:border-white">
           <div 
             className="h-full bg-indigo-600 transition-all duration-300 ease-out"
