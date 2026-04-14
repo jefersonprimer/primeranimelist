@@ -29,7 +29,7 @@ export function AnimeCard({
   return (
     <Link 
       href={`/anime/${malId}/${slug}`}
-      className="group/card relative block w-full overflow-hidden transition-transform duration-200 hover:scale-105 h-[340px] sm:h-[380px] shadow-sm"
+      className="group/card relative block w-full overflow-hidden transition-transform duration-200 hover:scale-105 h-[340px] sm:h-[380px]"
     >
       <div className="relative h-[82%] w-full overflow-hidden shadow-md transition-all duration-300 ease-in-out group-hover/card:h-full">
         {imageUrl ? (
@@ -47,14 +47,16 @@ export function AnimeCard({
         )}
       </div>
       
-      <div className="p-2 h-[18%] flex items-start">
+      <div className="py-2 h-[18%] flex items-start">
         <h3 className="line-clamp-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
           {title}
         </h3>
       </div>
 
-      <div className="absolute inset-0 flex flex-col justify-start overflow-hidden bg-black/85 px-3 pt-3 text-[11px] text-white opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 z-20">
-          <p className="line-clamp-1 font-semibold">{title}</p>
+      <div className="absolute inset-0 flex flex-col justify-start overflow-hidden bg-black/85 px-3 pt-3 text-sm text-white opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 z-20">
+          <h3 className="line-clamp-2 font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
+            {title}
+          </h3>
           <p className="line-clamp-1">Rating: {rating || "N/A"}</p>
           <p className="line-clamp-1">
             Score: {score?.toFixed(2) || "N/A"}
@@ -62,9 +64,10 @@ export function AnimeCard({
           <p className="line-clamp-1">
             Members: {members ? members.toLocaleString() : "N/A"}
           </p>
-          <p className="line-clamp-1">Season: {season || "N/A"}</p>
-          <p className="line-clamp-1">Episodes: {episodes ?? "N/A"}</p>
-          <p className="line-clamp-4 break-words text-[10px] leading-relaxed text-zinc-100">
+          <p className="line-clamp-1 text-[#8c8c8c]">Season: {season || "N/A"}</p>
+          <p className="line-clamp-1 text-[#8c8c8c]">Episodes: {episodes ?? "N/A"}</p>
+
+          <p className="line-clamp-4 break-words leading-relaxed text-zinc-100">
             {synopsis || "No synopsis available."}
           </p>
       </div>
