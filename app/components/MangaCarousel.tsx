@@ -1,6 +1,7 @@
 import { listManga, TopMangaFilter } from "@/lib/services/manga.service";
 import { MangaCard } from "./MangaCard";
-import { CarouselContainer } from "./CarouselContainer";
+import { MangaCarouselContainer } from "./MangaCarouselContainer";
+import Link from "next/link";
 
 interface MangaCarouselProps {
   title: string;
@@ -13,28 +14,56 @@ export async function MangaCarousel({ title, filter }: MangaCarouselProps) {
   if (mangaList.length === 0) return null;
 
   return (
-    <section className="w-full max-w-7xl px-6 py-10 mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">{title}</h2>
-        <a 
-          href={`/manga/top?filter=${filter}`} 
-          className="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
-        >
-          View All
-        </a>
-      </div>
-      
-      <CarouselContainer>
-        {mangaList.map((manga) => (
-          <div key={manga.malId} className="snap-start shrink-0 w-40 sm:w-48 lg:w-52">
-            <MangaCard
-              malId={manga.malId}
-              title={manga.title}
-              imageUrl={manga.imageUrl}
-            />
+    <section className="relative w-full overflow-hidden bg-zinc-50 py-20 dark:bg-zinc-950/40">
+      {/* Background Pattern - Halftone / Screentone style */}
+      <div className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:20px_20px]" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent" />
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent" />
+
+      <div className="relative z-10 max-w-7xl px-6 mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+          <div className="relative">
+            {/* Manga Magazine Header Style */}
+            <div className="absolute -left-4 -top-6 h-12 w-12 bg-indigo-600/10 dark:bg-indigo-400/10 rounded-full blur-2xl" />
+            <span className="block text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 dark:text-indigo-400 mb-2">
+              Hot Collection
+            </span>
+            <h2 className="text-5xl font-black tracking-tighter text-zinc-900 dark:text-zinc-50 uppercase italic leading-none">
+              {title}
+            </h2>
+            <div className="mt-4 flex gap-1">
+              <div className="h-1.5 w-12 bg-indigo-600" />
+              <div className="h-1.5 w-4 bg-zinc-900 dark:bg-zinc-100" />
+              <div className="h-1.5 w-2 bg-zinc-300 dark:bg-zinc-700" />
+            </div>
           </div>
-        ))}
-      </CarouselContainer>
+          
+          <Link 
+            href={`/manga/top?filter=${filter}`} 
+            className="group inline-flex items-center gap-4 bg-zinc-900 dark:bg-zinc-100 px-6 py-3 text-xs font-black uppercase tracking-widest text-white dark:text-black transition-all hover:bg-indigo-600 dark:hover:bg-indigo-500 dark:hover:text-white"
+          >
+            Explore All
+            <span className="transition-transform group-hover:translate-x-1">→</span>
+          </Link>
+        </div>
+        
+        <MangaCarouselContainer>
+          {mangaList.map((manga, index) => (
+            <div key={manga.malId} className="snap-start shrink-0 w-[160px] sm:w-[200px] lg:w-[220px]">
+              <MangaCard
+                malId={manga.malId}
+                title={manga.title}
+                imageUrl={manga.imageUrl}
+                score={manga.score}
+                type={manga.type}
+                chapters={manga.chapters}
+                volumes={manga.volumes}
+                rank={index + 1}
+              />
+            </div>
+          ))}
+        </MangaCarouselContainer>
+      </div>
     </section>
   );
 }

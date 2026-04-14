@@ -29,7 +29,7 @@ export function AnimeCard({
   return (
     <Link 
       href={`/anime/${malId}/${slug}`}
-      className="group/card relative block w-full overflow-hidden transition-transform duration-200 hover:scale-105 h-[340px] sm:h-[380px] bg-white dark:bg-zinc-900 rounded-md shadow-sm"
+      className="group/card relative block w-full overflow-hidden transition-transform duration-200 hover:scale-105 h-[340px] sm:h-[380px] shadow-sm"
     >
       <div className="relative h-[82%] w-full overflow-hidden shadow-md transition-all duration-300 ease-in-out group-hover/card:h-full">
         {imageUrl ? (
