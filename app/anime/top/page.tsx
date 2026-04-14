@@ -49,6 +49,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
   const FILTERS: Array<{ label: string; value: TopAnimeFilter | null }> = [
     { label: "All Anime", value: null },
     { label: "Top Airing", value: "airing" },
+    { label: "Top Seasonal", value: "season" },
     { label: "Top Upcoming", value: "upcoming" },
     { label: "Top TV Series", value: "tv" },
     { label: "Top Movies", value: "movie" },

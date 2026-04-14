@@ -13,8 +13,8 @@ export async function AnimeCarousel({ title, filter }: AnimeCarouselProps) {
   if (animeList.length === 0) return null;
 
   return (
-    <section className="w-full max-w-7xl px-6 py-10 mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <section className="w-full py-10 overflow-hidden">
+      <div className="max-w-7xl px-6 mx-auto flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">{title}</h2>
         <a 
           href={`/anime/top?filter=${filter}`} 
@@ -26,11 +26,17 @@ export async function AnimeCarousel({ title, filter }: AnimeCarouselProps) {
       
       <CarouselContainer>
         {animeList.map((anime) => (
-          <div key={anime.malId} className="snap-start shrink-0 w-36 sm:w-44 lg:w-48">
+          <div key={anime.malId} className="snap-start shrink-0 w-[calc((100vw-48px-96px)/2)] sm:w-[calc((100vw-48px-96px)/3)] md:w-[calc((100vw-48px-120px)/4)] lg:w-[calc((1280px-48px-96px)/5)]">
             <AnimeCard
               malId={anime.malId}
               title={anime.title}
               imageUrl={anime.imageUrl}
+              rating={anime.rating}
+              score={anime.score}
+              members={anime.members}
+              season={anime.season}
+              episodes={anime.episodes}
+              synopsis={anime.synopsis}
             />
           </div>
         ))}

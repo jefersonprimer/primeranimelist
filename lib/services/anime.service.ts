@@ -275,6 +275,7 @@ const VALID_TOP_ANIME_FILTERS = [
   "special",
   "bypopularity",
   "favorite",
+  "season",
 ] as const;
 
 export type TopAnimeFilter = (typeof VALID_TOP_ANIME_FILTERS)[number];
@@ -308,6 +309,11 @@ function buildTopAnimeQuery(filter: TopAnimeFilter | null) {
   const nextYear = currentSeason === "fall" ? year + 1 : year;
 
   switch (filter) {
+    case "season":
+      return {
+        where: and(eq(anime.season, currentSeason), eq(anime.year, year)),
+        orderBy: [asc(anime.rank), desc(anime.members)] as const,
+      };
     case "airing":
       return {
         where: and(

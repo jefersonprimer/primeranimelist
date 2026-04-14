@@ -26,7 +26,7 @@ export async function MangaCarousel({ title, filter }: MangaCarouselProps) {
       
       <CarouselContainer>
         {mangaList.map((manga) => (
-          <div key={manga.malId} className="snap-start shrink-0 w-36 sm:w-44 lg:w-48">
+          <div key={manga.malId} className="snap-start shrink-0 w-40 sm:w-48 lg:w-52">
             <MangaCard
               malId={manga.malId}
               title={manga.title}
