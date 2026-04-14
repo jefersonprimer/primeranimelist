@@ -2,6 +2,7 @@ import { listManga, TopMangaFilter } from "@/lib/services/manga.service";
 import { MangaCard } from "./MangaCard";
 import { MangaCarouselContainer } from "./MangaCarouselContainer";
 import Link from "next/link";
+import { ArrowBigLeftIcon, ArrowBigRight } from "lucide-react";
 
 interface MangaCarouselProps {
   title: string;
@@ -41,7 +42,9 @@ export async function MangaCarousel({ title, filter }: MangaCarouselProps) {
             className="group inline-flex items-center gap-4 bg-zinc-900 dark:bg-zinc-100 px-6 py-3 text-xs font-black uppercase tracking-widest text-white dark:text-black transition-all hover:bg-indigo-600 dark:hover:bg-indigo-500 dark:hover:text-white"
           >
             Explore All
-            <span className="transition-transform group-hover:translate-x-1">→</span>
+            <span className="transition-transform group-hover:translate-x-1">
+              <ArrowBigRight size={20}/>
+            </span>
           </Link>
         </div>
       </div>
