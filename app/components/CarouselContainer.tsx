@@ -43,33 +43,32 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
   };
 
   return (
-    <div className="group relative w-full">
-      {/* Container for Buttons relative to max-w-7xl */}
-      <div className="absolute inset-0 pointer-events-none z-20 max-w-7xl mx-auto px-6">
-        <div className="relative h-full w-full">
-          {/* Left Button */}
-          {canScrollLeft && (
-            <button
-              onClick={() => scroll("left")}
-              className="pointer-events-auto absolute -left-12 top-0 flex h-full w-12 items-center justify-center text-zinc-400 transition-all hover:scale-110 hover:text-indigo-600 dark:text-zinc-500 dark:hover:text-indigo-400 hover:cursor-pointer"
-              aria-label="Scroll left"
-            >
-              <ChevronLeft size={40} strokeWidth={2.5}/>
-            </button>
-          )}
+    <div className="group relative w-full overflow-hidden">
+      {/* Left Navigation Area (Blocks clicks on left peek) */}
+      {canScrollLeft && (
+        <button
+          onClick={() => scroll("left")}
+          className="absolute left-0 top-0 z-30 h-full w-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))] flex items-center justify-center text-zinc-400 transition-all hover:text-indigo-600 dark:text-zinc-500 dark:hover:text-indigo-400 hover:cursor-pointer bg-transparent"
+          aria-label="Scroll left"
+        >
+          <div className="max-w-7xl w-full mx-auto px-2 sm:px-4 flex justify-start">
+             <ChevronLeft size={48} strokeWidth={2.5} className="-ml-2 sm:-ml-4" />
+          </div>
+        </button>
+      )}
 
-          {/* Right Button */}
-          {canScrollRight && (
-            <button
-              onClick={() => scroll("right")}
-              className="pointer-events-auto absolute -right-12 top-0 flex h-full w-12 items-center justify-center text-zinc-400 transition-all hover:scale-110 hover:text-indigo-600 dark:text-zinc-500 dark:hover:text-indigo-400 hover:cursor-pointer"
-              aria-label="Scroll right"
-            >
-              <ChevronRight size={40} strokeWidth={2.5}/>
-            </button>
-          )}
-        </div>
-      </div>
+      {/* Right Navigation Area (Blocks clicks on right peek) */}
+      {canScrollRight && (
+        <button
+          onClick={() => scroll("right")}
+          className="absolute right-0 top-0 z-30 h-full w-[max(1.5rem,calc((100vw-1280px)/2+1.5rem))] flex items-center justify-center text-zinc-400 transition-all hover:text-indigo-600 dark:text-zinc-500 dark:hover:text-indigo-400 hover:cursor-pointer bg-transparent"
+          aria-label="Scroll right"
+        >
+          <div className="max-w-7xl w-full mx-auto px-2 sm:px-4 flex justify-end">
+            <ChevronRight size={48} strokeWidth={2.5} className="-mr-2 sm:-mr-4" />
+          </div>
+        </button>
+      )}
 
       {/* Scrollable Area */}
       <div
