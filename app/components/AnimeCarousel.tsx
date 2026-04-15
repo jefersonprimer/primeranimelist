@@ -37,7 +37,6 @@ export async function AnimeCarousel({ title, filter }: AnimeCarouselProps) {
               rating={anime.rating}
               score={anime.score}
               members={anime.members}
-              season={anime.season}
               episodes={anime.episodes}
               synopsis={anime.synopsis}
             />
