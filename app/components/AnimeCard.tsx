@@ -131,20 +131,22 @@ export function AnimeCard({
         </h3>
       </div>
 
-      <div className="absolute inset-0 flex flex-col justify-start overflow-hidden bg-black/85 px-3 pt-3 text-sm font-semibold text-white opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 z-20">
+      <div className="absolute inset-0 flex flex-col justify-start overflow-hidden bg-black/85 px-3 pt-6 text-sm font-semibold text-white opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 z-20">
           <h3 className="line-clamp-2 font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
             {title}
           </h3>
-          <p className="flex items-center gap-2 line-clamp-1 text-[#bbb]">
+
+          <div className="flex items-center gap-2">
             {ratingIcon}
-            Rating: {rating || "N/A"}
-          </p>
-          <p className="flex items-center gap-2 line-clamp-1 text-[#bbb]">
+          <p className="flex items-center gap-1 line-clamp-1 text-[#bbb]">
             <Star size={16}/> {score?.toFixed(2) || "N/A"}
           </p>
-          <p className="flex items-center gap-2 line-clamp-1 text-[#bbb]">
+          <p className="flex items-center gap-1 line-clamp-1 text-[#bbb]">
             <Users size={16}/> {members ? members.toLocaleString() : "N/A"}
           </p>
+
+          </div>
+
           <p className="line-clamp-1 text-[#8c8c8c]">Seasons: {seasonCount ?? "N/A"}</p>
           <p className="line-clamp-1 text-[#8c8c8c]">Episodes: {episodes ?? "N/A"}</p>
 
