@@ -3,6 +3,10 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --cyber-pink: #ff00ff;
+  --cyber-cyan: #00ffff;
+  --cyber-lime: #00ff00;
+  --cyber-yellow: #ffff00;
 }
 
 @theme inline {
@@ -10,11 +14,26 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-cyber-pink: var(--cyber-pink);
+  --color-cyber-cyan: var(--cyber-cyan);
+  --color-cyber-lime: var(--cyber-lime);
+  --color-cyber-yellow: var(--cyber-yellow);
+  
+  --animate-glitch: glitch 0.2s infinite;
+
+  @keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #050505;
     --foreground: #ededed;
   }
 }
@@ -32,5 +51,35 @@ body {
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  .cyber-grid {
+    background-image: linear-gradient(to right, rgba(255, 0, 255, 0.1) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(255, 0, 255, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .comic-shadow {
+    box-shadow: 8px 8px 0px 0px #000000;
+  }
+  
+  .comic-shadow-pink {
+    box-shadow: 8px 8px 0px 0px var(--cyber-pink);
+  }
+
+  .comic-shadow-cyan {
+    box-shadow: 8px 8px 0px 0px var(--cyber-cyan);
+  }
+
+  .neon-text-pink {
+    text-shadow: 0 0 5px var(--cyber-pink), 0 0 10px var(--cyber-pink);
+  }
+
+  .neon-text-cyan {
+    text-shadow: 0 0 5px var(--cyber-cyan), 0 0 10px var(--cyber-cyan);
+  }
+
+  .cyber-border {
+    border: 4px solid #000000;
   }
 }
