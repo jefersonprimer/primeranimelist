@@ -1,4 +1,4 @@
-import { getMangaByMalId } from "@/lib/services/manga.service";
+import { getMangaByMalId, serializeSingleMangaResponse } from "@/lib/services/manga.service";
 
 export async function GET(
   _request: Request,
@@ -17,6 +17,5 @@ export async function GET(
     return Response.json({ error: "Manga not found" }, { status: 404 });
   }
 
-  return Response.json(manga);
+  return Response.json(serializeSingleMangaResponse(manga));
 }
-

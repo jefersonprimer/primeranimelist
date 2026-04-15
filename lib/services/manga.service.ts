@@ -2,12 +2,245 @@ import { db } from "@/lib/db";
 import { ensureDatabase } from "@/lib/db/bootstrap";
 import { manga } from "@/lib/db/schema";
 import { and, asc, count, desc, eq, gt, isNotNull } from "drizzle-orm";
+import type { InferSelectModel } from "drizzle-orm";
 
 type ListMangaOptions = {
   page?: number;
   limit?: number;
   filter?: string;
 };
+
+type MangaRow = InferSelectModel<typeof manga>;
+type MangaRelationValue =
+  | string
+  | {
+      mal_id?: number | null;
+      type?: string | null;
+      name?: string | null;
+      url?: string | null;
+    }
+  | {
+      type?: string | null;
+      name?: string | null;
+    };
+
+function formatDateISOString(date: Date | null) {
+  return date ? date.toISOString() : null;
+}
+
+function buildDateProp(date: Date | null) {
+  if (!date) {
+    return { day: null, month: null, year: null };
+  }
+
+  return {
+    day: date.getUTCDate(),
+    month: date.getUTCMonth() + 1,
+    year: date.getUTCFullYear(),
+  };
+}
+
+function formatPublishedString(from: Date | null, to: Date | null) {
+  if (!from && !to) return null;
+
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+
+  const fromText = from ? formatter.format(from) : "?";
+  const toText = to ? formatter.format(to) : "?";
+
+  return `${fromText} to ${toText}`;
+}
+
+function slugifyMalTitle(title: string) {
+  return title
+    .normalize("NFKD")
+    .replace(/[^\w\s-]/g, "")
+    .trim()
+    .replace(/[-\s]+/g, "_");
+}
+
+function buildMalMangaUrl(malId: number, title: string) {
+  return `https://myanimelist.net/manga/${malId}/${slugifyMalTitle(title)}`;
+}
+
+function deriveImageUrls(imageUrl: string | null) {
+  if (!imageUrl) {
+    return {
+      jpg: {
+        image_url: null,
+        small_image_url: null,
+        large_image_url: null,
+      },
+      webp: {
+        image_url: null,
+        small_image_url: null,
+        large_image_url: null,
+      },
+    };
+  }
+
+  const jpg = {
+    image_url: imageUrl,
+    small_image_url: imageUrl.replace(/(\.[a-z]+)$/i, "t$1"),
+    large_image_url: imageUrl.replace(/(\.[a-z]+)$/i, "l$1"),
+  };
+
+  const webpBase = imageUrl.replace(/\.jpg$/i, ".webp");
+  const webp = {
+    image_url: webpBase,
+    small_image_url: webpBase.replace(/(\.[a-z]+)$/i, "t$1"),
+    large_image_url: webpBase.replace(/(\.[a-z]+)$/i, "l$1"),
+  };
+
+  return { jpg, webp };
+}
+
+function buildTitles(row: MangaRow) {
+  const titles = [{ type: "Default", title: row.title }];
+
+  if (row.titleJapanese && row.titleJapanese !== row.title) {
+    titles.push({ type: "Japanese", title: row.titleJapanese });
+  }
+
+  if (row.titleEnglish && row.titleEnglish !== row.title) {
+    titles.push({ type: "English", title: row.titleEnglish });
+  }
+
+  return titles;
+}
+
+function serializeRelationItem(kind: "genre" | "author" | "serialization", value: MangaRelationValue) {
+  if (typeof value === "string") {
+    const encoded = encodeURIComponent(value.replace(/\s+/g, "_"));
+    const basePath =
+      kind === "author"
+        ? "people"
+        : kind === "serialization"
+          ? "magazine"
+          : "genre";
+
+    return {
+      mal_id: null,
+      type: "manga",
+      name: value,
+      url: `https://myanimelist.net/manga/${basePath}/${encoded}`,
+    };
+  }
+
+  if (kind === "author") {
+    return {
+      mal_id: "mal_id" in value ? value.mal_id ?? null : null,
+      type: value.type ?? "people",
+      name: value.name ?? "",
+      url:
+        "url" in value && value.url
+          ? value.url
+          : value.name
+            ? `https://myanimelist.net/people/${encodeURIComponent(value.name.replace(/\s+/g, "_"))}`
+            : null,
+    };
+  }
+
+  return {
+    mal_id: "mal_id" in value ? value.mal_id ?? null : null,
+    type: value.type ?? "manga",
+    name: value.name ?? "",
+    url:
+      "url" in value && value.url
+        ? value.url
+        : value.name
+          ? `https://myanimelist.net/manga/${kind === "serialization" ? "magazine" : "genre"}/${encodeURIComponent(
+              value.name.replace(/\s+/g, "_")
+            )}`
+          : null,
+  };
+}
+
+function serializeRelationList(values: MangaRow["genres"], kind: "genre" | "author" | "serialization") {
+  if (!Array.isArray(values)) return [];
+  return values.map((value) => serializeRelationItem(kind, value as MangaRelationValue));
+}
+
+export function serializeManga(row: MangaRow) {
+  return {
+    mal_id: row.malId,
+    url: buildMalMangaUrl(row.malId, row.title),
+    images: deriveImageUrls(row.imageUrl),
+    approved: true,
+    titles: buildTitles(row),
+    title: row.title,
+    title_english: row.titleEnglish,
+    title_japanese: row.titleJapanese,
+    title_synonyms: [],
+    type: row.type,
+    chapters: row.chapters,
+    volumes: row.volumes,
+    status: row.status,
+    publishing: row.publishing,
+    published: {
+      from: formatDateISOString(row.publishedFrom),
+      to: formatDateISOString(row.publishedTo),
+      prop: {
+        from: buildDateProp(row.publishedFrom),
+        to: buildDateProp(row.publishedTo),
+      },
+      string: formatPublishedString(row.publishedFrom, row.publishedTo),
+    },
+    score: row.score,
+    scored: row.score,
+    scored_by: row.scoredBy,
+    rank: row.rank,
+    popularity: row.popularity,
+    members: row.members,
+    favorites: row.favorites,
+    synopsis: row.synopsis,
+    background: row.background,
+    authors: serializeRelationList(row.authors, "author"),
+    serializations: serializeRelationList(row.serializations, "serialization"),
+    genres: serializeRelationList(row.genres, "genre"),
+    explicit_genres: [],
+    themes: serializeRelationList(row.themes, "genre"),
+    demographics: serializeRelationList(row.demographics, "genre"),
+  };
+}
+
+export function serializeMangaListResponse(
+  rows: MangaRow[],
+  {
+    page,
+    limit,
+    total,
+  }: {
+    page: number;
+    limit: number;
+    total: number;
+  }
+) {
+  return {
+    pagination: {
+      last_visible_page: Math.max(1, Math.ceil(total / limit)),
+      has_next_page: page * limit < total,
+      current_page: page,
+      items: {
+        count: rows.length,
+        total,
+        per_page: limit,
+      },
+    },
+    data: rows.map(serializeManga),
+  };
+}
+
+export function serializeSingleMangaResponse(row: MangaRow) {
+  return {
+    data: serializeManga(row),
+  };
+}
 
 const VALID_TOP_MANGA_FILTERS = [
   "manga",
@@ -124,4 +357,3 @@ export async function getMangaByMalId(malId: number) {
 
   return result[0] ?? null;
 }
-
