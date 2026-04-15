@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Star, Users, Bookmark } from "lucide-react";
@@ -34,6 +37,12 @@ export function SeasonAnimeCard({ anime }: SeasonAnimeCardProps) {
   const englishTitle = anime.titleEnglish?.trim() || anime.title_english?.trim() || null;
   const primaryTitle = anime.title;
   const secondaryTitle = englishTitle && englishTitle !== primaryTitle ? englishTitle : null;
+  const hasPrimaryTitle = primaryTitle.trim().length > 0;
+  const [isImageLoaded, setIsImageLoaded] = useState(!anime.imageUrl);
+
+  useEffect(() => {
+    setIsImageLoaded(!anime.imageUrl);
+  }, [anime.imageUrl]);
   
   const releaseMonth = anime.airedFrom 
     ? new Intl.DateTimeFormat('en-US', { month: 'short' }).format(new Date(anime.airedFrom))
@@ -47,13 +56,22 @@ export function SeasonAnimeCard({ anime }: SeasonAnimeCardProps) {
       >
         {/* Header: Titles */}
         <div className="flex flex-col items-center justify-center py-2">
-          <h2 className="line-clamp-2 text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-50 transition-colors">
-            {primaryTitle}
-          </h2>
-          {secondaryTitle && (
+          {hasPrimaryTitle ? (
+            <h2 className="line-clamp-2 text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-50 transition-colors">
+              {primaryTitle}
+            </h2>
+          ) : (
+            <div className="flex w-full max-w-[80%] flex-col gap-2">
+              <div className="h-4 w-full animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+              <div className="h-4 w-2/3 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+            </div>
+          )}
+          {secondaryTitle ? (
             <h3 className="line-clamp-1 text-xs font-medium text-zinc-400 dark:text-zinc-500 italic">
               {secondaryTitle}
             </h3>
+          ) : hasPrimaryTitle ? null : (
+            <div className="mt-2 h-3 w-1/2 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
           )}
         </div>
       
@@ -84,13 +102,20 @@ export function SeasonAnimeCard({ anime }: SeasonAnimeCardProps) {
         <div className="flex flex-1 gap-0 overflow-hidden min-h-[220px]">
           {/* Image Container */}
           <div className="relative w-1/2 shrink-0 aspect-[3/4] overflow-hidden shadow-md ring-1 ring-zinc-200/50 dark:ring-zinc-800/50">
+            {!isImageLoaded && (
+              <div className="absolute inset-0 z-10 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+            )}
+
             {anime.imageUrl ? (
               <Image
                 src={anime.imageUrl}
                 alt={anime.title}
                 fill
-                className="object-cover transition-transform duration-500"
+                className={`object-cover transition-opacity duration-300 ${
+                  isImageLoaded ? "opacity-100" : "opacity-0"
+                }`}
                 sizes="(max-width: 768px) 50vw, 33vw"
+                onLoad={() => setIsImageLoaded(true)}
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-zinc-100 dark:bg-zinc-800">

@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Star, Users } from "lucide-react";
@@ -103,6 +106,12 @@ export function AnimeCard({
   const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   const seasonCount = getSeasonCountFromTitle(title);
   const ratingIcon = getRatingIcon(rating);
+  const hasTitle = title.trim().length > 0;
+  const [isImageLoaded, setIsImageLoaded] = useState(!imageUrl);
+
+  useEffect(() => {
+    setIsImageLoaded(!imageUrl);
+  }, [imageUrl]);
   
   return (
     <Link 
@@ -110,13 +119,20 @@ export function AnimeCard({
       className="group/card relative block w-full overflow-hidden transition-transform duration-200 hover:scale-105 h-[340px] sm:h-[380px]"
     >
       <div className="relative h-[82%] w-full overflow-hidden shadow-md transition-all duration-300 ease-in-out group-hover/card:h-full">
+        {!isImageLoaded && (
+          <div className="absolute inset-0 z-10 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+        )}
+
         {imageUrl ? (
           <Image
             src={imageUrl}
             alt={title}
             fill
-            className="object-cover"
+            className={`object-cover transition-opacity duration-300 ${
+              isImageLoaded ? "opacity-100" : "opacity-0"
+            }`}
             sizes="(max-width: 768px) 200px, 250px"
+            onLoad={() => setIsImageLoaded(true)}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-zinc-200 dark:bg-zinc-800">
@@ -126,13 +142,20 @@ export function AnimeCard({
       </div>
       
       <div className="py-2 h-[18%] flex items-start">
-        <h3 className="line-clamp-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
-          {title}
-        </h3>
+        {hasTitle ? (
+          <h3 className="line-clamp-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
+            {title}
+          </h3>
+        ) : (
+          <div className="flex w-full flex-col gap-2">
+            <div className="h-4 w-full animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+            <div className="h-4 w-2/3 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+          </div>
+        )}
       </div>
 
       <div className="absolute inset-0 flex flex-col justify-start overflow-hidden bg-black/85 px-3 pt-4 text-sm font-semibold text-white opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 z-20">
-          <h3 className="py-2 line-clamp-2 font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
+          <h3 className="py-2 line-clamp-2 wrap-break-word font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
             {title}
           </h3>
 

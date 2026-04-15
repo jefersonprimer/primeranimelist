@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { AnimeCarousel } from "@/app/components/AnimeCarousel";
 import { MangaCarousel } from "@/app/components/MangaCarousel";
+import { AnimeCarouselSkeleton } from "@/app/components/AnimeCarouselSkeleton";
 
 export default function Home() {
   return (
@@ -34,11 +36,23 @@ export default function Home() {
       </div>
 
       <div className="w-full pb-20">
-        <AnimeCarousel title="Top Airing Anime" filter="airing" />
+        <Suspense fallback={<AnimeCarouselSkeleton title="Top Airing Anime" />}>
+          <AnimeCarousel title="Top Airing Anime" filter="airing" />
+        </Suspense>
+
         <MangaCarousel title="Top Popular Manga" filter="bypopularity" />
-        <AnimeCarousel title="Anime da Temporada Atual" filter="season" />
-        <AnimeCarousel title="Top Popular Anime" filter="bypopularity" />
-        <AnimeCarousel title="Upcoming Anime" filter="upcoming" />
+
+        <Suspense fallback={<AnimeCarouselSkeleton title="Anime da Temporada Atual" />}>
+          <AnimeCarousel title="Anime da Temporada Atual" filter="season" />
+        </Suspense>
+
+        <Suspense fallback={<AnimeCarouselSkeleton title="Top Popular Anime" />}>
+          <AnimeCarousel title="Top Popular Anime" filter="bypopularity" />
+        </Suspense>
+
+        <Suspense fallback={<AnimeCarouselSkeleton title="Upcoming Anime" />}>
+          <AnimeCarousel title="Upcoming Anime" filter="upcoming" />
+        </Suspense>
       </div>
     </div>
   );

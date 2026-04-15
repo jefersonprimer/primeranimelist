@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Star, Bookmark, Crown } from "lucide-react";
@@ -24,7 +27,13 @@ export function MangaCard({
   rank
 }: MangaCardProps) {
   const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  
+  const hasTitle = title.trim().length > 0;
+  const [isImageLoaded, setIsImageLoaded] = useState(!imageUrl);
+
+  useEffect(() => {
+    setIsImageLoaded(!imageUrl);
+  }, [imageUrl]);
+
   const isTop3 = rank !== undefined && rank >= 1 && rank <= 3;
   
   const rankStyles = {
@@ -76,13 +85,22 @@ export function MangaCard({
         <div className="pointer-events-none absolute inset-0 z-10 opacity-0 mix-blend-multiply transition-opacity duration-300 group-hover/manga:opacity-10 dark:mix-blend-screen bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:4px_4px]" />
 
         {imageUrl ? (
-          <Image
-            src={imageUrl}
-            alt={title}
-            fill
-            className="object-cover transition-transform duration-700 group-hover/manga:scale-105"
-            sizes="(max-width: 768px) 150px, 200px"
-          />
+          <>
+            {!isImageLoaded && (
+              <div className="absolute inset-0 z-10 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+            )}
+
+            <Image
+              src={imageUrl}
+              alt={title}
+              fill
+              className={`object-cover transition-transform duration-700 group-hover/manga:scale-105 ${
+                isImageLoaded ? "opacity-100" : "opacity-0"
+              }`}
+              sizes="(max-width: 768px) 150px, 200px"
+              onLoad={() => setIsImageLoaded(true)}
+            />
+          </>
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-zinc-50 dark:bg-zinc-800">
              <Bookmark className="h-10 w-10 text-zinc-300" />
@@ -105,9 +123,16 @@ export function MangaCard({
           <span className={`h-[1px] flex-1 ${isTop3 ? (rank === 1 ? "bg-yellow-200 dark:bg-yellow-900/50" : rank === 2 ? "bg-slate-200 dark:bg-slate-800/50" : "bg-orange-200 dark:bg-orange-900/50") : "bg-zinc-200 dark:bg-zinc-800"}`} />
         </div>
         
-        <h3 className={`line-clamp-2 text-sm font-black leading-tight transition-colors uppercase tracking-tight ${isTop3 ? "text-zinc-900 dark:text-zinc-50" : "text-zinc-900 dark:text-zinc-100"} group-hover/manga:text-indigo-600 dark:group-hover/manga:text-indigo-400`}>
-          {title}
-        </h3>
+        {hasTitle ? (
+          <h3 className={`line-clamp-2 text-sm font-black leading-tight transition-colors uppercase tracking-tight ${isTop3 ? "text-zinc-900 dark:text-zinc-50" : "text-zinc-900 dark:text-zinc-100"} group-hover/manga:text-indigo-600 dark:group-hover/manga:text-indigo-400`}>
+            {title}
+          </h3>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <div className="h-4 w-full animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+            <div className="h-4 w-2/3 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+          </div>
+        )}
         
         <p className="mt-1 text-[11px] font-bold text-zinc-500 dark:text-zinc-400 italic">
           {volumes ? `${volumes} Volumes` : chapters ? `${chapters} Chapters` : "Status Unknown"}

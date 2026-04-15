@@ -58,7 +58,7 @@ export function MangaCarouselContainer({ children }: MangaCarouselContainerProps
         >
           <button
             onClick={() => scroll("left")}
-            className="pointer-events-auto ml-2 flex h-14 w-14 items-center justify-center border-[3px] border-zinc-900 bg-white text-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-zinc-100 active:shadow-none active:translate-x-1 active:translate-y-1 dark:border-white dark:bg-zinc-900 dark:text-white dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+            className="pointer-events-auto ml-2 flex h-14 w-14 items-center justify-center border-[3px] border-zinc-900 bg-white text-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all -translate-y-6 hover:bg-zinc-100 active:shadow-none active:translate-x-1 active:translate-y-1 dark:border-white dark:bg-zinc-900 dark:text-white dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
             aria-label="Scroll left"
           >
             <ArrowLeft size={28} strokeWidth={3} />
@@ -74,7 +74,7 @@ export function MangaCarouselContainer({ children }: MangaCarouselContainerProps
         >
           <button
             onClick={() => scroll("right")}
-            className="pointer-events-auto mr-2 flex h-14 w-14 items-center justify-center border-[3px] border-zinc-900 bg-white text-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-zinc-100 active:shadow-none active:translate-x-1 active:translate-y-1 dark:border-white dark:bg-zinc-900 dark:text-white dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+            className="pointer-events-auto mr-2 flex h-14 w-14 items-center justify-center border-[3px] border-zinc-900 bg-white text-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all -translate-y-6 hover:bg-zinc-100 active:shadow-none active:translate-x-1 active:translate-y-1 dark:border-white dark:bg-zinc-900 dark:text-white dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
             aria-label="Scroll right"
           >
             <ArrowRight size={28} strokeWidth={3} />
