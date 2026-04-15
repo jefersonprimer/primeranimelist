@@ -43,7 +43,7 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
     }
   };
 
-  const dynamicPadding = "calc(max(1.5rem, (100vw - 1280px) / 2 + 1.5rem))";
+  const dynamicPadding = "calc(max(1.5rem, (100% - 1280px) / 2 + 1.5rem))";
 
   return (
     <div className="group relative w-full">
@@ -52,7 +52,7 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
         <button
           onClick={() => scroll("left")}
           style={{ width: dynamicPadding }}
-          className="absolute left-0 top-0 z-30 h-full flex items-center justify-center text-zinc-400 transition-all hover:text-indigo-600 dark:text-zinc-500 dark:hover:text-indigo-400 hover:cursor-pointer bg-transparent"
+          className="absolute left-0 top-0 z-30 h-full flex items-center justify-center text-zinc-400 transition-all hover:text-[#f2f2f2] hover:cursor-pointer bg-transparent hover:bg-black/20"
           aria-label="Scroll left"
         >
           <div className="max-w-7xl w-full mx-auto px-6 flex justify-start">
@@ -66,7 +66,7 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
         <button
           onClick={() => scroll("right")}
           style={{ width: dynamicPadding }}
-          className="absolute right-0 top-0 z-30 h-full flex items-center justify-center text-zinc-400 transition-all hover:text-indigo-600 dark:text-zinc-500 dark:hover:text-indigo-400 hover:cursor-pointer bg-transparent"
+          className="absolute right-0 top-0 z-30 h-full flex items-center justify-center text-zinc-400 transition-all hover:text-[#f2f2f2] hover:cursor-pointer bg-transparent hover:bg-black/20"
           aria-label="Scroll right"
         >
           <div className="max-w-7xl w-full mx-auto px-6 flex justify-end">
