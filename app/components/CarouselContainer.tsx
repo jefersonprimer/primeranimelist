@@ -56,7 +56,7 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
           aria-label="Scroll left"
         >
           <div className="max-w-7xl w-full mx-auto px-6 flex justify-start">
-             <ChevronLeft size={56} strokeWidth={2.5} className="-ml-4 -translate-y-6" />
+             <ChevronLeft size={56} strokeWidth={2.5} className="-ml-4 -translate-y-6 translate-x-3" />
           </div>
         </button>
       )}
@@ -70,7 +70,7 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
           aria-label="Scroll right"
         >
           <div className="max-w-7xl w-full mx-auto px-6 flex justify-end">
-            <ChevronRight size={56} strokeWidth={2.5} className="-mr-4 -translate-y-6" />
+            <ChevronRight size={56} strokeWidth={2.5} className="-mr-4 -translate-y-6 -translate-x-3" />
           </div>
         </button>
       )}

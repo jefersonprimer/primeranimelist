@@ -35,8 +35,8 @@ export default function Home() {
 
       <div className="w-full pb-20">
         <AnimeCarousel title="Top Airing Anime" filter="airing" />
-        <AnimeCarousel title="Anime da Temporada Atual" filter="season" />
         <MangaCarousel title="Top Popular Manga" filter="bypopularity" />
+        <AnimeCarousel title="Anime da Temporada Atual" filter="season" />
         <AnimeCarousel title="Top Popular Anime" filter="bypopularity" />
         <AnimeCarousel title="Upcoming Anime" filter="upcoming" />
       </div>

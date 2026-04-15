@@ -13,7 +13,7 @@ export async function AnimeCarousel({ title, filter }: AnimeCarouselProps) {
   if (animeList.length === 0) return null;
 
   return (
-    <section className="w-full py-10 overflow-hidden">
+    <section className="w-full py-6 overflow-hidden">
       <div className="max-w-7xl px-6 mx-auto flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">{title}</h2>
         <a 
