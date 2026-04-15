@@ -108,7 +108,7 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
           </div>
 
           <div className="flex flex-col gap-4 min-w-[300px]">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               <div className="flex flex-col">
                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Total Found</span>
                  <span className="text-xl font-black italic text-indigo-600 dark:text-indigo-400 leading-none">
