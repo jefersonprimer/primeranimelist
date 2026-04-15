@@ -1,13 +1,18 @@
 import { db } from "@/lib/db";
 import { ensureDatabase } from "@/lib/db/bootstrap";
 import { manga } from "@/lib/db/schema";
-import { and, asc, count, desc, eq, gt, isNotNull } from "drizzle-orm";
+import { and, asc, count, desc, eq, gt, ilike, isNotNull, or } from "drizzle-orm";
 import type { InferSelectModel } from "drizzle-orm";
 
 type ListMangaOptions = {
   page?: number;
   limit?: number;
   filter?: string;
+};
+
+type SearchMangaOptions = {
+  query: string;
+  limit?: number;
 };
 
 type MangaRow = InferSelectModel<typeof manga>;
@@ -356,4 +361,30 @@ export async function getMangaByMalId(malId: number) {
     .limit(1);
 
   return result[0] ?? null;
+}
+
+export async function searchManga({ query, limit = 24 }: SearchMangaOptions) {
+  await ensureDatabase();
+
+  const trimmedQuery = query.trim();
+
+  if (!trimmedQuery) {
+    return [];
+  }
+
+  const safeLimit = Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : 24;
+  const pattern = `%${trimmedQuery}%`;
+
+  return db
+    .select()
+    .from(manga)
+    .where(
+      or(
+        ilike(manga.title, pattern),
+        ilike(manga.titleEnglish, pattern),
+        ilike(manga.titleJapanese, pattern)
+      )
+    )
+    .orderBy(asc(manga.rank), desc(manga.members))
+    .limit(safeLimit);
 }

@@ -1,13 +1,18 @@
 import { db } from "@/lib/db";
 import { ensureDatabase } from "@/lib/db/bootstrap";
 import { anime } from "@/lib/db/schema";
-import { asc, and, count, desc, eq, gt, isNotNull } from "drizzle-orm";
+import { asc, and, count, desc, eq, gt, ilike, isNotNull, or } from "drizzle-orm";
 import type { InferSelectModel } from "drizzle-orm";
 
 type ListAnimeOptions = {
   page?: number;
   limit?: number;
   filter?: string;
+};
+
+type SearchAnimeOptions = {
+  query: string;
+  limit?: number;
 };
 
 type AnimeRow = InferSelectModel<typeof anime>;
@@ -411,6 +416,32 @@ export async function getAnimeByMalId(malId: number) {
     .limit(1);
 
   return result[0] ?? null;
+}
+
+export async function searchAnime({ query, limit = 24 }: SearchAnimeOptions) {
+  await ensureDatabase();
+
+  const trimmedQuery = query.trim();
+
+  if (!trimmedQuery) {
+    return [];
+  }
+
+  const safeLimit = Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : 24;
+  const pattern = `%${trimmedQuery}%`;
+
+  return db
+    .select()
+    .from(anime)
+    .where(
+      or(
+        ilike(anime.title, pattern),
+        ilike(anime.titleEnglish, pattern),
+        ilike(anime.titleJapanese, pattern)
+      )
+    )
+    .orderBy(asc(anime.rank), desc(anime.members))
+    .limit(safeLimit);
 }
 
 const VALID_SEASONS = ["winter", "spring", "summer", "fall"] as const;
