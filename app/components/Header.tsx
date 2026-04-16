@@ -18,7 +18,7 @@ export default function Header() {
   const { user, logout } = useAuth();
 
   return (
-    <header className="bg-zinc-100 border-b border-zinc-200 py-2 px-6 dark:bg-zinc-900 dark:border-zinc-800">
+    <header className="bg-[#272727] py-2 px-6">
       <div className="max-w-7xl mx-auto flex flex-row items-center justify-between">
         <div className="flex flex-row items-center gap-4">
           <Link href="/" className="flex flex-row items-center gap-3">
@@ -33,19 +33,19 @@ export default function Header() {
         <nav className="flex-1 flex px-6">
           <ul className="flex flex-row gap-8">
             <li>
-              <Link href="/anime/top" className="text-base font-medium text-zinc-600 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 transition-colors">
+              <Link href="/anime/top" className="text-base font-medium text-[#bbb] hover:text-white transition-colors">
                 Top Anime
               </Link>
             </li>
             <li>
-              <Link href="/manga/top" className="text-base font-medium text-zinc-600 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 transition-colors">
+              <Link href="/manga/top" className="text-base font-medium text-[#bbb] hover:text-white transition-colors">
                 Top Manga
               </Link>
             </li>
             <li>
               <Link
                 href={`/anime/season/${currentYear}/${currentSeason}`}
-                className="text-base font-medium text-zinc-600 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 transition-colors"
+                className="text-base font-medium text-[#bbb] hover:text-white transition-colors"
               >
                 Season Anime
               </Link>
@@ -55,7 +55,7 @@ export default function Header() {
         <div className="flex flex-row items-center gap-4">
           <Link
             href="/search"
-            className="p-2 text-zinc-600 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 transition-colors"
+            className="p-2 text-[#bbb] hover:text-white transition-colors"
             aria-label="Search"
           >
             <Search size={22} />
@@ -65,7 +65,7 @@ export default function Header() {
             <div className="flex items-center gap-4">
               <Link
                 href="/library"
-                className="p-2 text-zinc-600 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 transition-colors"
+                className="p-2 text-[#bbb] hover:text-white transition-colors"
                 aria-label="Library"
               >
                 <Bookmark size={22} />

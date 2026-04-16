@@ -155,7 +155,7 @@ export function AnimeCard({
       </div>
 
       <div className="absolute inset-0 flex flex-col justify-start overflow-hidden bg-black/85 px-3 pt-4 text-sm font-semibold text-white opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 z-20">
-          <h3 className="py-2 line-clamp-2 wrap-break-word font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
+          <h3 className="my-2 line-clamp-3 wrap-break-word font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
             {title}
           </h3>
 
