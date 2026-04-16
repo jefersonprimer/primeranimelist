@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -84,23 +84,15 @@ export function SearchControls({ query }: { query: string }) {
   return (
     <div>
       <form action="/search" method="get" className="grid gap-4 lg:grid-cols-[1fr_auto]">
-        <label className="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 focus-within:border-indigo-400 focus-within:bg-white dark:border-zinc-800 dark:bg-zinc-900 dark:focus-within:border-indigo-700">
-          <Search className="h-5 w-5 text-zinc-400" />
+        <label className="flex items-center gap-3 border-b-2 border-[#636363] bg-transparent py-3">
           <input
             type="search"
             name="q"
             defaultValue={query}
-            placeholder="Search for Naruto, Vagabond, Frieren..."
-            className="w-full bg-transparent text-sm font-medium text-zinc-900 outline-none placeholder:text-zinc-400 dark:text-zinc-50"
+            placeholder="Search..."
+            className="w-full bg-transparent text-3xl font-medium text-zinc-900 outline-none placeholder:text-[#636363] dark:text-zinc-50"
           />
         </label>
-
-        <button
-          type="submit"
-          className="inline-flex items-center justify-center rounded-2xl bg-indigo-600 px-6 py-3 text-sm font-black text-white transition-colors hover:bg-indigo-700"
-        >
-          Search
-        </button>
       </form>
 
       {!query && recentSearches.length > 0 && (
@@ -110,7 +102,7 @@ export function SearchControls({ query }: { query: string }) {
             <button
               type="button"
               onClick={clearRecentSearches}
-              className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+              className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 hover:cursor-pointer"
             >
               Clear Recent
             </button>
@@ -133,7 +125,7 @@ export function SearchControls({ query }: { query: string }) {
                   type="button"
                   aria-label={`Remove ${item} from recent searches`}
                   onClick={() => removeRecentSearch(item)}
-                  className="p-1 text-[#f2f2f2] transition-colors bg-[#334953]"
+                  className="p-1 text-[#f2f2f2] transition-colors bg-[#334953] hover:cursor-pointer"
                 >
                   <X className="h-5 w-5" />
                 </button>

@@ -30,9 +30,9 @@ export default async function SearchPage(props: PageProps<"/search">) {
   const totalResults = animeResults.length + mangaResults.length;
 
   return (
-    <main className="min-h-screen bg-zinc-50 py-12 dark:bg-zinc-950/40">
+    <main className="min-h-screen bg-[#151515] py-12">
       <div className="mx-auto max-w-6xl px-6">
-        <section className="rounded-[2rem] border border-zinc-200 bg-white px-6 py-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+        <section>
           <SearchControls query={query} />
 
           {hasQuery && (
