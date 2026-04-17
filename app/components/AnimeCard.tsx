@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Star, Users } from "lucide-react";
-import { RatingIcon10 } from "./icons/RatingIcon10";
-import { RatingIcon12 } from "./icons/RatingIcon12";
-import { RatingIcon14 } from "./icons/RatingIcon14";
-import { RatingIcon16 } from "./icons/RatingIcon16";
-import { RatingIcon18 } from "./icons/RatingIcon18";
-import RatingIconAL from "./icons/RatingIconAL";
+import { RatingIcon10 } from "./icons/Rating10Icon";
+import { RatingIcon12 } from "./icons/Rating12Icon";
+import { RatingIcon14 } from "./icons/Rating14Icon";
+import { RatingIcon16 } from "./icons/Rating16Icon";
+import { RatingIcon18 } from "./icons/Rating18Icon";
+import RatingIconAL from "./icons/RatingALIcon";
 import { WatchlistButton } from "./WatchlistButton";
 
 interface AnimeCardProps {
@@ -31,10 +31,13 @@ function getSeasonCountFromTitle(title: string): number | null {
   }
 
   const explicitSeasonMatch = normalizedTitle.match(
-    /\b(?:season\s*(\d+)|(\d+)(?:st|nd|rd|th)\s+season)\b/
+    /\b(?:season\s*(\d+)|(\d+)(?:st|nd|rd|th)\s+season)\b/,
   );
   if (explicitSeasonMatch) {
-    const value = Number.parseInt(explicitSeasonMatch[1] ?? explicitSeasonMatch[2], 10);
+    const value = Number.parseInt(
+      explicitSeasonMatch[1] ?? explicitSeasonMatch[2],
+      10,
+    );
     return Number.isFinite(value) && value > 0 ? value : null;
   }
 
@@ -113,9 +116,9 @@ export function AnimeCard({
   useEffect(() => {
     setIsImageLoaded(!imageUrl);
   }, [imageUrl]);
-  
+
   return (
-    <Link 
+    <Link
       href={`/anime/${malId}/${slug}`}
       className="group/card relative block w-full overflow-hidden transition-transform duration-200 hover:scale-105 h-[340px] sm:h-[380px]"
     >
@@ -141,7 +144,7 @@ export function AnimeCard({
           </div>
         )}
       </div>
-      
+
       <div className="py-2 h-[18%] flex items-start">
         {hasTitle ? (
           <h3 className="line-clamp-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
@@ -156,36 +159,39 @@ export function AnimeCard({
       </div>
 
       <div className="absolute inset-0 flex flex-col justify-start overflow-hidden bg-black/85 px-3 pt-4 text-sm font-semibold text-white opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 z-20">
-          <h3 className="my-2 line-clamp-3 wrap-break-word font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
-            {title}
-          </h3>
+        <h3 className="my-2 line-clamp-3 wrap-break-word font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
+          {title}
+        </h3>
 
-          <div className="flex items-center gap-2">
-            {ratingIcon}
+        <div className="flex items-center gap-2">
+          {ratingIcon}
           <p className="flex items-center gap-1 line-clamp-1 text-[#bbb]">
-            <Star size={16}/> {score?.toFixed(2) || "N/A"}
+            <Star size={16} /> {score?.toFixed(2) || "N/A"}
           </p>
           <p className="flex items-center gap-1 line-clamp-1 text-[#bbb]">
-            <Users size={16}/> {members ? members.toLocaleString() : "N/A"}
+            <Users size={16} /> {members ? members.toLocaleString() : "N/A"}
           </p>
+        </div>
 
-          </div>
+        <p className="line-clamp-1 text-[#8c8c8c]">
+          Seasons: {seasonCount ?? "N/A"}
+        </p>
+        <p className="line-clamp-1 text-[#8c8c8c]">
+          Episodes: {episodes ?? "N/A"}
+        </p>
 
-          <p className="line-clamp-1 text-[#8c8c8c]">Seasons: {seasonCount ?? "N/A"}</p>
-          <p className="line-clamp-1 text-[#8c8c8c]">Episodes: {episodes ?? "N/A"}</p>
+        <p className="line-clamp-4 break-words leading-relaxed font-medium text-zinc-100">
+          {synopsis || "No synopsis available."}
+        </p>
 
-          <p className="line-clamp-4 break-words leading-relaxed font-medium text-zinc-100">
-            {synopsis || "No synopsis available."}
-          </p>
-
-          <div className="mt-auto flex justify-end pb-2 pt-4">
-            <WatchlistButton
-              malId={malId}
-              title={title}
-              episodes={episodes}
-              triggerClassName="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/60 px-3 py-2 text-xs font-semibold text-white transition hover:border-indigo-400 hover:bg-black/80"
-            />
-          </div>
+        <div className="mt-auto flex justify-end pb-2 pt-4">
+          <WatchlistButton
+            malId={malId}
+            title={title}
+            episodes={episodes}
+            triggerClassName="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/60 px-3 py-2 text-xs font-semibold text-white transition hover:border-indigo-400 hover:bg-black/80"
+          />
+        </div>
       </div>
     </Link>
   );
