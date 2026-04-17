@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, Users } from "lucide-react";
+import { Bookmark, Star, Users } from "lucide-react";
 import { RatingIcon10 } from "./icons/Rating10Icon";
 import { RatingIcon12 } from "./icons/Rating12Icon";
 import { RatingIcon14 } from "./icons/Rating14Icon";
@@ -112,10 +112,37 @@ export function AnimeCard({
   const ratingIcon = getRatingIcon(rating);
   const hasTitle = title.trim().length > 0;
   const [isImageLoaded, setIsImageLoaded] = useState(!imageUrl);
+  const [isInWatchlist, setIsInWatchlist] = useState(false);
 
   useEffect(() => {
     setIsImageLoaded(!imageUrl);
   }, [imageUrl]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadWatchlistState() {
+      try {
+        const response = await fetch(`/api/v1/watchlist?malId=${malId}`, {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          setIsInWatchlist(false);
+          return;
+        }
+
+        const data = await response.json();
+        setIsInWatchlist(Boolean(data.entry));
+      } catch {
+        setIsInWatchlist(false);
+      }
+    }
+
+    loadWatchlistState();
+
+    return () => controller.abort();
+  }, [malId]);
 
   return (
     <Link
@@ -123,6 +150,16 @@ export function AnimeCard({
       className="group/card relative block w-full overflow-hidden transition-transform duration-200 hover:scale-105 h-[340px] sm:h-[380px]"
     >
       <div className="relative h-[82%] w-full overflow-hidden shadow-md transition-all duration-300 ease-in-out group-hover/card:h-full">
+        {isInWatchlist ? (
+          <>
+            <div className="pointer-events-none absolute right-0 top-0 z-30 h-14 w-14 bg-black transition-opacity duration-200 group-hover/card:opacity-0 [clip-path:polygon(100%_0,0_0,100%_100%)]" />
+            <Bookmark
+              size={16}
+              className="pointer-events-none absolute right-1.5 top-1.5 z-40 fill-white text-white transition-opacity duration-200 group-hover/card:opacity-0"
+            />
+          </>
+        ) : null}
+
         {!isImageLoaded && (
           <div className="absolute inset-0 z-10 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
         )}

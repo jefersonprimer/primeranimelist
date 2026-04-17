@@ -28,7 +28,7 @@ export function EmptyWatchlistState() {
             Nada salvo por aqui ainda
           </h2>
           <p className="mt-3 max-w-2xl text-base text-zinc-400">
-            Quando você adicionar animes, eles vão aparecer aqui para acompanhar status, progresso e nota.
+            Quando você adicionar títulos à sua lista, eles vão aparecer aqui para acompanhar status, progresso e nota.
           </p>
           <Link
             href="/"

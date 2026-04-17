@@ -137,12 +137,38 @@ async function createWatchlistTable() {
   `);
 }
 
+async function createMangaWatchlistTable() {
+  await db.execute(sql`
+    create table if not exists "manga_watchlist" (
+      "id" serial primary key,
+      "user_id" integer not null references "users"("id") on delete cascade,
+      "manga_id" integer not null references "manga"("id") on delete cascade,
+      "status" text not null default 'Plan to Read',
+      "volumes_read" integer not null default 0,
+      "chapters_read" integer not null default 0,
+      "score" real,
+      "start_date" timestamp,
+      "finish_date" timestamp,
+      "created_at" timestamp default now(),
+      "updated_at" timestamp default now(),
+      unique ("user_id", "manga_id")
+    )
+  `);
+
+  await db.execute(sql`
+    create index if not exists "manga_watchlist_user_id_idx"
+    on "manga_watchlist" ("user_id")
+  `);
+}
+
 export async function ensureDatabase() {
   if (!databaseReady) {
     databaseReady = (async () => {
       await createAnimeTable();
+      await createMangaTable();
       await createAuthTables();
       await createWatchlistTable();
+      await createMangaWatchlistTable();
     })();
   }
 
@@ -151,7 +177,11 @@ export async function ensureDatabase() {
 
 export async function ensureMangaDatabase() {
   if (!mangaDatabaseReady) {
-    mangaDatabaseReady = createMangaTable();
+    mangaDatabaseReady = (async () => {
+      await createMangaTable();
+      await createAuthTables();
+      await createMangaWatchlistTable();
+    })();
   }
 
   await mangaDatabaseReady;

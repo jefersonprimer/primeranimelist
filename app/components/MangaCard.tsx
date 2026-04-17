@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, Bookmark, Crown } from "lucide-react";
+import { Bookmark, Crown } from "lucide-react";
+import { MangaWatchlistButton } from "./MangaWatchlistButton";
 
 interface MangaCardProps {
   malId: number;
@@ -113,6 +114,16 @@ export function MangaCard({
             {score.toFixed(2)}
           </div>
         )}
+
+        <div className="absolute bottom-12 right-1 z-20 opacity-100 transition-opacity duration-200 md:opacity-0 md:group-hover/manga:opacity-100">
+          <MangaWatchlistButton
+            malId={malId}
+            title={title}
+            volumes={volumes ?? null}
+            chapters={chapters ?? null}
+            triggerClassName="inline-flex items-center justify-center rounded-full border-2 border-zinc-900 bg-white p-1 text-zinc-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.8)] transition hover:translate-x-[-1px] hover:translate-y-[-1px] hover:bg-indigo-600 hover:text-white dark:border-white dark:bg-zinc-950 dark:text-zinc-100 dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)]"
+          />
+        </div>
       </div>
       
       <div className="mt-4 px-1">
@@ -137,6 +148,7 @@ export function MangaCard({
         <p className="mt-1 text-[11px] font-bold text-zinc-500 dark:text-zinc-400 italic">
           {volumes ? `${volumes} Volumes` : chapters ? `${chapters} Chapters` : "Status Unknown"}
         </p>
+
       </div>
     </Link>
   );

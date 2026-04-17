@@ -10,6 +10,16 @@ export const WATCHLIST_STATUSES = [
 
 export type WatchlistStatus = (typeof WATCHLIST_STATUSES)[number];
 
+export const MANGA_WATCHLIST_STATUSES = [
+  "Reading",
+  "Completed",
+  "On-Hold",
+  "Dropped",
+  "Plan to Read",
+] as const;
+
+export type MangaWatchlistStatus = (typeof MANGA_WATCHLIST_STATUSES)[number];
+
 export const anime = pgTable("anime", {
   id: serial("id").primaryKey(),
   malId: integer("mal_id").unique().notNull(),
@@ -111,5 +121,25 @@ export const animeWatchlist = pgTable(
   },
   (table) => ({
     userAnimeUnique: uniqueIndex("anime_watchlist_user_anime_idx").on(table.userId, table.animeId),
+  })
+);
+
+export const mangaWatchlist = pgTable(
+  "manga_watchlist",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    mangaId: integer("manga_id").references(() => manga.id, { onDelete: "cascade" }).notNull(),
+    status: text("status").$type<MangaWatchlistStatus>().notNull().default("Plan to Read"),
+    volumesRead: integer("volumes_read").notNull().default(0),
+    chaptersRead: integer("chapters_read").notNull().default(0),
+    score: real("score"),
+    startDate: timestamp("start_date"),
+    finishDate: timestamp("finish_date"),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  },
+  (table) => ({
+    userMangaUnique: uniqueIndex("manga_watchlist_user_manga_idx").on(table.userId, table.mangaId),
   })
 );
