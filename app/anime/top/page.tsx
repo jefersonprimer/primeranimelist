@@ -1,4 +1,6 @@
+import { getSession } from "@/lib/auth";
 import { listAnime, parseTopAnimeFilter, type TopAnimeFilter } from "@/lib/services/anime.service";
+import { listWatchlistEntriesByMalIds } from "@/lib/services/watchlist.service";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,11 +37,30 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
   const { page: pageParam, filter: filterParam } = await props.searchParams;
   const page = getPageNumber(pageParam);
   const filter = parseTopAnimeFilter(filterParam);
-  const { items: animeList, total, totalPages } = await listAnime({
-    page,
-    limit: PAGE_SIZE,
-    filter: filter ?? undefined,
-  });
+  const [session, { items: animeList, total, totalPages }] = await Promise.all([
+    getSession(),
+    listAnime({
+      page,
+      limit: PAGE_SIZE,
+      filter: filter ?? undefined,
+    }),
+  ]);
+  const watchlistEntries =
+    session && animeList.length > 0
+      ? await listWatchlistEntriesByMalIds(
+          session.user.id,
+          animeList.map((anime) => anime.malId)
+        )
+      : [];
+  const watchlistByMalId = new Map(
+    watchlistEntries.map((entry) => [
+      entry.anime.malId,
+      {
+        status: entry.status,
+        score: entry.score,
+      },
+    ])
+  );
   const currentPage = Math.min(page, totalPages);
   const startRank = total === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
   const endRank = total === 0 ? 0 : startRank + animeList.length - 1;
@@ -149,89 +170,113 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                 <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-wider text-sm w-32">Image</th>
                 <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-wider text-sm">Title</th>
                 <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-wider text-sm text-center w-32">Score</th>
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-wider text-sm text-center w-40">Your Status</th>
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-wider text-sm text-center w-32">Your Score</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
               {animeList.length > 0 ? (
-                animeList.map((anime, index) => (
-                  <tr key={anime.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
-                    <td className="px-6 py-8 align-middle">
-                      <span className="text-3xl font-black text-zinc-400 dark:text-zinc-600">
-                        #{filter ? startRank + index : anime.rank || anime.popularity || startRank + index}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 align-middle">
-                      <Link href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`}>
-                        {anime.imageUrl ? (
-                          <div className="relative h-28 w-20 overflow-hidden border border-zinc-200 shadow-sm dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
-                            <Image
-                              src={anime.imageUrl}
-                              alt={anime.title}
-                              fill
-                              className="object-cover"
-                              sizes="80px"
-                            />
-                          </div>
-                        ) : (
-                          <div className="flex h-28 w-20 items-center justify-center rounded bg-zinc-200 dark:bg-zinc-800">
-                            <span className="text-[10px] text-zinc-400">No image</span>
-                          </div>
-                        )}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 align-middle">
-                      <div className="flex flex-col gap-1">
-                        <Link href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                          <h3 className="text-lg font-bold leading-tight text-zinc-900 dark:text-zinc-50">
-                            {anime.title}
-                          </h3>
-                        </Link>
-                        {anime.titleJapanese && (
-                          <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                            {anime.titleJapanese}
-                          </p>
-                        )}
-                        <div className="mt-1.5 flex flex-wrap gap-2">
-                          {anime.type && (
-                            <span className="rounded border border-indigo-100 bg-indigo-50 px-1.5 py-0.5 text-[9px] font-black uppercase text-indigo-600 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-400">
-                              {anime.type}
-                            </span>
+                animeList.map((anime, index) => {
+                  const watchlistEntry = watchlistByMalId.get(anime.malId);
+
+                  return (
+                    <tr key={anime.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
+                      <td className="px-6 py-8 align-middle">
+                        <span className="text-3xl font-black text-zinc-400 dark:text-zinc-600">
+                          #{filter ? startRank + index : anime.rank || anime.popularity || startRank + index}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 align-middle">
+                        <Link href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`}>
+                          {anime.imageUrl ? (
+                            <div className="relative h-28 w-20 overflow-hidden border border-zinc-200 shadow-sm dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+                              <Image
+                                src={anime.imageUrl}
+                                alt={anime.title}
+                                fill
+                                className="object-cover"
+                                sizes="80px"
+                              />
+                            </div>
+                          ) : (
+                            <div className="flex h-28 w-20 items-center justify-center rounded bg-zinc-200 dark:bg-zinc-800">
+                              <span className="text-[10px] text-zinc-400">No image</span>
+                            </div>
                           )}
-                          {anime.episodes && (
-                            <span className="rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
-                              {anime.episodes} eps
-                            </span>
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4 align-middle">
+                        <div className="flex flex-col gap-1">
+                          <Link href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                            <h3 className="text-lg font-bold leading-tight text-zinc-900 dark:text-zinc-50">
+                              {anime.title}
+                            </h3>
+                          </Link>
+                          {anime.titleJapanese && (
+                            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                              {anime.titleJapanese}
+                            </p>
+                          )}
+                          <div className="mt-1.5 flex flex-wrap gap-2">
+                            {anime.type && (
+                              <span className="rounded border border-indigo-100 bg-indigo-50 px-1.5 py-0.5 text-[9px] font-black uppercase text-indigo-600 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-400">
+                                {anime.type}
+                              </span>
+                            )}
+                            {anime.episodes && (
+                              <span className="rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+                                {anime.episodes} eps
+                              </span>
+                            )}
+                          </div>
+                          {(anime.airedFrom || anime.airedTo) && (
+                            <p className="mt-0.5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">
+                              {formatDate(anime.airedFrom)}
+                              {anime.airedTo ? ` - ${formatDate(anime.airedTo)}` : ""}
+                            </p>
+                          )}
+                          {anime.members !== null && anime.members !== undefined && (
+                            <p className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500">
+                              {new Intl.NumberFormat("en-US").format(anime.members)} members
+                            </p>
                           )}
                         </div>
-                        {(anime.airedFrom || anime.airedTo) && (
-                          <p className="mt-0.5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">
-                            {formatDate(anime.airedFrom)}
-                            {anime.airedTo ? ` - ${formatDate(anime.airedTo)}` : ""}
-                          </p>
+                      </td>
+                      <td className="px-6 py-4 text-center align-middle">
+                        <div className="inline-flex flex-col items-center">
+                          <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400">
+                            {anime.score ? anime.score.toFixed(2) : "N/A"}
+                          </span>
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                            Score
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center align-middle">
+                        {watchlistEntry ? (
+                          <span className="inline-flex rounded-full border border-indigo-400/20 bg-indigo-400/10 px-3 py-1 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+                            {watchlistEntry.status}
+                          </span>
+                        ) : (
+                          <span className="text-sm font-medium text-zinc-400 dark:text-zinc-500">-</span>
                         )}
-                        {anime.members !== null && anime.members !== undefined && (
-                          <p className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500">
-                            {new Intl.NumberFormat("en-US").format(anime.members)} members
-                          </p>
+                      </td>
+                      <td className="px-6 py-4 text-center align-middle">
+                        {watchlistEntry ? (
+                          <span className="text-base font-black text-zinc-900 dark:text-zinc-50">
+                            {watchlistEntry.score ?? "N/A"}
+                          </span>
+                        ) : (
+                          <span className="text-sm font-medium text-zinc-400 dark:text-zinc-500">-</span>
                         )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-center align-middle">
-                      <div className="inline-flex flex-col items-center">
-                        <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400">
-                          {anime.score ? anime.score.toFixed(2) : "N/A"}
-                        </span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-                          Score
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td
-                    colSpan={4}
+                    colSpan={6}
                     className="px-6 py-12 text-center text-sm font-medium text-zinc-500 dark:text-zinc-400"
                   >
                     No ranked anime available for this page.

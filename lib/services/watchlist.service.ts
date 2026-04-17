@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { ensureDatabase } from "@/lib/db/bootstrap";
 import { anime, animeWatchlist, WATCHLIST_STATUSES, type WatchlistStatus } from "@/lib/db/schema";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 
 export interface WatchlistFormInput {
   status: string;
@@ -171,6 +171,31 @@ export async function listWatchlistEntries(userId: number) {
     .from(animeWatchlist)
     .innerJoin(anime, eq(animeWatchlist.animeId, anime.id))
     .where(eq(animeWatchlist.userId, userId))
+    .orderBy(desc(animeWatchlist.updatedAt), desc(animeWatchlist.createdAt));
+
+  return result.map(mapWatchlistRow);
+}
+
+export async function listWatchlistEntriesByMalIds(userId: number, malIds: number[]) {
+  await ensureDatabase();
+
+  if (malIds.length === 0) {
+    return [];
+  }
+
+  const result = await db
+    .select({
+      watchlist: animeWatchlist,
+      anime: {
+        malId: anime.malId,
+        title: anime.title,
+        imageUrl: anime.imageUrl,
+        episodes: anime.episodes,
+      },
+    })
+    .from(animeWatchlist)
+    .innerJoin(anime, eq(animeWatchlist.animeId, anime.id))
+    .where(and(eq(animeWatchlist.userId, userId), inArray(anime.malId, malIds)))
     .orderBy(desc(animeWatchlist.updatedAt), desc(animeWatchlist.createdAt));
 
   return result.map(mapWatchlistRow);

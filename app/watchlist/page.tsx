@@ -1,9 +1,10 @@
+import { EmptyWatchlistState } from "@/app/components/EmptyWatchlistState";
 import { getSession } from "@/lib/auth";
 import { listWatchlistEntries } from "@/lib/services/watchlist.service";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Bookmark, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { WatchlistButton } from "@/app/components/WatchlistButton";
 
 function formatDate(date: string | null) {
@@ -41,19 +42,7 @@ export default async function LibraryPage() {
         </div>
 
         {entries.length === 0 ? (
-          <div className="mt-10 rounded-3xl border border-dashed border-zinc-700 bg-zinc-950/70 px-8 py-14 text-center">
-            <Bookmark className="mx-auto text-zinc-600" size={28} />
-            <h2 className="mt-4 text-2xl font-black text-white">Your list is empty</h2>
-            <p className="mt-2 text-zinc-400">
-              Use the bookmark button on any anime card to save it to your watchlist.
-            </p>
-            <Link
-              href="/anime/top"
-              className="mt-6 inline-flex rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
-            >
-              Browse anime
-            </Link>
-          </div>
+          <EmptyWatchlistState />
         ) : (
           <div className="mt-10 overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950/80 shadow-2xl">
             <div className="overflow-x-auto">
