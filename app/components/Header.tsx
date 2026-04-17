@@ -111,7 +111,7 @@ export default function Header() {
           ) : user ? (
             <div className="flex h-full items-center">
               <Link
-                href="/library"
+                href="/watchlist"
                 className="flex h-full items-center px-4 text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
                 aria-label="Library"
               >

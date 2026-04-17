@@ -1,4 +1,14 @@
-import { pgTable, serial, text, integer, real, jsonb, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, real, jsonb, timestamp, boolean, uniqueIndex } from "drizzle-orm/pg-core";
+
+export const WATCHLIST_STATUSES = [
+  "Watching",
+  "Completed",
+  "On-Hold",
+  "Dropped",
+  "Plan to Watch",
+] as const;
+
+export type WatchlistStatus = (typeof WATCHLIST_STATUSES)[number];
 
 export const anime = pgTable("anime", {
   id: serial("id").primaryKey(),
@@ -83,3 +93,23 @@ export const sessions = pgTable("sessions", {
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export const animeWatchlist = pgTable(
+  "anime_watchlist",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    animeId: integer("anime_id").references(() => anime.id, { onDelete: "cascade" }).notNull(),
+    status: text("status").$type<WatchlistStatus>().notNull().default("Plan to Watch"),
+    episodesWatched: integer("episodes_watched").notNull().default(0),
+    score: real("score"),
+    startDate: timestamp("start_date"),
+    finishDate: timestamp("finish_date"),
+    isFavorite: boolean("is_favorite").notNull().default(false),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  },
+  (table) => ({
+    userAnimeUnique: uniqueIndex("anime_watchlist_user_anime_idx").on(table.userId, table.animeId),
+  })
+);

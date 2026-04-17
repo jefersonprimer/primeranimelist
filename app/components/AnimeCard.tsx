@@ -10,6 +10,7 @@ import { RatingIcon14 } from "./RatingIcon14";
 import { RatingIcon16 } from "./RatingIcon16";
 import { RatingIcon18 } from "./RatingIcon18";
 import RatingIconAL from "./RatingIconAL";
+import { WatchlistButton } from "./WatchlistButton";
 
 interface AnimeCardProps {
   malId: number;
@@ -176,6 +177,15 @@ export function AnimeCard({
           <p className="line-clamp-4 break-words leading-relaxed font-medium text-zinc-100">
             {synopsis || "No synopsis available."}
           </p>
+
+          <div className="mt-auto flex justify-end pb-2 pt-4">
+            <WatchlistButton
+              malId={malId}
+              title={title}
+              episodes={episodes}
+              triggerClassName="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/60 px-3 py-2 text-xs font-semibold text-white transition hover:border-indigo-400 hover:bg-black/80"
+            />
+          </div>
       </div>
     </Link>
   );

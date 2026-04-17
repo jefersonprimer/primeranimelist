@@ -113,11 +113,36 @@ async function createAuthTables() {
   `);
 }
 
+async function createWatchlistTable() {
+  await db.execute(sql`
+    create table if not exists "anime_watchlist" (
+      "id" serial primary key,
+      "user_id" integer not null references "users"("id") on delete cascade,
+      "anime_id" integer not null references "anime"("id") on delete cascade,
+      "status" text not null default 'Plan to Watch',
+      "episodes_watched" integer not null default 0,
+      "score" real,
+      "start_date" timestamp,
+      "finish_date" timestamp,
+      "is_favorite" boolean not null default false,
+      "created_at" timestamp default now(),
+      "updated_at" timestamp default now(),
+      unique ("user_id", "anime_id")
+    )
+  `);
+
+  await db.execute(sql`
+    create index if not exists "anime_watchlist_user_id_idx"
+    on "anime_watchlist" ("user_id")
+  `);
+}
+
 export async function ensureDatabase() {
   if (!databaseReady) {
     databaseReady = (async () => {
       await createAnimeTable();
       await createAuthTables();
+      await createWatchlistTable();
     })();
   }
 
