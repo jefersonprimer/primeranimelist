@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Star, Users } from "lucide-react";
-import { RatingIcon10 } from "./RatingIcon10";
-import { RatingIcon12 } from "./RatingIcon12";
-import { RatingIcon14 } from "./RatingIcon14";
-import { RatingIcon16 } from "./RatingIcon16";
-import { RatingIcon18 } from "./RatingIcon18";
-import RatingIconAL from "./RatingIconAL";
+import { RatingIcon10 } from "./icons/RatingIcon10";
+import { RatingIcon12 } from "./icons/RatingIcon12";
+import { RatingIcon14 } from "./icons/RatingIcon14";
+import { RatingIcon16 } from "./icons/RatingIcon16";
+import { RatingIcon18 } from "./icons/RatingIcon18";
+import RatingIconAL from "./icons/RatingIconAL";
 import { WatchlistButton } from "./WatchlistButton";
 
 interface AnimeCardProps {
