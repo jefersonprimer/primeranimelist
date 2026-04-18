@@ -11,6 +11,10 @@ import { RatingIcon16 } from "./icons/Rating16Icon";
 import { RatingIcon18 } from "./icons/Rating18Icon";
 import RatingIconAL from "./icons/RatingALIcon";
 import { WatchlistButton } from "./WatchlistButton";
+import {
+  WATCHLIST_UPDATED_EVENT,
+  type WatchlistUpdatedDetail,
+} from "@/lib/watchlist-events";
 
 interface AnimeCardProps {
   malId: number;
@@ -144,6 +148,25 @@ export function AnimeCard({
     return () => controller.abort();
   }, [malId]);
 
+  useEffect(() => {
+    const handleWatchlistUpdated = (event: Event) => {
+      const { detail } = event as CustomEvent<WatchlistUpdatedDetail>;
+
+      if (detail?.malId === malId) {
+        setIsInWatchlist(detail.inWatchlist);
+      }
+    };
+
+    window.addEventListener(WATCHLIST_UPDATED_EVENT, handleWatchlistUpdated);
+
+    return () => {
+      window.removeEventListener(
+        WATCHLIST_UPDATED_EVENT,
+        handleWatchlistUpdated,
+      );
+    };
+  }, [malId]);
+
   return (
     <Link
       href={`/anime/${malId}/${slug}`}
@@ -152,10 +175,10 @@ export function AnimeCard({
       <div className="relative h-[82%] w-full overflow-hidden shadow-md transition-all duration-300 ease-in-out group-hover/card:h-full">
         {isInWatchlist ? (
           <>
-            <div className="pointer-events-none absolute right-0 top-0 z-30 h-14 w-14 bg-black transition-opacity duration-200 group-hover/card:opacity-0 [clip-path:polygon(100%_0,0_0,100%_100%)]" />
+            <div className="pointer-events-none absolute right-0 top-0 z-30 h-9 w-9 bg-black transition-opacity duration-200 group-hover/card:opacity-0 [clip-path:polygon(100%_0,0_0,100%_100%)]" />
             <Bookmark
               size={16}
-              className="pointer-events-none absolute right-1.5 top-1.5 z-40 fill-white text-white transition-opacity duration-200 group-hover/card:opacity-0"
+              className="pointer-events-none absolute right-0.5 top-0.5 z-40 fill-white text-white transition-opacity duration-200 group-hover/card:opacity-0"
             />
           </>
         ) : null}

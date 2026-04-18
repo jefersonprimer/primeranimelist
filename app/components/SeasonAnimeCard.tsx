@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Users, Bookmark } from "lucide-react";
+import { Star, Users } from "lucide-react";
+import { WatchlistButton } from "./WatchlistButton";
 
 interface SeasonAnimeCardProps {
   anime: {
@@ -34,23 +35,27 @@ interface SeasonAnimeCardProps {
 
 export function SeasonAnimeCard({ anime }: SeasonAnimeCardProps) {
   const slug = anime.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  const englishTitle = anime.titleEnglish?.trim() || anime.title_english?.trim() || null;
+  const englishTitle =
+    anime.titleEnglish?.trim() || anime.title_english?.trim() || null;
   const primaryTitle = anime.title;
-  const secondaryTitle = englishTitle && englishTitle !== primaryTitle ? englishTitle : null;
+  const secondaryTitle =
+    englishTitle && englishTitle !== primaryTitle ? englishTitle : null;
   const hasPrimaryTitle = primaryTitle.trim().length > 0;
   const [isImageLoaded, setIsImageLoaded] = useState(!anime.imageUrl);
 
   useEffect(() => {
     setIsImageLoaded(!anime.imageUrl);
   }, [anime.imageUrl]);
-  
-  const releaseMonth = anime.airedFrom 
-    ? new Intl.DateTimeFormat('en-US', { month: 'short' }).format(new Date(anime.airedFrom))
+
+  const releaseMonth = anime.airedFrom
+    ? new Intl.DateTimeFormat("en-US", { month: "short" }).format(
+        new Date(anime.airedFrom),
+      )
     : anime.season;
 
   return (
     <div className="relative h-full w-full">
-      <Link 
+      <Link
         href={`/anime/${anime.malId}/${slug}`}
         className="flex h-full w-full flex-col overflow-hidden border border-zinc-200/60 bg-white shadow-sm transition-all duration-300 dark:border-zinc-800/60 dark:bg-zinc-900/50"
       >
@@ -74,7 +79,7 @@ export function SeasonAnimeCard({ anime }: SeasonAnimeCardProps) {
             <div className="mt-2 h-3 w-1/2 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
           )}
         </div>
-      
+
         <div className="flex items-center justify-center text-[#a3a3a3] bg-[#181818] p-1 gap-2 text-xs font-medium">
           <span className="text-[#181818] bg-[#797979] px-1.5 py-0.5 rounded-md">
             {anime.type || "Special"}
@@ -83,14 +88,15 @@ export function SeasonAnimeCard({ anime }: SeasonAnimeCardProps) {
             {releaseMonth} {anime.year}
           </span>
           <div className="flex items-center gap-2">
-            {anime.episodes || "?"} eps, {anime.duration?.replace(" per ep", "")}
+            {anime.episodes || "?"} eps,{" "}
+            {anime.duration?.replace(" per ep", "")}
           </div>
-        </div>  
+        </div>
 
         <div className="flex items-center justify-center bg-[#222222] p-1 flex-wrap gap-1.5">
           {[...(anime.genres || [])].slice(0, 3).map((genre) => (
-            <span 
-              key={genre} 
+            <span
+              key={genre}
               className="rounded-full bg-zinc-100 px-2.5 py-0.5 text-[9px] font-bold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 ring-1 ring-inset ring-zinc-200/50 dark:ring-zinc-700/50"
             >
               {genre}
@@ -124,7 +130,6 @@ export function SeasonAnimeCard({ anime }: SeasonAnimeCardProps) {
             )}
           </div>
 
-
           {/* Details & Scrollable Synopsis */}
           <div className="flex w-1/2 flex-col min-w-0 p-3 h-full">
             <div className="relative flex-1 overflow-hidden">
@@ -134,24 +139,33 @@ export function SeasonAnimeCard({ anime }: SeasonAnimeCardProps) {
                 </p>
                 <div className="mt-4 space-y-1.5 border-t border-zinc-100 pt-3 dark:border-zinc-800">
                   <div className="flex items-center gap-2 text-[10px]">
-                    <span className="font-bold text-zinc-400 dark:text-zinc-500 tracking-tighter">Studio</span>
-                    <span className="truncate text-zinc-700 dark:text-zinc-300 font-medium">{anime.studios?.[0] || "N/A"}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-[10px]">
-                    <span className="font-bold text-zinc-400 dark:text-zinc-500 tracking-tighter">Source</span>
-                    <span className="truncate text-zinc-700 dark:text-zinc-300 font-medium">{anime.source}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-[10px]">
-                    <span className="font-bold text-zinc-400 dark:text-zinc-500 tracking-tighter">Themes</span>
+                    <span className="font-bold text-zinc-400 dark:text-zinc-500 tracking-tighter">
+                      Studio
+                    </span>
                     <span className="truncate text-zinc-700 dark:text-zinc-300 font-medium">
-                      {anime.themes && anime.themes.length > 0 
-                        ? anime.themes.slice(0, 3).join(", ") 
-                        : "N/A"}
+                      {anime.studios?.[0] || "N/A"}
                     </span>
                   </div>
 
+                  <div className="flex items-center gap-2 text-[10px]">
+                    <span className="font-bold text-zinc-400 dark:text-zinc-500 tracking-tighter">
+                      Source
+                    </span>
+                    <span className="truncate text-zinc-700 dark:text-zinc-300 font-medium">
+                      {anime.source}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-[10px]">
+                    <span className="font-bold text-zinc-400 dark:text-zinc-500 tracking-tighter">
+                      Themes
+                    </span>
+                    <span className="truncate text-zinc-700 dark:text-zinc-300 font-medium">
+                      {anime.themes && anime.themes.length > 0
+                        ? anime.themes.slice(0, 3).join(", ")
+                        : "N/A"}
+                    </span>
+                  </div>
                 </div>
               </div>
               {/* Fade out effect for synopsis bottom */}
@@ -176,15 +190,15 @@ export function SeasonAnimeCard({ anime }: SeasonAnimeCardProps) {
               </span>
             </div>
 
-            {/* TODO: feature to add my list, implement in after, not now */} 
-            <button
-              className="text-xs bg-[#3F5893] px-2 py-1 hover:cursor-pointer"
-            >
-              Add to my list
-            </button>
+            <WatchlistButton
+              malId={anime.malId}
+              title={anime.title}
+              episodes={anime.episodes}
+              triggerLabel="Add to my list"
+              triggerClassName="flex items-center gap-2 text-xs bg-[#3F5893] px-2 py-1 hover:cursor-pointer"
+            />
           </div>
         </div>
-
       </Link>
     </div>
   );

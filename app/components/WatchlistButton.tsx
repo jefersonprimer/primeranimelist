@@ -5,6 +5,11 @@ import { Bookmark, LoaderCircle, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/AuthContext";
 import { createPortal } from "react-dom";
+import {
+  dispatchWatchlistUpdated,
+  WATCHLIST_UPDATED_EVENT,
+  type WatchlistUpdatedDetail,
+} from "@/lib/watchlist-events";
 
 const STATUS_OPTIONS = [
   "Watching",
@@ -56,7 +61,9 @@ export function WatchlistButton({
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState("");
-  const [entry, setEntry] = useState<WatchlistEntry>(initialEntry ?? defaultEntry);
+  const [entry, setEntry] = useState<WatchlistEntry>(
+    initialEntry ?? defaultEntry,
+  );
   const [hasSavedEntry, setHasSavedEntry] = useState(Boolean(initialEntry));
   const [mounted, setMounted] = useState(false);
 
@@ -83,6 +90,65 @@ export function WatchlistButton({
       document.body.style.overflow = "";
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+
+    if (!user) {
+      setHasSavedEntry(false);
+      return;
+    }
+
+    if (initialEntry) {
+      setHasSavedEntry(true);
+      return;
+    }
+
+    const controller = new AbortController();
+
+    async function preloadSavedState() {
+      try {
+        const response = await fetch(`/api/v1/watchlist?malId=${malId}`, {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          setHasSavedEntry(false);
+          return;
+        }
+
+        const data = await response.json();
+        setHasSavedEntry(Boolean(data.entry));
+      } catch {
+        setHasSavedEntry(false);
+      }
+    }
+
+    preloadSavedState();
+
+    return () => controller.abort();
+  }, [initialEntry, loading, malId, user]);
+
+  useEffect(() => {
+    const handleWatchlistUpdated = (event: Event) => {
+      const { detail } = event as CustomEvent<WatchlistUpdatedDetail>;
+
+      if (detail?.malId === malId) {
+        setHasSavedEntry(detail.inWatchlist);
+      }
+    };
+
+    window.addEventListener(WATCHLIST_UPDATED_EVENT, handleWatchlistUpdated);
+
+    return () => {
+      window.removeEventListener(
+        WATCHLIST_UPDATED_EVENT,
+        handleWatchlistUpdated,
+      );
+    };
+  }, [malId]);
 
   async function loadEntry() {
     setIsFetching(true);
@@ -141,7 +207,10 @@ export function WatchlistButton({
         body: JSON.stringify({
           malId,
           ...entry,
-          score: entry.score === null || Number.isNaN(entry.score) ? null : entry.score,
+          score:
+            entry.score === null || Number.isNaN(entry.score)
+              ? null
+              : entry.score,
         }),
       });
 
@@ -152,6 +221,7 @@ export function WatchlistButton({
 
       setEntry(data.entry);
       setHasSavedEntry(true);
+      dispatchWatchlistUpdated({ malId, inWatchlist: true });
       setIsOpen(false);
       router.refresh();
     } catch (saveError: any) {
@@ -177,6 +247,7 @@ export function WatchlistButton({
 
       setEntry(defaultEntry);
       setHasSavedEntry(false);
+      dispatchWatchlistUpdated({ malId, inWatchlist: false });
       setIsOpen(false);
       router.refresh();
     } catch (deleteError: any) {
@@ -197,199 +268,219 @@ export function WatchlistButton({
           triggerClassName ??
           "inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/60 px-3 py-2 text-xs font-semibold text-white transition hover:border-indigo-400 hover:bg-black/80"
         }
-        aria-label={hasSavedEntry ? "Edit watchlist entry" : "Add anime to watchlist"}
+        aria-label={
+          hasSavedEntry ? "Edit watchlist entry" : "Add anime to watchlist"
+        }
       >
         <Bookmark
           size={18}
-          className={hasSavedEntry ? "fill-indigo-400 text-indigo-400" : "text-white"}
+          className={
+            hasSavedEntry ? "fill-indigo-400 text-indigo-400" : "text-white"
+          }
         />
         {triggerLabel ? <span>{triggerLabel}</span> : null}
       </button>
 
       {mounted && isOpen
         ? createPortal(
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 px-4 py-6"
-          onClick={() => setIsOpen(false)}
-        >
-          <div
-            className="w-full max-w-xl rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-zinc-50 shadow-2xl"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-zinc-500">
-                  Watchlist
-                </p>
-                <h2 className="mt-2 text-2xl font-black tracking-tight">{title}</h2>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="rounded-full border border-zinc-700 p-2 text-zinc-400 transition hover:border-zinc-500 hover:text-white"
-                aria-label="Close watchlist modal"
+            <div
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 px-4 py-6"
+              onClick={() => setIsOpen(false)}
+            >
+              <div
+                className="w-full max-w-xl rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-zinc-50 shadow-2xl"
+                onClick={(event) => event.stopPropagation()}
               >
-                <X size={18} />
-              </button>
-            </div>
-
-            {isFetching ? (
-              <div className="flex min-h-64 items-center justify-center">
-                <LoaderCircle className="animate-spin text-indigo-400" size={28} />
-              </div>
-            ) : (
-              <form className="mt-6 space-y-5" onSubmit={handleSave}>
-                {error ? (
-                  <div className="rounded-2xl border border-red-900 bg-red-950/40 px-4 py-3 text-sm text-red-300">
-                    {error}
-                  </div>
-                ) : null}
-
-                <div className="grid gap-5 md:grid-cols-2">
-                  <label className="flex flex-col gap-2 text-sm font-semibold text-zinc-200">
-                    Status
-                    <select
-                      value={entry.status}
-                      onChange={(event) =>
-                        setEntry((current) => ({
-                          ...current,
-                          status: event.target.value as WatchlistEntry["status"],
-                        }))
-                      }
-                      className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500"
-                    >
-                      {STATUS_OPTIONS.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <label className="flex flex-col gap-2 text-sm font-semibold text-zinc-200">
-                    Episodes Watched
-                    <input
-                      type="number"
-                      min={0}
-                      max={currentEpisodes ?? undefined}
-                      value={entry.episodesWatched}
-                      onChange={(event) =>
-                        setEntry((current) => ({
-                          ...current,
-                          episodesWatched: Number.parseInt(event.target.value || "0", 10),
-                        }))
-                      }
-                      className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500"
-                    />
-                    <span className="text-xs font-medium text-zinc-500">
-                      {entry.episodesWatched} / {currentEpisodes ?? "?"} episodes
-                    </span>
-                  </label>
-
-                  <label className="flex flex-col gap-2 text-sm font-semibold text-zinc-200">
-                    Your score
-                    <input
-                      type="number"
-                      min={0}
-                      max={10}
-                      step={0.1}
-                      value={entry.score ?? ""}
-                      onChange={(event) =>
-                        setEntry((current) => ({
-                          ...current,
-                          score: event.target.value === "" ? null : Number(event.target.value),
-                        }))
-                      }
-                      className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500"
-                      placeholder="0 to 10"
-                    />
-                  </label>
-
-                  <label className="flex items-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-900/70 px-4 py-3 text-sm font-semibold text-zinc-200">
-                    <input
-                      type="checkbox"
-                      checked={entry.isFavorite}
-                      onChange={(event) =>
-                        setEntry((current) => ({
-                          ...current,
-                          isFavorite: event.target.checked,
-                        }))
-                      }
-                      className="h-4 w-4 rounded border-zinc-600 bg-zinc-900 text-indigo-500 focus:ring-indigo-500"
-                    />
-                    Add to favorites
-                  </label>
-
-                  <label className="flex flex-col gap-2 text-sm font-semibold text-zinc-200">
-                    Start date
-                    <input
-                      type="date"
-                      value={entry.startDate ?? ""}
-                      onChange={(event) =>
-                        setEntry((current) => ({
-                          ...current,
-                          startDate: event.target.value || null,
-                        }))
-                      }
-                      className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500"
-                    />
-                  </label>
-
-                  <label className="flex flex-col gap-2 text-sm font-semibold text-zinc-200">
-                    Finish date
-                    <input
-                      type="date"
-                      value={entry.finishDate ?? ""}
-                      onChange={(event) =>
-                        setEntry((current) => ({
-                          ...current,
-                          finishDate: event.target.value || null,
-                        }))
-                      }
-                      className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500"
-                    />
-                  </label>
-                </div>
-
-                <div className="flex flex-col-reverse gap-3 border-t border-zinc-800 pt-5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start justify-between gap-4">
                   <div>
-                    {hasSavedEntry ? (
-                      <button
-                        type="button"
-                        onClick={handleDelete}
-                        disabled={isDeleting}
-                        className="inline-flex items-center gap-2 rounded-full border border-red-900 bg-red-950/30 px-4 py-2 text-sm font-semibold text-red-300 transition hover:border-red-700 hover:bg-red-950/50 disabled:opacity-60"
-                      >
-                        <Trash2 size={16} />
-                        {isDeleting ? "Removing..." : "Remove from list"}
-                      </button>
-                    ) : null}
+                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-zinc-500">
+                      Watchlist
+                    </p>
+                    <h2 className="mt-2 text-2xl font-black tracking-tight">
+                      {title}
+                    </h2>
                   </div>
-
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setIsOpen(false)}
-                      className="rounded-full border border-zinc-700 px-5 py-2 text-sm font-semibold text-zinc-300 transition hover:border-zinc-500 hover:text-white"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isSaving}
-                      className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-60"
-                    >
-                      {isSaving ? "Saving..." : hasSavedEntry ? "Update entry" : "Save to list"}
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsOpen(false)}
+                    className="rounded-full border border-zinc-700 p-2 text-zinc-400 transition hover:border-zinc-500 hover:text-white"
+                    aria-label="Close watchlist modal"
+                  >
+                    <X size={18} />
+                  </button>
                 </div>
-              </form>
-            )}
-          </div>
-        </div>
-        ,
-          document.body
-        )
+
+                {isFetching ? (
+                  <div className="flex min-h-64 items-center justify-center">
+                    <LoaderCircle
+                      className="animate-spin text-indigo-400"
+                      size={28}
+                    />
+                  </div>
+                ) : (
+                  <form className="mt-6 space-y-5" onSubmit={handleSave}>
+                    {error ? (
+                      <div className="rounded-2xl border border-red-900 bg-red-950/40 px-4 py-3 text-sm text-red-300">
+                        {error}
+                      </div>
+                    ) : null}
+
+                    <div className="grid gap-5 md:grid-cols-2">
+                      <label className="flex flex-col gap-2 text-sm font-semibold text-zinc-200">
+                        Status
+                        <select
+                          value={entry.status}
+                          onChange={(event) =>
+                            setEntry((current) => ({
+                              ...current,
+                              status: event.target
+                                .value as WatchlistEntry["status"],
+                            }))
+                          }
+                          className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500"
+                        >
+                          {STATUS_OPTIONS.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <label className="flex flex-col gap-2 text-sm font-semibold text-zinc-200">
+                        Episodes Watched
+                        <input
+                          type="number"
+                          min={0}
+                          max={currentEpisodes ?? undefined}
+                          value={entry.episodesWatched}
+                          onChange={(event) =>
+                            setEntry((current) => ({
+                              ...current,
+                              episodesWatched: Number.parseInt(
+                                event.target.value || "0",
+                                10,
+                              ),
+                            }))
+                          }
+                          className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500"
+                        />
+                        <span className="text-xs font-medium text-zinc-500">
+                          {entry.episodesWatched} / {currentEpisodes ?? "?"}{" "}
+                          episodes
+                        </span>
+                      </label>
+
+                      <label className="flex flex-col gap-2 text-sm font-semibold text-zinc-200">
+                        Your score
+                        <input
+                          type="number"
+                          min={0}
+                          max={10}
+                          step={0.1}
+                          value={entry.score ?? ""}
+                          onChange={(event) =>
+                            setEntry((current) => ({
+                              ...current,
+                              score:
+                                event.target.value === ""
+                                  ? null
+                                  : Number(event.target.value),
+                            }))
+                          }
+                          className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500"
+                          placeholder="0 to 10"
+                        />
+                      </label>
+
+                      <label className="flex items-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-900/70 px-4 py-3 text-sm font-semibold text-zinc-200">
+                        <input
+                          type="checkbox"
+                          checked={entry.isFavorite}
+                          onChange={(event) =>
+                            setEntry((current) => ({
+                              ...current,
+                              isFavorite: event.target.checked,
+                            }))
+                          }
+                          className="h-4 w-4 rounded border-zinc-600 bg-zinc-900 text-indigo-500 focus:ring-indigo-500"
+                        />
+                        Add to favorites
+                      </label>
+
+                      <label className="flex flex-col gap-2 text-sm font-semibold text-zinc-200">
+                        Start date
+                        <input
+                          type="date"
+                          value={entry.startDate ?? ""}
+                          onChange={(event) =>
+                            setEntry((current) => ({
+                              ...current,
+                              startDate: event.target.value || null,
+                            }))
+                          }
+                          className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500"
+                        />
+                      </label>
+
+                      <label className="flex flex-col gap-2 text-sm font-semibold text-zinc-200">
+                        Finish date
+                        <input
+                          type="date"
+                          value={entry.finishDate ?? ""}
+                          onChange={(event) =>
+                            setEntry((current) => ({
+                              ...current,
+                              finishDate: event.target.value || null,
+                            }))
+                          }
+                          className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500"
+                        />
+                      </label>
+                    </div>
+
+                    <div className="flex flex-col-reverse gap-3 border-t border-zinc-800 pt-5 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        {hasSavedEntry ? (
+                          <button
+                            type="button"
+                            onClick={handleDelete}
+                            disabled={isDeleting}
+                            className="inline-flex items-center gap-2 rounded-full border border-red-900 bg-red-950/30 px-4 py-2 text-sm font-semibold text-red-300 transition hover:border-red-700 hover:bg-red-950/50 disabled:opacity-60"
+                          >
+                            <Trash2 size={16} />
+                            {isDeleting ? "Removing..." : "Remove from list"}
+                          </button>
+                        ) : null}
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setIsOpen(false)}
+                          className="rounded-full border border-zinc-700 px-5 py-2 text-sm font-semibold text-zinc-300 transition hover:border-zinc-500 hover:text-white"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={isSaving}
+                          className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-60"
+                        >
+                          {isSaving
+                            ? "Saving..."
+                            : hasSavedEntry
+                              ? "Update entry"
+                              : "Save to list"}
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                )}
+              </div>
+            </div>,
+            document.body,
+          )
         : null}
     </>
   );
