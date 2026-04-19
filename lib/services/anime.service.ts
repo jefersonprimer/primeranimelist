@@ -234,6 +234,11 @@ export function serializeAnime(row: AnimeRow) {
     explicit_genres: [],
     themes: serializeRelationList(row.themes, "genre"),
     demographics: serializeRelationList(row.demographics, "genre"),
+    image_banner_desktop: row.imageBannerDesktop,
+    image_banner_mobile: row.imageBannerMobile,
+    image_logo: row.imageLogo,
+    image_thumbnail: row.imageThumbnail,
+    image_card_compact: row.imageCardCompact,
   };
 }
 

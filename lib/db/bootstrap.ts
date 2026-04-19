@@ -50,6 +50,11 @@ async function createAnimeTable() {
     await db.execute(sql`alter table "anime" add column if not exists "licensors" jsonb`);
     await db.execute(sql`alter table "anime" add column if not exists "themes" jsonb`);
     await db.execute(sql`alter table "anime" add column if not exists "demographics" jsonb`);
+    await db.execute(sql`alter table "anime" add column if not exists "image_banner_desktop" text`);
+    await db.execute(sql`alter table "anime" add column if not exists "image_banner_mobile" text`);
+    await db.execute(sql`alter table "anime" add column if not exists "image_logo" text`);
+    await db.execute(sql`alter table "anime" add column if not exists "image_thumbnail" text`);
+    await db.execute(sql`alter table "anime" add column if not exists "image_card_compact" text`);
   } catch (err) {
     console.error("Migration error:", err);
   }

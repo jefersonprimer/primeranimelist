@@ -14,6 +14,7 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/** Only Jikan-backed fields — omit app-only image URLs so upserts never clear them. */
 function parseAnime(item: any) {
   return {
     malId: item.mal_id,
