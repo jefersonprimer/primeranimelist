@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
-import { Search, LogOut, Bookmark } from 'lucide-react';
-import { useAuth } from '@/lib/context/AuthContext';
-import { DropdownIcon } from './icons/DropdownIcon';
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { Search, LogOut, Bookmark, Pencil } from "lucide-react";
+import { useAuth } from "@/lib/context/AuthContext";
+import { DropdownIcon } from "./icons/DropdownIcon";
 
 function getCurrentSeason(date = new Date()) {
   const month = date.getMonth(); // 0-11
@@ -107,7 +107,10 @@ export default function Header() {
           </Link>
 
           {loading ? (
-            <div className="h-10 w-24 rounded-full bg-zinc-700/60" aria-hidden="true" />
+            <div
+              className="h-10 w-24 rounded-full bg-zinc-700/60"
+              aria-hidden="true"
+            />
           ) : user ? (
             <div className="flex h-full items-center">
               <Link
@@ -118,38 +121,40 @@ export default function Header() {
                 <Bookmark size={22} />
               </Link>
               <div className="relative h-full" ref={userMenuRef}>
-                <div className="flex h-full items-center gap-1 px-4 text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white">
-                  <button
-                    type="button"
-                    onClick={() => setIsUserModalOpen((open) => !open)}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-[#272727] cursor-pointer"
-                    aria-label="Abrir menu do usuário"
-                    aria-haspopup="dialog"
-                    aria-expanded={isUserModalOpen}
-                  >
+                <button
+                  type="button"
+                  onClick={() => setIsUserModalOpen((open) => !open)}
+                  className={`flex h-full items-center gap-1 px-4 transition-colors hover:bg-[#181818] hover:text-white cursor-pointer focus:outline-none ${
+                    isUserModalOpen ? "bg-[#181818] text-white" : "text-[#bbb]"
+                  }`}
+                  aria-label="Abrir menu do usuário"
+                  aria-haspopup="dialog"
+                  aria-expanded={isUserModalOpen}
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-500">
                     {getUserInitial(user.fullName, user.email)}
-                  </button>
+                  </div>
                   <DropdownIcon />
-                </div>
+                </button>
 
                 {isUserModalOpen && (
                   <div
-                    className="absolute right-0 top-full z-50 mt-3 w-64 rounded-2xl border border-zinc-700 bg-zinc-900 p-4 shadow-2xl"
+                    className="absolute right-0 top-full z-50 w-64 bg-[#181818] p-4"
                     role="dialog"
                     aria-label="Menu do usuário"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-base font-bold text-white">
-                        {getUserInitial(user.fullName, user.email)}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs font-medium uppercase tracking-[0.2em] text-zinc-400">
-                          Usuário
-                        </p>
-                        <p className="truncate text-sm font-semibold text-white">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-base font-bold text-white">
+                          {getUserInitial(user.fullName, user.email)}
+                        </div>
+                        <div className="min-w-0">
                           {getDisplayName(user.fullName, user.email)}
-                        </p>
+                        </div>
                       </div>
+                      <button>
+                        <Pencil size={24} />
+                      </button>
                     </div>
 
                     <button
