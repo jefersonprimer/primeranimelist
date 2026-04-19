@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search, LogOut, Bookmark, Pencil } from "lucide-react";
 import { useAuth } from "@/lib/context/AuthContext";
 import { DropdownIcon } from "./icons/DropdownIcon";
+import { AdminNavActions } from "./AdminNavActions";
 
 function getCurrentSeason(date = new Date()) {
   const month = date.getMonth(); // 0-11
@@ -98,6 +99,8 @@ export default function Header() {
           </ul>
         </nav>
         <div className="flex h-full flex-row items-center">
+          <AdminNavActions />
+
           <Link
             href="/search"
             className="flex h-full items-center px-4 text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"

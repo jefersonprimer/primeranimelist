@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { ensureDatabase } from "@/lib/db/bootstrap";
+import { isAdminEmail } from "@/lib/admin";
 
 export async function POST(req: Request) {
   try {
@@ -47,6 +48,7 @@ export async function POST(req: Request) {
         id: user.id,
         email: user.email,
         fullName: user.fullName,
+        isAdmin: isAdminEmail(user.email),
       },
     });
   } catch (error: any) {

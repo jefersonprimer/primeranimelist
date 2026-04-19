@@ -3,6 +3,7 @@ import { ArrowBigLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AdminDetailEditButton } from "@/app/components/AdminDetailEditButton";
 
 function toNameList(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
@@ -60,15 +61,18 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ ma
       <div className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:20px_20px]" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 flex flex-col gap-12">
-        <Link
-          href="/manga/top"
-          className="group inline-flex w-fit items-center gap-4 bg-zinc-900 dark:bg-zinc-100 px-6 py-3 text-xs font-black uppercase tracking-widest text-white dark:text-black transition-all hover:bg-indigo-600 dark:hover:bg-indigo-500 dark:hover:text-white border-2 border-zinc-900 dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
-        >
-          <span className="transition-transform group-hover:-translate-x-1">
-            <ArrowBigLeft/>
-          </span>
-          BACK TO TOP MANGA
-        </Link>
+        <div className="flex flex-wrap items-center gap-4">
+          <Link
+            href="/manga/top"
+            className="group inline-flex w-fit items-center gap-4 bg-zinc-900 dark:bg-zinc-100 px-6 py-3 text-xs font-black uppercase tracking-widest text-white dark:text-black transition-all hover:bg-indigo-600 dark:hover:bg-indigo-500 dark:hover:text-white border-2 border-zinc-900 dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+          >
+            <span className="transition-transform group-hover:-translate-x-1">
+              <ArrowBigLeft />
+            </span>
+            BACK TO TOP MANGA
+          </Link>
+          <AdminDetailEditButton kind="manga" malId={malId} />
+        </div>
 
         <div className="flex flex-col gap-12 md:flex-row items-start">
           <div className="flex-shrink-0 relative group self-center md:self-start">

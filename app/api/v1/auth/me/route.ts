@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/auth";
+import { isAdminEmail } from "@/lib/admin";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -9,7 +10,12 @@ export async function GET() {
       return NextResponse.json({ user: null });
     }
 
-    return NextResponse.json({ user: session.user });
+    return NextResponse.json({
+      user: {
+        ...session.user,
+        isAdmin: isAdminEmail(session.user.email),
+      },
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

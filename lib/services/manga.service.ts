@@ -388,3 +388,120 @@ export async function searchManga({ query, limit = 24 }: SearchMangaOptions) {
     .orderBy(asc(manga.rank), desc(manga.members))
     .limit(safeLimit);
 }
+
+export type MangaAdminWrite = {
+  malId: number;
+  title: string;
+  titleJapanese?: string | null;
+  titleEnglish?: string | null;
+  imageUrl?: string | null;
+  synopsis?: string | null;
+  background?: string | null;
+  score?: number | null;
+  scoredBy?: number | null;
+  rank?: number | null;
+  popularity?: number | null;
+  chapters?: number | null;
+  volumes?: number | null;
+  status?: string | null;
+  publishing?: boolean | null;
+  genres?: string[] | null;
+  themes?: string[] | null;
+  demographics?: string[] | null;
+  authors?: string[] | null;
+  serializations?: string[] | null;
+  publishedFrom?: Date | null;
+  publishedTo?: Date | null;
+  type?: string | null;
+  members?: number | null;
+  favorites?: number | null;
+};
+
+export type MangaAdminPatch = Partial<Omit<MangaAdminWrite, "malId">>;
+
+export async function adminCreateManga(payload: MangaAdminWrite) {
+  await ensureDatabase();
+
+  const existing = await getMangaByMalId(payload.malId);
+  if (existing) {
+    return { ok: false as const, error: "duplicate_mal_id" };
+  }
+
+  await db.insert(manga).values({
+    malId: payload.malId,
+    title: payload.title,
+    titleJapanese: payload.titleJapanese ?? null,
+    titleEnglish: payload.titleEnglish ?? null,
+    imageUrl: payload.imageUrl ?? null,
+    synopsis: payload.synopsis ?? null,
+    background: payload.background ?? null,
+    score: payload.score ?? null,
+    scoredBy: payload.scoredBy ?? null,
+    rank: payload.rank ?? null,
+    popularity: payload.popularity ?? null,
+    chapters: payload.chapters ?? null,
+    volumes: payload.volumes ?? null,
+    status: payload.status ?? null,
+    publishing: payload.publishing ?? null,
+    genres: payload.genres ?? null,
+    themes: payload.themes ?? null,
+    demographics: payload.demographics ?? null,
+    authors: payload.authors ?? null,
+    serializations: payload.serializations ?? null,
+    publishedFrom: payload.publishedFrom ?? null,
+    publishedTo: payload.publishedTo ?? null,
+    type: payload.type ?? null,
+    members: payload.members ?? null,
+    favorites: payload.favorites ?? null,
+    updatedAt: new Date(),
+  });
+
+  const row = await getMangaByMalId(payload.malId);
+  return { ok: true as const, row };
+}
+
+export async function adminUpdateMangaByMalId(malId: number, patch: MangaAdminPatch) {
+  await ensureDatabase();
+
+  const existing = await getMangaByMalId(malId);
+  if (!existing) {
+    return { ok: false as const, error: "not_found" };
+  }
+
+  const updates: Partial<MangaRow> = { updatedAt: new Date() };
+
+  if (patch.title !== undefined) updates.title = patch.title;
+  if (patch.titleJapanese !== undefined) updates.titleJapanese = patch.titleJapanese;
+  if (patch.titleEnglish !== undefined) updates.titleEnglish = patch.titleEnglish;
+  if (patch.imageUrl !== undefined) updates.imageUrl = patch.imageUrl;
+  if (patch.synopsis !== undefined) updates.synopsis = patch.synopsis;
+  if (patch.background !== undefined) updates.background = patch.background;
+  if (patch.score !== undefined) updates.score = patch.score;
+  if (patch.scoredBy !== undefined) updates.scoredBy = patch.scoredBy;
+  if (patch.rank !== undefined) updates.rank = patch.rank;
+  if (patch.popularity !== undefined) updates.popularity = patch.popularity;
+  if (patch.chapters !== undefined) updates.chapters = patch.chapters;
+  if (patch.volumes !== undefined) updates.volumes = patch.volumes;
+  if (patch.status !== undefined) updates.status = patch.status;
+  if (patch.publishing !== undefined) updates.publishing = patch.publishing;
+  if (patch.genres !== undefined) updates.genres = patch.genres;
+  if (patch.themes !== undefined) updates.themes = patch.themes;
+  if (patch.demographics !== undefined) updates.demographics = patch.demographics;
+  if (patch.authors !== undefined) updates.authors = patch.authors;
+  if (patch.serializations !== undefined) updates.serializations = patch.serializations;
+  if (patch.publishedFrom !== undefined) updates.publishedFrom = patch.publishedFrom;
+  if (patch.publishedTo !== undefined) updates.publishedTo = patch.publishedTo;
+  if (patch.type !== undefined) updates.type = patch.type;
+  if (patch.members !== undefined) updates.members = patch.members;
+  if (patch.favorites !== undefined) updates.favorites = patch.favorites;
+
+  const touchedFields = Object.keys(updates).filter((key) => key !== "updatedAt");
+  if (touchedFields.length === 0) {
+    return { ok: true as const, row: existing };
+  }
+
+  await db.update(manga).set(updates).where(eq(manga.malId, malId));
+
+  const row = await getMangaByMalId(malId);
+  return { ok: true as const, row };
+}

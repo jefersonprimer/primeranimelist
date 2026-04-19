@@ -493,3 +493,150 @@ export async function getAnimeBySeason({ season, year, limit }: ListAnimeBySeaso
 export function isValidAnimeSeason(value: string): value is AnimeSeason {
   return (VALID_SEASONS as readonly string[]).includes(value);
 }
+
+export type AnimeAdminWrite = {
+  malId: number;
+  title: string;
+  titleJapanese?: string | null;
+  titleEnglish?: string | null;
+  imageUrl?: string | null;
+  imageBannerDesktop?: string | null;
+  imageBannerMobile?: string | null;
+  imageLogo?: string | null;
+  imageThumbnail?: string | null;
+  imageCardCompact?: string | null;
+  synopsis?: string | null;
+  score?: number | null;
+  scoredBy?: number | null;
+  rank?: number | null;
+  popularity?: number | null;
+  episodes?: number | null;
+  status?: string | null;
+  rating?: string | null;
+  source?: string | null;
+  season?: string | null;
+  year?: number | null;
+  genres?: string[] | null;
+  studios?: string[] | null;
+  producers?: string[] | null;
+  licensors?: string[] | null;
+  themes?: string[] | null;
+  demographics?: string[] | null;
+  airedFrom?: Date | null;
+  airedTo?: Date | null;
+  isAiring?: boolean | null;
+  trailerUrl?: string | null;
+  type?: string | null;
+  members?: number | null;
+  favorites?: number | null;
+  duration?: string | null;
+};
+
+export type AnimeAdminPatch = Partial<Omit<AnimeAdminWrite, "malId">>;
+
+export async function adminCreateAnime(payload: AnimeAdminWrite) {
+  await ensureDatabase();
+
+  const existing = await getAnimeByMalId(payload.malId);
+  if (existing) {
+    return { ok: false as const, error: "duplicate_mal_id" };
+  }
+
+  await db.insert(anime).values({
+    malId: payload.malId,
+    title: payload.title,
+    titleJapanese: payload.titleJapanese ?? null,
+    titleEnglish: payload.titleEnglish ?? null,
+    imageUrl: payload.imageUrl ?? null,
+    imageBannerDesktop: payload.imageBannerDesktop ?? null,
+    imageBannerMobile: payload.imageBannerMobile ?? null,
+    imageLogo: payload.imageLogo ?? null,
+    imageThumbnail: payload.imageThumbnail ?? null,
+    imageCardCompact: payload.imageCardCompact ?? null,
+    synopsis: payload.synopsis ?? null,
+    score: payload.score ?? null,
+    scoredBy: payload.scoredBy ?? null,
+    rank: payload.rank ?? null,
+    popularity: payload.popularity ?? null,
+    episodes: payload.episodes ?? null,
+    status: payload.status ?? null,
+    rating: payload.rating ?? null,
+    source: payload.source ?? null,
+    season: payload.season ?? null,
+    year: payload.year ?? null,
+    genres: payload.genres ?? null,
+    studios: payload.studios ?? null,
+    producers: payload.producers ?? null,
+    licensors: payload.licensors ?? null,
+    themes: payload.themes ?? null,
+    demographics: payload.demographics ?? null,
+    airedFrom: payload.airedFrom ?? null,
+    airedTo: payload.airedTo ?? null,
+    isAiring: payload.isAiring ?? null,
+    trailerUrl: payload.trailerUrl ?? null,
+    type: payload.type ?? null,
+    members: payload.members ?? null,
+    favorites: payload.favorites ?? null,
+    duration: payload.duration ?? null,
+    updatedAt: new Date(),
+  });
+
+  const row = await getAnimeByMalId(payload.malId);
+  return { ok: true as const, row };
+}
+
+export async function adminUpdateAnimeByMalId(malId: number, patch: AnimeAdminPatch) {
+  await ensureDatabase();
+
+  const existing = await getAnimeByMalId(malId);
+  if (!existing) {
+    return { ok: false as const, error: "not_found" };
+  }
+
+  const updates: Partial<AnimeRow> = { updatedAt: new Date() };
+
+  if (patch.title !== undefined) updates.title = patch.title;
+  if (patch.titleJapanese !== undefined) updates.titleJapanese = patch.titleJapanese;
+  if (patch.titleEnglish !== undefined) updates.titleEnglish = patch.titleEnglish;
+  if (patch.imageUrl !== undefined) updates.imageUrl = patch.imageUrl;
+  if (patch.imageBannerDesktop !== undefined) updates.imageBannerDesktop = patch.imageBannerDesktop;
+  if (patch.imageBannerMobile !== undefined) updates.imageBannerMobile = patch.imageBannerMobile;
+  if (patch.imageLogo !== undefined) updates.imageLogo = patch.imageLogo;
+  if (patch.imageThumbnail !== undefined) updates.imageThumbnail = patch.imageThumbnail;
+  if (patch.imageCardCompact !== undefined) updates.imageCardCompact = patch.imageCardCompact;
+  if (patch.synopsis !== undefined) updates.synopsis = patch.synopsis;
+  if (patch.score !== undefined) updates.score = patch.score;
+  if (patch.scoredBy !== undefined) updates.scoredBy = patch.scoredBy;
+  if (patch.rank !== undefined) updates.rank = patch.rank;
+  if (patch.popularity !== undefined) updates.popularity = patch.popularity;
+  if (patch.episodes !== undefined) updates.episodes = patch.episodes;
+  if (patch.status !== undefined) updates.status = patch.status;
+  if (patch.rating !== undefined) updates.rating = patch.rating;
+  if (patch.source !== undefined) updates.source = patch.source;
+  if (patch.season !== undefined) updates.season = patch.season;
+  if (patch.year !== undefined) updates.year = patch.year;
+  if (patch.genres !== undefined) updates.genres = patch.genres;
+  if (patch.studios !== undefined) updates.studios = patch.studios;
+  if (patch.producers !== undefined) updates.producers = patch.producers;
+  if (patch.licensors !== undefined) updates.licensors = patch.licensors;
+  if (patch.themes !== undefined) updates.themes = patch.themes;
+  if (patch.demographics !== undefined) updates.demographics = patch.demographics;
+  if (patch.airedFrom !== undefined) updates.airedFrom = patch.airedFrom;
+  if (patch.airedTo !== undefined) updates.airedTo = patch.airedTo;
+  if (patch.isAiring !== undefined) updates.isAiring = patch.isAiring;
+  if (patch.trailerUrl !== undefined) updates.trailerUrl = patch.trailerUrl;
+  if (patch.type !== undefined) updates.type = patch.type;
+  if (patch.members !== undefined) updates.members = patch.members;
+  if (patch.favorites !== undefined) updates.favorites = patch.favorites;
+  if (patch.duration !== undefined) updates.duration = patch.duration;
+
+  const touchedFields = Object.keys(updates).filter((key) => key !== "updatedAt");
+  if (touchedFields.length === 0) {
+    return { ok: true as const, row: existing };
+  }
+
+  await db.update(anime).set(updates).where(eq(anime.malId, malId));
+
+  const row = await getAnimeByMalId(malId);
+  return { ok: true as const, row };
+}

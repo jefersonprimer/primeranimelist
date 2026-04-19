@@ -2,6 +2,7 @@ import { getAnimeByMalId } from "@/lib/services/anime.service";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AdminDetailEditButton } from "@/app/components/AdminDetailEditButton";
 
 export async function generateMetadata({ params }: { params: Promise<{ mal_id: string; title: string }> }) {
   const { mal_id } = await params;
@@ -40,13 +41,16 @@ export default async function AnimeDetailPage({ params }: { params: Promise<{ ma
   return (
     <div className="max-w-7xl mx-auto py-12 px-6">
       <div className="flex flex-col gap-8">
-        <Link
-          href="/anime/top"
-          className="inline-flex items-center gap-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
-        >
-          <span aria-hidden="true">←</span>
-          Back to Top Anime
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/anime/top"
+            className="inline-flex items-center gap-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+          >
+            <span aria-hidden="true">←</span>
+            Back to Top Anime
+          </Link>
+          <AdminDetailEditButton kind="anime" malId={malId} />
+        </div>
 
         <div className="flex flex-col gap-8 md:flex-row">
           <div className="flex-shrink-0">
