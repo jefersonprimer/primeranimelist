@@ -16,7 +16,7 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
       // Use a 2px buffer to handle subpixel rounding issues
-      setCanScrollLeft(scrollLeft > 2); 
+      setCanScrollLeft(scrollLeft > 2);
       setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 2);
     }
   };
@@ -35,7 +35,7 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
     if (scrollRef.current) {
       const { clientWidth } = scrollRef.current;
       // Scroll exactly 5 cards (plus gaps)
-      const scrollAmount = clientWidth * 0.8; 
+      const scrollAmount = clientWidth * 0.8;
       scrollRef.current.scrollBy({
         left: direction === "left" ? -scrollAmount : scrollAmount,
         behavior: "smooth",
@@ -56,7 +56,11 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
           aria-label="Scroll left"
         >
           <div className="max-w-7xl w-full mx-auto px-6 flex justify-start">
-             <ChevronLeft size={56} strokeWidth={2.5} className="-ml-4 -translate-y-6 translate-x-3" />
+            <ChevronLeft
+              size={56}
+              strokeWidth={2.5}
+              className="-ml-4 -translate-y-6 translate-x-3"
+            />
           </div>
         </button>
       )}
@@ -70,7 +74,11 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
           aria-label="Scroll right"
         >
           <div className="max-w-7xl w-full mx-auto px-6 flex justify-end">
-            <ChevronRight size={56} strokeWidth={2.5} className="-mr-4 -translate-y-6 -translate-x-3" />
+            <ChevronRight
+              size={56}
+              strokeWidth={2.5}
+              className="-mr-4 -translate-y-6 -translate-x-3"
+            />
           </div>
         </button>
       )}
@@ -85,7 +93,7 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
           scrollPaddingLeft: dynamicPadding,
           scrollPaddingRight: dynamicPadding,
         }}
-        className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory scroll-smooth"
+        className="flex gap-2 lg:gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory scroll-smooth"
       >
         {children}
       </div>
