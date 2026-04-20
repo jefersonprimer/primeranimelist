@@ -83,7 +83,7 @@ function validatePayload(
   validateProgress("Chapters read", chaptersRead, totalChapters);
 
   let score: number | null = null;
-  if (payload.score !== null && payload.score !== undefined && payload.score !== "") {
+  if (payload.score !== null && payload.score !== undefined) {
     score = Number(payload.score);
     if (Number.isNaN(score) || score < 0 || score > 10) {
       throw new Error("Your score must be between 0 and 10");
