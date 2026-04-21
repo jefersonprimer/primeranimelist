@@ -166,6 +166,29 @@ async function createMangaWatchlistTable() {
   `);
 }
 
+async function createPostsTable() {
+  await db.execute(sql`
+    create table if not exists "posts" (
+      "id" serial primary key,
+      "slug" text not null unique,
+      "title" text not null,
+      "excerpt" text,
+      "cover_image_url" text,
+      "content_markdown" text not null,
+      "is_published" boolean not null default false,
+      "published_at" timestamp,
+      "created_by_user_id" integer references "users"("id") on delete set null,
+      "created_at" timestamp default now(),
+      "updated_at" timestamp default now()
+    )
+  `);
+
+  await db.execute(sql`
+    create index if not exists "posts_slug_idx"
+    on "posts" ("slug")
+  `);
+}
+
 export async function ensureDatabase() {
   if (!databaseReady) {
     databaseReady = (async () => {
@@ -174,6 +197,7 @@ export async function ensureDatabase() {
       await createAuthTables();
       await createWatchlistTable();
       await createMangaWatchlistTable();
+      await createPostsTable();
     })();
   }
 

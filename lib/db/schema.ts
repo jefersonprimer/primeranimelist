@@ -148,3 +148,23 @@ export const mangaWatchlist = pgTable(
     userMangaUnique: uniqueIndex("manga_watchlist_user_manga_idx").on(table.userId, table.mangaId),
   })
 );
+
+export const posts = pgTable(
+  "posts",
+  {
+    id: serial("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    excerpt: text("excerpt"),
+    coverImageUrl: text("cover_image_url"),
+    contentMarkdown: text("content_markdown").notNull(),
+    isPublished: boolean("is_published").notNull().default(false),
+    publishedAt: timestamp("published_at"),
+    createdByUserId: integer("created_by_user_id").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  },
+  (table) => ({
+    slugUnique: uniqueIndex("posts_slug_idx").on(table.slug),
+  })
+);

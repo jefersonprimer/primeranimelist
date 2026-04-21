@@ -96,6 +96,14 @@ export default function Header() {
                 Season Anime
               </Link>
             </li>
+            <li className="h-full">
+              <Link
+                href="/news"
+                className="flex h-full items-center px-4 text-base font-medium text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
+              >
+                News
+              </Link>
+            </li>
           </ul>
         </nav>
         <div className="flex h-full flex-row items-center">

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
+import Link from "next/link";
 import { useAuth } from "@/lib/context/AuthContext";
 import { AdminMediaModal } from "./AdminMediaModal";
 
@@ -28,6 +29,12 @@ export function AdminNavActions() {
   return (
     <>
       <div className="flex h-full items-center gap-1 border-l border-zinc-800 pl-3">
+        <Link
+          href="/admin/news"
+          className="flex h-9 items-center rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 text-xs font-semibold text-zinc-100 transition hover:border-indigo-500 hover:text-white"
+        >
+          News
+        </Link>
         <button
           type="button"
           onClick={() => setModal({ kind: "anime", mode: "create" })}
