@@ -750,7 +750,7 @@ export function AdminMediaModal({ open, onClose, kind, mode, malId, onSaved }: A
                     />
                   </label>
                   <label className="flex flex-col gap-1 text-sm text-zinc-300">
-                    Miniatura (URL)
+                    Thumbnail (URL)
                     <input
                       className={fieldClass}
                       value={form.image_thumbnail}
