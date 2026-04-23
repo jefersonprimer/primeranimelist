@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Bookmark, ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { RatingIcon10 } from "./icons/Rating10Icon";
 import { RatingIcon12 } from "./icons/Rating12Icon";
@@ -64,7 +64,9 @@ export function HomeHeroAnimeCarouselClient({
   items,
 }: HomeHeroAnimeCarouselClientProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [progressPercent, setProgressPercent] = useState(0);
   const total = items.length;
+  const autoplayDurationMs = 10000;
 
   const safeIndex = useMemo(() => {
     if (total === 0) return 0;
@@ -72,14 +74,34 @@ export function HomeHeroAnimeCarouselClient({
   }, [currentIndex, total]);
 
   useEffect(() => {
-    if (total <= 1) return;
+    if (total <= 1) {
+      setProgressPercent(0);
+      return;
+    }
 
-    const intervalId = window.setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % total);
-    }, 10000);
+    let animationFrameId = 0;
+    let startedAt = performance.now();
 
-    return () => window.clearInterval(intervalId);
-  }, [total]);
+    const tick = (now: number) => {
+      const elapsed = now - startedAt;
+      const nextProgress = Math.min((elapsed / autoplayDurationMs) * 100, 100);
+      setProgressPercent(nextProgress);
+
+      if (elapsed >= autoplayDurationMs) {
+        setCurrentIndex((prev) => (prev + 1) % total);
+        return;
+      }
+
+      animationFrameId = window.requestAnimationFrame(tick);
+    };
+
+    animationFrameId = window.requestAnimationFrame((now) => {
+      startedAt = now;
+      tick(now);
+    });
+
+    return () => window.cancelAnimationFrame(animationFrameId);
+  }, [autoplayDurationMs, currentIndex, total]);
 
   if (total === 0) return null;
 
@@ -103,7 +125,7 @@ export function HomeHeroAnimeCarouselClient({
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/65 to-black/30" />
 
-          <div className="absolute inset-0 flex items-center -trabs p-8 sm:p-10 md:p-12">
+          <div className="absolute -translate-y-20 inset-0 flex items-center mx-auto w-full max-w-7xl -trabs p-8 sm:p-10 md:py-12">
             <div className="max-w-md text-white">
               <Link
                 href={`/anime/${active.malId}/${slug}`}
@@ -134,6 +156,50 @@ export function HomeHeroAnimeCarouselClient({
               <p className="line-clamp-4 text-sm leading-relaxed text-zinc-100 sm:text-base">
                 {active.synopsis || "No synopsis available."}
               </p>
+
+              <div className="mt-5 mb-12 flex items-center gap-3">
+                <Link
+                  href={`/anime/${active.malId}/${slug}`}
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-xs font-semibold tracking-wide text-black transition hover:bg-zinc-200 sm:text-sm"
+                >
+                  <Play size={16} fill="currentColor" />
+                  <span>START WATCHING E1</span>
+                </Link>
+                <button
+                  type="button"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/60 text-white transition hover:bg-white/15"
+                  aria-label="Add anime to watchlist"
+                >
+                  <Bookmark size={16} />
+                </button>
+              </div>
+
+              {total > 1 ? (
+                <div
+                  className="mt-4 flex items-center gap-2"
+                  aria-hidden="true"
+                >
+                  {items.map((_, index) => {
+                    const isActive = index === safeIndex;
+
+                    return (
+                      <div
+                        key={`hero-dot-${index}`}
+                        className={`relative h-1.5 overflow-hidden rounded-full bg-white/35 transition-all duration-300 ${
+                          isActive ? "w-10" : "w-5"
+                        }`}
+                      >
+                        <div
+                          className="absolute inset-y-0 left-0 rounded-full bg-white transition-[width] duration-75 ease-linear"
+                          style={{
+                            width: `${isActive ? progressPercent : 0}%`,
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : null}
             </div>
           </div>
 
@@ -144,7 +210,7 @@ export function HomeHeroAnimeCarouselClient({
                 onClick={() =>
                   setCurrentIndex((prev) => (prev - 1 + total) % total)
                 }
-                className="absolute top-1/2 z-20 -translate-y-1/2  p-2 text-white transition hover:cursor-pointer"
+                className="absolute left-3 top-1/2 z-20 -translate-y-24  p-2 text-white transition hover:cursor-pointer"
                 aria-label="Previous anime"
               >
                 <ChevronLeft size={34} />
@@ -152,7 +218,7 @@ export function HomeHeroAnimeCarouselClient({
               <button
                 type="button"
                 onClick={() => setCurrentIndex((prev) => (prev + 1) % total)}
-                className="absolute right-0 top-1/2 z-20 -translate-y-1/2  p-2 text-white transition hover:cursor-pointer"
+                className="absolute right-3 top-1/2 z-20 -translate-y-24  p-2 text-white transition hover:cursor-pointer"
                 aria-label="Next anime"
               >
                 <ChevronRight size={34} />
