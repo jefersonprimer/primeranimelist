@@ -155,6 +155,7 @@ export const posts = pgTable(
     id: serial("id").primaryKey(),
     slug: text("slug").notNull().unique(),
     title: text("title").notNull(),
+    category: text("category").notNull().default("general"),
     excerpt: text("excerpt"),
     coverImageUrl: text("cover_image_url"),
     contentMarkdown: text("content_markdown").notNull(),

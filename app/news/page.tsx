@@ -1,63 +1,100 @@
-import Link from "next/link";
-import { listPublishedPosts, serializePost } from "@/lib/services/post.service";
-import { getSession } from "@/lib/auth";
-import { isAdminEmail } from "@/lib/admin";
+'use client';
 
-function formatDate(iso: string | null) {
-  if (!iso) return "Nao publicado";
-  return new Intl.DateTimeFormat("pt-BR", { dateStyle: "long" }).format(new Date(iso));
-}
+import useFetchPosts from './hooks/useFetchPosts';
+import Banner from './components/Banner';
+import LatestNews from './components/latest-news/LatestNews';
+import FeaturedContent from './components/post/FeaturedContent';
+import SpecialArticles from './components/post/SpecialArticles';
+import AdBanner from './components/post/AdBanner';
+import AnimeSeriesCard from './components/AnimeSeriesCard';
+import QuizzesAndTests from './components/post/QuizzesAndTests';
+import Guides from './components/post/Guides';
+import { useTheme } from './context/ThemeContext';
+import CustomTagPanel from './components/CustomTagPanel';
+import { useRef } from 'react';
+import Link from 'next/link'
+import Loading from '../loading';
 
-export default async function NewsPage() {
-  const [{ items }, session] = await Promise.all([
-    listPublishedPosts({ page: 1, limit: 24 }),
-    getSession(),
-  ]);
-  const posts = items.map(serializePost);
-  const isAdmin = isAdminEmail(session?.user.email);
+const HomePage = () => {
+  const { isDark } = useTheme(); 
+
+  const { posts, loading, error } = useFetchPosts();
+  const topRef = useRef<HTMLDivElement>(null);
+
+  const scrollToTop = () => {
+    console.log('Scrolling to top...');
+    if (topRef.current) {
+      topRef.current.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo(0, 0);
+    }
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return <p className="text-center text-lg text-red-500">{error}</p>;
+  }
 
   return (
-    <main className="mx-auto min-h-screen max-w-5xl px-6 py-10">
-      <div className="mb-8 flex items-center justify-between gap-4">
-        <div>
-          <p className="text-sm uppercase tracking-wide text-indigo-300">News</p>
-          <h1 className="text-3xl font-black text-zinc-100">Blog & Noticias</h1>
-          <p className="mt-2 text-zinc-400">Atualizacoes, anuncios e guias da plataforma.</p>
-        </div>
-        {isAdmin && (
-          <Link href="/admin/news/new" className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white">
-            Novo post
-          </Link>
-        )}
-      </div>
+    <div className="relative">
+      <div ref={topRef} className="max-w-[1200px] w-full mx-auto px-4">
+        <Link href="http://localhost:3001/watch/a98c2f98-db7a-4e9d-acb7-ecdd36042ea5/maomao">
+          <Banner
+            src="https://a.storyblok.com/f/178900/2304x154/9683340ebe/pt_byebyeearth_s2_cr_desktop_2304x154.png/m/filters:quality(95)format(webp)"
+            alt="Bye Bye, Earth"
+            width={2304}
+            height={154}
+          />
+        </Link>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-12 gap-4 my-8">
+          {/* Primeira coluna - Últimas Notícias */}
+          <div className="md:col-span-1 lg:col-span-3 ">
+            <LatestNews />
+          </div>
 
-      {posts.length === 0 ? (
-        <div className="rounded-2xl border border-zinc-800 bg-[#181818] p-8 text-zinc-300">
-          Ainda nao existem posts publicados.
+          {/* Segunda coluna - Destaques e Anúncios */}
+          <div className={`md:col-span-1 lg:col-span-6 px-4 border-l border-r ${isDark ? "border-[#4A4E58]" : "border-[#A0A0A0]"}`}>
+            <FeaturedContent />
+          </div>
+
+          {/* Terceira coluna - Artigos Especiais */}
+          <div className="md:col-span-1 lg:col-span-3">
+            <SpecialArticles/>
+          </div>
         </div>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2">
-          {posts.map((post) => (
-            <article key={post.id} className="overflow-hidden rounded-2xl border border-zinc-800 bg-[#181818]">
-              {post.cover_image_url && (
-                <img src={post.cover_image_url} alt={post.title} className="h-48 w-full object-cover" />
-              )}
-              <div className="space-y-3 p-5">
-                <p className="text-xs uppercase tracking-wide text-zinc-400">{formatDate(post.published_at)}</p>
-                <h2 className="text-xl font-bold text-zinc-100">
-                  <Link href={`/news/${post.slug}`} className="hover:text-indigo-300">
-                    {post.title}
-                  </Link>
-                </h2>
-                {post.excerpt && <p className="line-clamp-3 text-sm text-zinc-300">{post.excerpt}</p>}
-                <Link href={`/news/${post.slug}`} className="inline-flex text-sm font-semibold text-indigo-300 hover:text-indigo-200">
-                  Ler post
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
-    </main>
+
+        <Banner
+          src="https://a.storyblok.com/f/178900/2304x154/2fb84820aa/q22025_crnews_bannerplacements_pt-br-cr_desktop_2304x154.png/m/filters:quality(95)format(webp)"
+          alt="Temporada de janeiro de 2025"
+          width={2304}
+          height={154}
+        />
+        <AdBanner />
+      </div>
+      <div className='my-14'>
+        <AnimeSeriesCard />
+      </div>
+      <QuizzesAndTests />
+      <CustomTagPanel />
+      <Guides />
+      
+      {/* Botão Voltar ao Topo */}
+      <div className="flex justify-center my-8">
+        <button
+          onClick={() => scrollToTop()}
+          type="button"
+          className={`px-4 py-2 cursor-pointer text-[#008382] border border-[#008382] hover:bg-[#008382] hover:text-white transition-colors duration-200`}
+        >
+          <span>Voltar para o topo</span>
+        </button>
+      </div>
+    </div>
   );
-}
+};
+
+export default HomePage;
+

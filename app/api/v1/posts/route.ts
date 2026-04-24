@@ -19,6 +19,7 @@ function slugify(input: string) {
 
 function readPostPayload(body: Record<string, unknown>): PostWritePayload | { error: string } {
   const title = parseString(body.title);
+  const category = parseString(body.category);
   const contentMarkdown = parseString(body.content_markdown ?? body.contentMarkdown);
   const requestedSlug = parseString(body.slug);
 
@@ -27,6 +28,9 @@ function readPostPayload(body: Record<string, unknown>): PostWritePayload | { er
   }
   if (!contentMarkdown) {
     return { error: "Content is required" };
+  }
+  if (!category) {
+    return { error: "Category is required" };
   }
 
   const slug = requestedSlug ?? slugify(title);
@@ -37,6 +41,7 @@ function readPostPayload(body: Record<string, unknown>): PostWritePayload | { er
   return {
     title,
     slug,
+    category,
     excerpt: parseString(body.excerpt),
     coverImageUrl: parseString(body.cover_image_url ?? body.coverImageUrl),
     contentMarkdown,

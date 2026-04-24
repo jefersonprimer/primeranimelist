@@ -172,6 +172,7 @@ async function createPostsTable() {
       "id" serial primary key,
       "slug" text not null unique,
       "title" text not null,
+      "category" text not null default 'general',
       "excerpt" text,
       "cover_image_url" text,
       "content_markdown" text not null,
@@ -186,6 +187,11 @@ async function createPostsTable() {
   await db.execute(sql`
     create index if not exists "posts_slug_idx"
     on "posts" ("slug")
+  `);
+
+  await db.execute(sql`
+    alter table "posts"
+    add column if not exists "category" text not null default 'general'
   `);
 }
 

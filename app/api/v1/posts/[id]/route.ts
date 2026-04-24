@@ -30,6 +30,11 @@ function buildPostPatch(body: Record<string, unknown>): PostPatchPayload | { err
     if (!slug) return { error: "Slug cannot be empty" };
     patch.slug = slug;
   }
+  if ("category" in body) {
+    const category = parseString(body.category);
+    if (!category) return { error: "Category cannot be empty" };
+    patch.category = category;
+  }
   if ("excerpt" in body) patch.excerpt = parseString(body.excerpt);
   if ("cover_image_url" in body || "coverImageUrl" in body) {
     patch.coverImageUrl = parseString(body.cover_image_url ?? body.coverImageUrl);

@@ -7,6 +7,7 @@ import { MarkdownRenderer } from "./MarkdownRenderer";
 type PostFormData = {
   title: string;
   slug: string;
+  category: string;
   excerpt: string;
   cover_image_url: string;
   content_markdown: string;
@@ -32,6 +33,7 @@ export function AdminPostForm({ mode, postId, initialData }: AdminPostFormProps)
   const [form, setForm] = useState<PostFormData>({
     title: initialData?.title ?? "",
     slug: initialData?.slug ?? "",
+    category: initialData?.category ?? "",
     excerpt: initialData?.excerpt ?? "",
     cover_image_url: initialData?.cover_image_url ?? "",
     content_markdown: initialData?.content_markdown ?? "",
@@ -115,6 +117,17 @@ export function AdminPostForm({ mode, postId, initialData }: AdminPostFormProps)
               setAutoSlug(false);
               setForm((prev) => ({ ...prev, slug: event.target.value }));
             }}
+            required
+          />
+        </label>
+
+        <label className="flex flex-col gap-1 text-sm text-zinc-300 md:col-span-2">
+          Categoria
+          <input
+            className={inputClass}
+            value={form.category}
+            onChange={(event) => setForm((prev) => ({ ...prev, category: event.target.value }))}
+            placeholder="ex: noticias, guides, announcements"
             required
           />
         </label>

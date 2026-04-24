@@ -9,6 +9,7 @@ type PostRow = InferSelectModel<typeof posts>;
 export type PostWritePayload = {
   title: string;
   slug: string;
+  category: string;
   excerpt?: string | null;
   coverImageUrl?: string | null;
   contentMarkdown: string;
@@ -27,6 +28,7 @@ export function serializePost(row: PostRow) {
     id: row.id,
     slug: row.slug,
     title: row.title,
+    category: row.category,
     excerpt: row.excerpt,
     cover_image_url: row.coverImageUrl,
     content_markdown: row.contentMarkdown,
@@ -103,6 +105,7 @@ export async function adminCreatePost(payload: PostWritePayload) {
   await db.insert(posts).values({
     slug: payload.slug,
     title: payload.title,
+    category: payload.category,
     excerpt: payload.excerpt ?? null,
     coverImageUrl: payload.coverImageUrl ?? null,
     contentMarkdown: payload.contentMarkdown,
@@ -136,6 +139,7 @@ export async function adminUpdatePostById(id: number, patch: PostPatchPayload) {
 
   if (patch.title !== undefined) updates.title = patch.title;
   if (patch.slug !== undefined) updates.slug = patch.slug;
+  if (patch.category !== undefined) updates.category = patch.category;
   if (patch.excerpt !== undefined) updates.excerpt = patch.excerpt;
   if (patch.coverImageUrl !== undefined) updates.coverImageUrl = patch.coverImageUrl;
   if (patch.contentMarkdown !== undefined) updates.contentMarkdown = patch.contentMarkdown;

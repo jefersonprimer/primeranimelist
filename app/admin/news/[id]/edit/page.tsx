@@ -40,6 +40,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
         initialData={{
           title: post.title,
           slug: post.slug,
+          category: post.category,
           excerpt: post.excerpt ?? "",
           cover_image_url: post.coverImageUrl ?? "",
           content_markdown: post.contentMarkdown,
