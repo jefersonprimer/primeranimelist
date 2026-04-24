@@ -1,7 +1,13 @@
-export function RatingIcon16() {
+interface Props {
+  size: number;
+}
+
+export function RatingIcon16({ size }: Props) {
   return (
     <svg
-      className="h-4 w-4 shrink-0"
+      className="shrink-0"
+      width={size}
+      height={size}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 64 64"
       data-t="rating-a16-svg"

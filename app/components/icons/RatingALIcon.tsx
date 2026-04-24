@@ -1,7 +1,13 @@
-export default function RatingIconAL() {
+interface Props {
+  size: number;
+}
+
+export function RatingIconAL({ size }: Props) {
   return (
     <svg
-      className="h-4 w-4 shrink-0"
+      className="shrink-0"
+      width={size}
+      height={size}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 64 64"
       data-t="rating-al-svg"

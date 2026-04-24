@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Search, LogOut, Bookmark, Pencil } from "lucide-react";
+import { Search, LogOut, Bookmark, Pencil, Play } from "lucide-react";
 import { useAuth } from "@/lib/context/AuthContext";
 import { DropdownIcon } from "./icons/DropdownIcon";
 import { AdminNavActions } from "./AdminNavActions";
@@ -57,17 +57,52 @@ export default function Header() {
     };
   }, [isUserModalOpen]);
 
+  if (loading) {
+    return (
+      <header className="h-16 bg-[#272727] px-6">
+        <div className="mx-auto flex h-full max-w-7xl flex-row items-center justify-between animate-pulse">
+          <div className="flex flex-row items-center gap-4">
+            <div className="h-9 w-9 rounded-lg bg-zinc-700/60" />
+            <div className="flex flex-col gap-1">
+              <div className="h-4 w-20 bg-zinc-700/60 rounded" />
+              <div className="h-2 w-16 bg-zinc-700/60 rounded" />
+            </div>
+          </div>
+          
+          <nav className="hidden md:flex flex-1 px-6">
+            <div className="flex gap-4">
+              <div className="h-4 w-20 bg-zinc-700/60 rounded" />
+              <div className="h-4 w-20 bg-zinc-700/60 rounded" />
+              <div className="h-4 w-24 bg-zinc-700/60 rounded" />
+              <div className="h-4 w-16 bg-zinc-700/60 rounded" />
+            </div>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <div className="h-6 w-6 bg-zinc-700/60 rounded" />
+            <div className="h-9 w-9 rounded-full bg-zinc-700/60" />
+          </div>
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header className="h-16 bg-[#272727] px-6">
       <div className="mx-auto flex h-full max-w-7xl flex-row items-center justify-between">
         <div className="flex flex-row items-center gap-4">
-          <Link href="/" className="flex flex-row items-center gap-3">
-            <div className="bg-indigo-600 text-white font-bold p-2 rounded-md shadow-md w-11 h-11 flex items-center justify-center text-lg">
-              PAL
+          <Link href="/" className="flex flex-row items-center gap-3 group">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 transition-transform group-hover:scale-105 group-hover:rotate-3 shadow-lg shadow-indigo-500/20">
+              <Play className="fill-white text-white ml-0.5" size={20} />
             </div>
-            <span className="text-xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
-              𝑷𝒓𝒊𝒎𝒆𝒓𝑨𝒏𝒊𝒎𝒆𝑳𝒊𝒔𝒕
-            </span>
+            <div className="flex flex-col leading-none">
+              <span className="text-lg font-black tracking-tight text-white uppercase">
+                Primer
+              </span>
+              <span className="text-[9px] font-bold tracking-[0.25em] text-indigo-400 uppercase">
+                AnimeList
+              </span>
+            </div>
           </Link>
         </div>
         <nav className="flex h-full flex-1 px-6">
@@ -117,12 +152,7 @@ export default function Header() {
             <Search size={22} />
           </Link>
 
-          {loading ? (
-            <div
-              className="h-10 w-24 rounded-full bg-zinc-700/60"
-              aria-hidden="true"
-            />
-          ) : user ? (
+          {user ? (
             <div className="flex h-full items-center">
               <Link
                 href="/watchlist"

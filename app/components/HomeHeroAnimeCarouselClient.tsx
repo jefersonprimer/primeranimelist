@@ -9,7 +9,7 @@ import { RatingIcon12 } from "./icons/Rating12Icon";
 import { RatingIcon14 } from "./icons/Rating14Icon";
 import { RatingIcon16 } from "./icons/Rating16Icon";
 import { RatingIcon18 } from "./icons/Rating18Icon";
-import RatingIconAL from "./icons/RatingALIcon";
+import { RatingIconAL } from "./icons/RatingALIcon";
 
 type HeroAnimeItem = {
   malId: number;
@@ -34,27 +34,27 @@ function getRatingIcon(rating: string | null) {
     /^rx\b/.test(normalizedRating) ||
     /hentai|adult|18\+|r18|a18|18 anos/.test(normalizedRating)
   ) {
-    return <RatingIcon18 />;
+    return <RatingIcon18 size={20} />;
   }
 
   if (/^r\b|r\+|nudity|17\+|a16|16 anos|mature/.test(normalizedRating)) {
-    return <RatingIcon16 />;
+    return <RatingIcon16 size={20} />;
   }
 
   if (/pg-13|teens|13\+|a14|14 anos/.test(normalizedRating)) {
-    return <RatingIcon14 />;
+    return <RatingIcon14 size={20} />;
   }
 
   if (/kids|children|a12|12 anos/.test(normalizedRating)) {
-    return <RatingIcon12 />;
+    return <RatingIcon12 size={20} />;
   }
 
   if (/^pg\b|a10|10 anos/.test(normalizedRating)) {
-    return <RatingIcon10 />;
+    return <RatingIcon10 size={20} />;
   }
 
   if (/^g\b|all ages|livre/.test(normalizedRating)) {
-    return <RatingIconAL />;
+    return <RatingIconAL size={20} />;
   }
 
   return null;
@@ -125,7 +125,7 @@ export function HomeHeroAnimeCarouselClient({
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/65 to-black/30" />
 
-          <div className="absolute -translate-y-20 inset-0 flex items-center mx-auto w-full max-w-7xl -trabs p-8 sm:p-10 md:py-12">
+          <div className="absolute -translate-y-20 inset-0 flex items-center mx-auto w-full max-w-7xl -trabs p-8 sm:py-10 md:py-12">
             <div className="max-w-md text-white">
               <Link
                 href={`/anime/${active.malId}/${slug}`}
@@ -148,29 +148,35 @@ export function HomeHeroAnimeCarouselClient({
                 )}
               </Link>
 
-              <div className="mb-4 flex items-center gap-3 text-sm text-zinc-200 sm:text-base">
+              <div className="mb-4 flex items-center gap-1 text-sm text-zinc-200">
                 {ratingIcon}
+                <span
+                  className="flex items-center text-[0.8rem] relative pl-[14px] 
+                      before:content-['◆'] before:text-[#A0A0A0] before:text-[0.5rem] 
+                      before:absolute before:left-[4px] before:top-1/2 before:-translate-y-1/2 
+                      before:mr-[8px] first:before:hidden"
+                ></span>
                 <p className="line-clamp-1">{genresText}</p>
               </div>
 
-              <p className="line-clamp-4 text-sm leading-relaxed text-zinc-100 sm:text-base">
+              <p className="line-clamp-4 text-sm leading-relaxed text-[#bbb] sm:text-base">
                 {active.synopsis || "No synopsis available."}
               </p>
 
-              <div className="mt-5 mb-12 flex items-center gap-3">
+              <div className="mt-5 mb-12 flex items-center gap-2">
                 <Link
                   href={`/anime/${active.malId}/${slug}`}
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-xs font-semibold tracking-wide text-black transition hover:bg-zinc-200 sm:text-sm"
+                  className="inline-flex items-center gap-2 bg-white px-5 py-2 text-xs font-semibold tracking-wide text-black transition hover:bg-zinc-200 sm:text-sm"
                 >
-                  <Play size={16} fill="currentColor" />
+                  <Play size={24} />
                   <span>START WATCHING E1</span>
                 </Link>
                 <button
                   type="button"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/60 text-white transition hover:bg-white/15"
+                  className="inline-flex h-10 w-10 items-center justify-center border border-white/60 text-white transition hover:bg-white/1 hover:cursor-pointer"
                   aria-label="Add anime to watchlist"
                 >
-                  <Bookmark size={16} />
+                  <Bookmark size={24} />
                 </button>
               </div>
 
@@ -210,18 +216,18 @@ export function HomeHeroAnimeCarouselClient({
                 onClick={() =>
                   setCurrentIndex((prev) => (prev - 1 + total) % total)
                 }
-                className="absolute left-3 top-1/2 z-20 -translate-y-24  p-2 text-white transition hover:cursor-pointer"
+                className="absolute left-3 top-1/2 z-20 -translate-y-27 p-2 text-white transition hover:text-[#41414166] hover:cursor-pointer"
                 aria-label="Previous anime"
               >
-                <ChevronLeft size={34} />
+                <ChevronLeft size={38} />
               </button>
               <button
                 type="button"
                 onClick={() => setCurrentIndex((prev) => (prev + 1) % total)}
-                className="absolute right-3 top-1/2 z-20 -translate-y-24  p-2 text-white transition hover:cursor-pointer"
+                className="absolute right-3 top-1/2 z-20 -translate-y-27  p-2 text-white transition hover:text-[#41414166]  hover:cursor-pointer"
                 aria-label="Next anime"
               >
-                <ChevronRight size={34} />
+                <ChevronRight size={38} />
               </button>
             </>
           ) : null}

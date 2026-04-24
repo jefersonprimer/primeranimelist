@@ -1,10 +1,16 @@
-export function RatingIcon14() {
+interface Props {
+  size: number;
+}
+
+export function RatingIcon14({ size }: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
+      className="shrink-0"
+      width={size}
+      height={size}
       viewBox="0 0 64 64"
       aria-hidden="true"
-      className="h-4 w-4 shrink-0"
     >
       <path
         d="m62.37 4.31-.019-.035c-.363-1.252-1.451-2.322-2.74-2.685h-.035c-.345-.109-.762-.127-1.143-.127H5.604c-.326 0-.708.018-1.016.09h-.036c-1.67.345-3.012 1.96-3.084 3.647v22.186c0 10.195.018 20.734 0 31.11v.073c-.055.962.344 1.941 1.07 2.721.726.78 1.687 1.234 2.649 1.252h53.246c.29 0 .67-.018 1.016-.09 1.778-.418 3.174-2.177 3.084-3.919V6.977c-.018-.254 0-.507 0-.743.018-.69.036-1.36-.146-1.887l-.018-.036z"

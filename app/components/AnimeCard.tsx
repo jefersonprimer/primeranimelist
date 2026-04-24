@@ -9,7 +9,7 @@ import { RatingIcon12 } from "./icons/Rating12Icon";
 import { RatingIcon14 } from "./icons/Rating14Icon";
 import { RatingIcon16 } from "./icons/Rating16Icon";
 import { RatingIcon18 } from "./icons/Rating18Icon";
-import RatingIconAL from "./icons/RatingALIcon";
+import { RatingIconAL } from "./icons/RatingALIcon";
 import { WatchlistButton } from "./WatchlistButton";
 import {
   WATCHLIST_UPDATED_EVENT,
@@ -75,27 +75,27 @@ function getRatingIcon(rating: string | null) {
     /^rx\b/.test(normalizedRating) ||
     /hentai|adult|18\+|r18|a18|18 anos/.test(normalizedRating)
   ) {
-    return <RatingIcon18 />;
+    return <RatingIcon18 size={16} />;
   }
 
   if (/^r\b|r\+|nudity|17\+|a16|16 anos|mature/.test(normalizedRating)) {
-    return <RatingIcon16 />;
+    return <RatingIcon16 size={16} />;
   }
 
   if (/pg-13|teens|13\+|a14|14 anos/.test(normalizedRating)) {
-    return <RatingIcon14 />;
+    return <RatingIcon14 size={16} />;
   }
 
   if (/kids|children|a12|12 anos/.test(normalizedRating)) {
-    return <RatingIcon12 />;
+    return <RatingIcon12 size={16} />;
   }
 
   if (/^pg\b|a10|10 anos/.test(normalizedRating)) {
-    return <RatingIcon10 />;
+    return <RatingIcon10 size={16} />;
   }
 
   if (/^g\b|all ages|livre/.test(normalizedRating)) {
-    return <RatingIconAL />;
+    return <RatingIconAL size={16} />;
   }
 
   return null;
