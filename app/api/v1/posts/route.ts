@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { parseBoolean, parseFiniteInt, parseString, parseStringArrayField, requireAdminApiUser } from "@/lib/admin-api";
+import { estimateReadTimeFromMarkdown } from "@/lib/read-time";
 import {
   adminCreatePost,
   listAllPostsForAdmin,
@@ -62,7 +63,7 @@ function readPostPayload(body: Record<string, unknown>): PostWritePayload | { er
     coverImage: parseString(body.cover_image ?? body.coverImage),
     tags: parseStringArrayField(body.tags),
     author: parseAuthorField(body.author),
-    readTime: parseFiniteInt(body.read_time ?? body.readTime),
+    readTime: parseFiniteInt(body.read_time ?? body.readTime) ?? estimateReadTimeFromMarkdown(contentMarkdown),
     excerpt: parseString(body.excerpt ?? body.summary),
     coverImageUrl: parseString(body.cover_image_url ?? body.coverImageUrl ?? body.cover_image ?? body.coverImage),
     contentMarkdown,

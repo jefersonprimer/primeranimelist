@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { parseBoolean, parseFiniteInt, parseString, parseStringArrayField, requireAdminApiUser } from "@/lib/admin-api";
 import { adminUpdatePostById, getPostById, serializePost, type PostPatchPayload } from "@/lib/services/post.service";
+import { estimateReadTimeFromMarkdown } from "@/lib/read-time";
 
 function slugify(input: string) {
   return input
@@ -72,6 +73,9 @@ function buildPostPatch(body: Record<string, unknown>): PostPatchPayload | { err
     const content = parseString(body.content_markdown ?? body.contentMarkdown);
     if (!content) return { error: "Content cannot be empty" };
     patch.contentMarkdown = content;
+    if (!("read_time" in body || "readTime" in body)) {
+      patch.readTime = estimateReadTimeFromMarkdown(content);
+    }
   }
   if ("is_published" in body || "isPublished" in body) {
     patch.isPublished = parseBoolean(body.is_published ?? body.isPublished) ?? false;

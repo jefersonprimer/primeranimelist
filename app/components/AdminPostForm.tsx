@@ -158,13 +158,14 @@ export function AdminPostForm({ mode, postId, initialData }: AdminPostFormProps)
         </label>
 
         <label className="flex flex-col gap-1 text-sm text-zinc-300">
-          Read time (min)
+          Read time (min, vazio = automatico)
           <input
             className={inputClass}
             type="number"
             min={0}
             value={form.read_time}
             onChange={(event) => setForm((prev) => ({ ...prev, read_time: event.target.value }))}
+            placeholder="Calculado pelo conteudo"
           />
         </label>
 
