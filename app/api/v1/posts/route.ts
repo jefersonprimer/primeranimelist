@@ -59,7 +59,6 @@ function readPostPayload(body: Record<string, unknown>): PostWritePayload | { er
     slug,
     category,
     summary: parseString(body.summary),
-    content: parseString(body.content),
     coverImage: parseString(body.cover_image ?? body.coverImage),
     tags: parseStringArrayField(body.tags),
     author: parseAuthorField(body.author),

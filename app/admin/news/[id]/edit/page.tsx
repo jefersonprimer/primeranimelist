@@ -50,7 +50,6 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
           title: post.title,
           slug: post.slug,
           category: post.category,
-          content: post.content ?? "",
           tags: post.tags?.join(", ") ?? "",
           author: post.author ? JSON.stringify(post.author, null, 2) : "",
           read_time: post.readTime !== null && post.readTime !== undefined ? String(post.readTime) : "",

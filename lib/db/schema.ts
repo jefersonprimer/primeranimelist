@@ -160,7 +160,6 @@ export const posts = pgTable(
     slug: text("slug").notNull().unique(),
     title: text("title").notNull(),
     summary: text("summary"),
-    content: text("content"),
     coverImage: text("cover_image"),
     tags: text("tags").array(),
     category: text("category").notNull().default("general"),

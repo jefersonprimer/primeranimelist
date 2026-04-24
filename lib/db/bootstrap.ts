@@ -193,7 +193,6 @@ async function createPostsTable() {
       "slug" text not null unique,
       "title" text not null,
       "summary" text ,
-      "content" text,
       "cover_image" text,
       "tags" text[],
       "category" text not null default 'general',
@@ -223,11 +222,6 @@ async function createPostsTable() {
   await db.execute(sql`
     alter table "posts"
     add column if not exists "summary" text
-  `);
-
-  await db.execute(sql`
-    alter table "posts"
-    add column if not exists "content" text
   `);
 
   await db.execute(sql`
@@ -290,6 +284,11 @@ async function createPostsTable() {
     update "posts"
     set "cover_image_url" = coalesce("cover_image_url", "cover_image")
     where "cover_image_url" is null and "cover_image" is not null
+  `);
+
+  await db.execute(sql`
+    alter table "posts"
+    drop column if exists "content"
   `);
 }
 

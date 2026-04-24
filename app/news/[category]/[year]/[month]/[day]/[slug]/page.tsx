@@ -134,7 +134,7 @@ export default function PostDetailPage() {
 
           {/* Conteúdo */}
           <div className={`prose max-w-none mb-8 border-t-1 border-[#4A4E58] pt-2 ${isDark ? "text-white" : "text-[#000000]"} border-b ${isDark ? "border-[#4A4E58]" : "border-[#00787E]"}`}>
-            <div>{post.content_markdown ?? post.content ?? ''}</div>
+            <div>{post.content_markdown ?? ''}</div>
 
             {/* Tags */}
             <div className="flex flex-wrap gap-2 mb-4 mt-[60px]">

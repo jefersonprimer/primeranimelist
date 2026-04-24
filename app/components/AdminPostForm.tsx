@@ -9,7 +9,6 @@ type PostFormData = {
   title: string;
   slug: string;
   category: string;
-  content: string;
   tags: string;
   author: string;
   read_time: string;
@@ -39,7 +38,6 @@ export function AdminPostForm({ mode, postId, initialData }: AdminPostFormProps)
     title: initialData?.title ?? "",
     slug: initialData?.slug ?? "",
     category: initialData?.category ?? "",
-    content: initialData?.content ?? "",
     tags: Array.isArray(initialData?.tags) ? initialData.tags.join(", ") : "",
     author: typeof initialData?.author === "object" && initialData?.author !== null ? JSON.stringify(initialData.author, null, 2) : "",
     read_time:
@@ -151,15 +149,6 @@ export function AdminPostForm({ mode, postId, initialData }: AdminPostFormProps)
             onChange={(event) => setForm((prev) => ({ ...prev, category: event.target.value }))}
             placeholder="ex: noticias, guides, announcements"
             required
-          />
-        </label>
-
-        <label className="flex flex-col gap-1 text-sm text-zinc-300 md:col-span-2">
-          Content (texto puro)
-          <textarea
-            className={`${inputClass} min-h-24`}
-            value={form.content}
-            onChange={(event) => setForm((prev) => ({ ...prev, content: event.target.value }))}
           />
         </label>
 

@@ -52,7 +52,6 @@ function buildPostPatch(body: Record<string, unknown>): PostPatchPayload | { err
     patch.category = category;
   }
   if ("summary" in body && !("excerpt" in body)) patch.excerpt = parseString(body.summary);
-  if ("content" in body) patch.content = parseString(body.content);
   if (("cover_image" in body || "coverImage" in body) && !("cover_image_url" in body || "coverImageUrl" in body)) {
     patch.coverImageUrl = parseString(body.cover_image ?? body.coverImage);
   }

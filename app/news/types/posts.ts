@@ -18,7 +18,6 @@ export interface Post {
   updated_at: string;
   // Legacy fields (from old external API) — kept optional for compatibility
   summary?: string;
-  content?: string;
   cover_image?: string;
   tags?: string[];
   author?: Author;

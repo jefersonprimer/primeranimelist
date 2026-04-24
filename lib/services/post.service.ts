@@ -11,7 +11,6 @@ export type PostWritePayload = {
   slug: string;
   category: string;
   summary?: string | null;
-  content?: string | null;
   coverImage?: string | null;
   tags?: string[] | null;
   author?: Record<string, unknown> | null;
@@ -38,7 +37,6 @@ export function serializePost(row: PostRow) {
     title: row.title,
     category: row.category,
     summary: excerpt,
-    content: row.content,
     cover_image: coverImageUrl,
     tags: row.tags,
     author: row.author,
@@ -121,7 +119,6 @@ export async function adminCreatePost(payload: PostWritePayload) {
     title: payload.title,
     category: payload.category,
     summary: payload.excerpt ?? payload.summary ?? null,
-    content: payload.content ?? null,
     coverImage: payload.coverImageUrl ?? payload.coverImage ?? null,
     tags: payload.tags ?? null,
     author: payload.author ?? null,
@@ -161,7 +158,6 @@ export async function adminUpdatePostById(id: number, patch: PostPatchPayload) {
   if (patch.slug !== undefined) updates.slug = patch.slug;
   if (patch.category !== undefined) updates.category = patch.category;
   if (patch.summary !== undefined) updates.summary = patch.summary;
-  if (patch.content !== undefined) updates.content = patch.content;
   if (patch.coverImage !== undefined) updates.coverImage = patch.coverImage;
   if (patch.tags !== undefined) updates.tags = patch.tags;
   if (patch.author !== undefined) updates.author = patch.author;
