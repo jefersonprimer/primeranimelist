@@ -1,4 +1,4 @@
-import { pgTable, serial, text, integer, real, jsonb, timestamp, boolean, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, real, jsonb, timestamp, boolean, uniqueIndex, index } from "drizzle-orm/pg-core";
 
 export const WATCHLIST_STATUSES = [
   "Watching",
@@ -107,7 +107,9 @@ export const sessions = pgTable("sessions", {
   sessionToken: text("session_token").unique().notNull(),
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => ({
+  userIdIdx: index("sessions_user_id_idx").on(table.userId),
+}));
 
 export const animeWatchlist = pgTable(
   "anime_watchlist",
@@ -126,6 +128,7 @@ export const animeWatchlist = pgTable(
   },
   (table) => ({
     userAnimeUnique: uniqueIndex("anime_watchlist_user_anime_idx").on(table.userId, table.animeId),
+    userIdIdx: index("anime_watchlist_user_id_idx").on(table.userId),
   })
 );
 
@@ -146,6 +149,7 @@ export const mangaWatchlist = pgTable(
   },
   (table) => ({
     userMangaUnique: uniqueIndex("manga_watchlist_user_manga_idx").on(table.userId, table.mangaId),
+    userIdIdx: index("manga_watchlist_user_id_idx").on(table.userId),
   })
 );
 
@@ -173,5 +177,7 @@ export const posts = pgTable(
   },
   (table) => ({
     slugUnique: uniqueIndex("posts_slug_idx").on(table.slug),
+    categoryIdx: index("posts_category_idx").on(table.category),
+    isPublishedIdx: index("posts_is_published_idx").on(table.isPublished),
   })
 );
