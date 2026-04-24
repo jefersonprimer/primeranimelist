@@ -30,19 +30,21 @@ function formatIso(date: Date | null) {
 }
 
 export function serializePost(row: PostRow) {
+  const excerpt = row.excerpt ?? row.summary;
+  const coverImageUrl = row.coverImageUrl ?? row.coverImage;
   return {
     id: row.id,
     slug: row.slug,
     title: row.title,
     category: row.category,
-    summary: row.summary,
+    summary: excerpt,
     content: row.content,
-    cover_image: row.coverImage,
+    cover_image: coverImageUrl,
     tags: row.tags,
     author: row.author,
     read_time: row.readTime,
-    excerpt: row.excerpt,
-    cover_image_url: row.coverImageUrl,
+    excerpt,
+    cover_image_url: coverImageUrl,
     content_markdown: row.contentMarkdown,
     is_published: row.isPublished,
     published_at: formatIso(row.publishedAt),
@@ -118,14 +120,14 @@ export async function adminCreatePost(payload: PostWritePayload) {
     slug: payload.slug,
     title: payload.title,
     category: payload.category,
-    summary: payload.summary ?? null,
+    summary: payload.excerpt ?? payload.summary ?? null,
     content: payload.content ?? null,
-    coverImage: payload.coverImage ?? null,
+    coverImage: payload.coverImageUrl ?? payload.coverImage ?? null,
     tags: payload.tags ?? null,
     author: payload.author ?? null,
     readTime: payload.readTime ?? null,
-    excerpt: payload.excerpt ?? null,
-    coverImageUrl: payload.coverImageUrl ?? null,
+    excerpt: payload.excerpt ?? payload.summary ?? null,
+    coverImageUrl: payload.coverImageUrl ?? payload.coverImage ?? null,
     contentMarkdown: payload.contentMarkdown,
     isPublished: payload.isPublished ?? false,
     publishedAt: payload.isPublished ? now : null,
@@ -164,8 +166,14 @@ export async function adminUpdatePostById(id: number, patch: PostPatchPayload) {
   if (patch.tags !== undefined) updates.tags = patch.tags;
   if (patch.author !== undefined) updates.author = patch.author;
   if (patch.readTime !== undefined) updates.readTime = patch.readTime;
-  if (patch.excerpt !== undefined) updates.excerpt = patch.excerpt;
-  if (patch.coverImageUrl !== undefined) updates.coverImageUrl = patch.coverImageUrl;
+  if (patch.excerpt !== undefined) {
+    updates.excerpt = patch.excerpt;
+    updates.summary = patch.excerpt;
+  }
+  if (patch.coverImageUrl !== undefined) {
+    updates.coverImageUrl = patch.coverImageUrl;
+    updates.coverImage = patch.coverImageUrl;
+  }
   if (patch.contentMarkdown !== undefined) updates.contentMarkdown = patch.contentMarkdown;
   if (patch.isPublished !== undefined) {
     updates.isPublished = patch.isPublished;

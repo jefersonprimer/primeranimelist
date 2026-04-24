@@ -64,8 +64,8 @@ function readPostPayload(body: Record<string, unknown>): PostWritePayload | { er
     tags: parseStringArrayField(body.tags),
     author: parseAuthorField(body.author),
     readTime: parseFiniteInt(body.read_time ?? body.readTime),
-    excerpt: parseString(body.excerpt),
-    coverImageUrl: parseString(body.cover_image_url ?? body.coverImageUrl),
+    excerpt: parseString(body.excerpt ?? body.summary),
+    coverImageUrl: parseString(body.cover_image_url ?? body.coverImageUrl ?? body.cover_image ?? body.coverImage),
     contentMarkdown,
     isPublished: parseBoolean(body.is_published ?? body.isPublished) ?? false,
   };

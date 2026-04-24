@@ -45,16 +45,36 @@ async function createAnimeTable() {
 
   // Migration: Add missing columns if they don't exist
   try {
-    await db.execute(sql`alter table "anime" add column if not exists "title_english" text`);
-    await db.execute(sql`alter table "anime" add column if not exists "producers" jsonb`);
-    await db.execute(sql`alter table "anime" add column if not exists "licensors" jsonb`);
-    await db.execute(sql`alter table "anime" add column if not exists "themes" jsonb`);
-    await db.execute(sql`alter table "anime" add column if not exists "demographics" jsonb`);
-    await db.execute(sql`alter table "anime" add column if not exists "image_banner_desktop" text`);
-    await db.execute(sql`alter table "anime" add column if not exists "image_banner_mobile" text`);
-    await db.execute(sql`alter table "anime" add column if not exists "image_logo" text`);
-    await db.execute(sql`alter table "anime" add column if not exists "image_thumbnail" text`);
-    await db.execute(sql`alter table "anime" add column if not exists "image_card_compact" text`);
+    await db.execute(
+      sql`alter table "anime" add column if not exists "title_english" text`,
+    );
+    await db.execute(
+      sql`alter table "anime" add column if not exists "producers" jsonb`,
+    );
+    await db.execute(
+      sql`alter table "anime" add column if not exists "licensors" jsonb`,
+    );
+    await db.execute(
+      sql`alter table "anime" add column if not exists "themes" jsonb`,
+    );
+    await db.execute(
+      sql`alter table "anime" add column if not exists "demographics" jsonb`,
+    );
+    await db.execute(
+      sql`alter table "anime" add column if not exists "image_banner_desktop" text`,
+    );
+    await db.execute(
+      sql`alter table "anime" add column if not exists "image_banner_mobile" text`,
+    );
+    await db.execute(
+      sql`alter table "anime" add column if not exists "image_logo" text`,
+    );
+    await db.execute(
+      sql`alter table "anime" add column if not exists "image_thumbnail" text`,
+    );
+    await db.execute(
+      sql`alter table "anime" add column if not exists "image_card_compact" text`,
+    );
   } catch (err) {
     console.error("Migration error:", err);
   }
@@ -172,7 +192,7 @@ async function createPostsTable() {
       "id" serial primary key,
       "slug" text not null unique,
       "title" text not null,
-      "summary" text,
+      "summary" text ,
       "content" text,
       "cover_image" text,
       "tags" text[],
@@ -228,6 +248,48 @@ async function createPostsTable() {
   await db.execute(sql`
     alter table "posts"
     add column if not exists "read_time" integer
+  `);
+
+  await db.execute(sql`
+    alter table "posts"
+    add column if not exists "excerpt" text
+  `);
+
+  await db.execute(sql`
+    alter table "posts"
+    add column if not exists "cover_image_url" text
+  `);
+
+  await db.execute(sql`
+    alter table "posts"
+    add column if not exists "content_markdown" text not null default ''
+  `);
+
+  await db.execute(sql`
+    alter table "posts"
+    add column if not exists "is_published" boolean not null default false
+  `);
+
+  await db.execute(sql`
+    alter table "posts"
+    add column if not exists "published_at" timestamp
+  `);
+
+  await db.execute(sql`
+    alter table "posts"
+    add column if not exists "created_by_user_id" integer references "users"("id") on delete set null
+  `);
+
+  await db.execute(sql`
+    update "posts"
+    set "excerpt" = coalesce("excerpt", "summary")
+    where "excerpt" is null and "summary" is not null
+  `);
+
+  await db.execute(sql`
+    update "posts"
+    set "cover_image_url" = coalesce("cover_image_url", "cover_image")
+    where "cover_image_url" is null and "cover_image" is not null
   `);
 }
 

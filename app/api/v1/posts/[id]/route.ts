@@ -51,10 +51,10 @@ function buildPostPatch(body: Record<string, unknown>): PostPatchPayload | { err
     if (!category) return { error: "Category cannot be empty" };
     patch.category = category;
   }
-  if ("summary" in body) patch.summary = parseString(body.summary);
+  if ("summary" in body && !("excerpt" in body)) patch.excerpt = parseString(body.summary);
   if ("content" in body) patch.content = parseString(body.content);
-  if ("cover_image" in body || "coverImage" in body) {
-    patch.coverImage = parseString(body.cover_image ?? body.coverImage);
+  if (("cover_image" in body || "coverImage" in body) && !("cover_image_url" in body || "coverImageUrl" in body)) {
+    patch.coverImageUrl = parseString(body.cover_image ?? body.coverImage);
   }
   if ("tags" in body) {
     patch.tags = parseStringArrayField(body.tags);

@@ -9,9 +9,7 @@ type PostFormData = {
   title: string;
   slug: string;
   category: string;
-  summary: string;
   content: string;
-  cover_image: string;
   tags: string;
   author: string;
   read_time: string;
@@ -41,9 +39,7 @@ export function AdminPostForm({ mode, postId, initialData }: AdminPostFormProps)
     title: initialData?.title ?? "",
     slug: initialData?.slug ?? "",
     category: initialData?.category ?? "",
-    summary: initialData?.summary ?? "",
     content: initialData?.content ?? "",
-    cover_image: initialData?.cover_image ?? "",
     tags: Array.isArray(initialData?.tags) ? initialData.tags.join(", ") : "",
     author: typeof initialData?.author === "object" && initialData?.author !== null ? JSON.stringify(initialData.author, null, 2) : "",
     read_time:
@@ -159,29 +155,11 @@ export function AdminPostForm({ mode, postId, initialData }: AdminPostFormProps)
         </label>
 
         <label className="flex flex-col gap-1 text-sm text-zinc-300 md:col-span-2">
-          Summary
-          <textarea
-            className={`${inputClass} min-h-20`}
-            value={form.summary}
-            onChange={(event) => setForm((prev) => ({ ...prev, summary: event.target.value }))}
-          />
-        </label>
-
-        <label className="flex flex-col gap-1 text-sm text-zinc-300 md:col-span-2">
           Content (texto puro)
           <textarea
             className={`${inputClass} min-h-24`}
             value={form.content}
             onChange={(event) => setForm((prev) => ({ ...prev, content: event.target.value }))}
-          />
-        </label>
-
-        <label className="flex flex-col gap-1 text-sm text-zinc-300 md:col-span-2">
-          Cover image
-          <input
-            className={inputClass}
-            value={form.cover_image}
-            onChange={(event) => setForm((prev) => ({ ...prev, cover_image: event.target.value }))}
           />
         </label>
 

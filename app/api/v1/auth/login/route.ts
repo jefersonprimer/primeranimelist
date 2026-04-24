@@ -6,18 +6,28 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { ensureDatabase } from "@/lib/db/bootstrap";
 import { isAdminEmail } from "@/lib/admin";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
 
 export async function POST(req: Request) {
   try {
-    await ensureDatabase();
-    const { email, password } = await req.json();
+    const body = await req.json();
+    const result = loginSchema.safeParse(body);
 
-    if (!email || !password) {
+    if (!result.success) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: result.error.errors[0].message },
         { status: 400 }
       );
     }
+
+    const { email, password } = result.data;
+
+    await ensureDatabase();
 
     const [user] = await db
       .select()
@@ -53,6 +63,9 @@ export async function POST(req: Request) {
     });
   } catch (error: any) {
     console.error("Login error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "An unexpected error occurred during login" },
+      { status: 500 }
+    );
   }
 }
