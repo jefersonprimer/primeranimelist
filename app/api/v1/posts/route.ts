@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { parseBoolean, parseFiniteInt, parseString, requireAdminApiUser } from "@/lib/admin-api";
+import { parseBoolean, parseFiniteInt, parseString, parseStringArrayField, requireAdminApiUser } from "@/lib/admin-api";
 import {
   adminCreatePost,
   listAllPostsForAdmin,
@@ -15,6 +15,22 @@ function slugify(input: string) {
     .trim()
     .toLowerCase()
     .replace(/[-\s]+/g, "-");
+}
+
+function parseAuthorField(value: unknown): Record<string, unknown> | null {
+  if (value === null || value === undefined || value === "") return null;
+  if (typeof value === "object" && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : null;
+    } catch {
+      return null;
+    }
+  }
+  return null;
 }
 
 function readPostPayload(body: Record<string, unknown>): PostWritePayload | { error: string } {
@@ -42,6 +58,12 @@ function readPostPayload(body: Record<string, unknown>): PostWritePayload | { er
     title,
     slug,
     category,
+    summary: parseString(body.summary),
+    content: parseString(body.content),
+    coverImage: parseString(body.cover_image ?? body.coverImage),
+    tags: parseStringArrayField(body.tags),
+    author: parseAuthorField(body.author),
+    readTime: parseFiniteInt(body.read_time ?? body.readTime),
     excerpt: parseString(body.excerpt),
     coverImageUrl: parseString(body.cover_image_url ?? body.coverImageUrl),
     contentMarkdown,

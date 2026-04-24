@@ -172,7 +172,13 @@ async function createPostsTable() {
       "id" serial primary key,
       "slug" text not null unique,
       "title" text not null,
+      "summary" text,
+      "content" text,
+      "cover_image" text,
+      "tags" text[],
       "category" text not null default 'general',
+      "author" jsonb,
+      "read_time" integer,
       "excerpt" text,
       "cover_image_url" text,
       "content_markdown" text not null,
@@ -192,6 +198,36 @@ async function createPostsTable() {
   await db.execute(sql`
     alter table "posts"
     add column if not exists "category" text not null default 'general'
+  `);
+
+  await db.execute(sql`
+    alter table "posts"
+    add column if not exists "summary" text
+  `);
+
+  await db.execute(sql`
+    alter table "posts"
+    add column if not exists "content" text
+  `);
+
+  await db.execute(sql`
+    alter table "posts"
+    add column if not exists "cover_image" text
+  `);
+
+  await db.execute(sql`
+    alter table "posts"
+    add column if not exists "tags" text[]
+  `);
+
+  await db.execute(sql`
+    alter table "posts"
+    add column if not exists "author" jsonb
+  `);
+
+  await db.execute(sql`
+    alter table "posts"
+    add column if not exists "read_time" integer
   `);
 }
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { parseBoolean, parseFiniteInt, parseString, requireAdminApiUser } from "@/lib/admin-api";
+import { parseBoolean, parseFiniteInt, parseString, parseStringArrayField, requireAdminApiUser } from "@/lib/admin-api";
 import { adminUpdatePostById, getPostById, serializePost, type PostPatchPayload } from "@/lib/services/post.service";
 
 function slugify(input: string) {
@@ -9,6 +9,22 @@ function slugify(input: string) {
     .trim()
     .toLowerCase()
     .replace(/[-\s]+/g, "-");
+}
+
+function parseAuthorField(value: unknown): Record<string, unknown> | null {
+  if (value === null || value === undefined || value === "") return null;
+  if (typeof value === "object" && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : null;
+    } catch {
+      return null;
+    }
+  }
+  return null;
 }
 
 function buildPostPatch(body: Record<string, unknown>): PostPatchPayload | { error: string } {
@@ -34,6 +50,20 @@ function buildPostPatch(body: Record<string, unknown>): PostPatchPayload | { err
     const category = parseString(body.category);
     if (!category) return { error: "Category cannot be empty" };
     patch.category = category;
+  }
+  if ("summary" in body) patch.summary = parseString(body.summary);
+  if ("content" in body) patch.content = parseString(body.content);
+  if ("cover_image" in body || "coverImage" in body) {
+    patch.coverImage = parseString(body.cover_image ?? body.coverImage);
+  }
+  if ("tags" in body) {
+    patch.tags = parseStringArrayField(body.tags);
+  }
+  if ("author" in body) {
+    patch.author = parseAuthorField(body.author);
+  }
+  if ("read_time" in body || "readTime" in body) {
+    patch.readTime = parseFiniteInt(body.read_time ?? body.readTime);
   }
   if ("excerpt" in body) patch.excerpt = parseString(body.excerpt);
   if ("cover_image_url" in body || "coverImageUrl" in body) {

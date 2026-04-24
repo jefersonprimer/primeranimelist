@@ -9,6 +9,12 @@ type PostFormData = {
   title: string;
   slug: string;
   category: string;
+  summary: string;
+  content: string;
+  cover_image: string;
+  tags: string;
+  author: string;
+  read_time: string;
   excerpt: string;
   cover_image_url: string;
   content_markdown: string;
@@ -35,6 +41,15 @@ export function AdminPostForm({ mode, postId, initialData }: AdminPostFormProps)
     title: initialData?.title ?? "",
     slug: initialData?.slug ?? "",
     category: initialData?.category ?? "",
+    summary: initialData?.summary ?? "",
+    content: initialData?.content ?? "",
+    cover_image: initialData?.cover_image ?? "",
+    tags: Array.isArray(initialData?.tags) ? initialData.tags.join(", ") : "",
+    author: typeof initialData?.author === "object" && initialData?.author !== null ? JSON.stringify(initialData.author, null, 2) : "",
+    read_time:
+      typeof initialData?.read_time === "number" && Number.isFinite(initialData.read_time)
+        ? String(initialData.read_time)
+        : "",
     excerpt: initialData?.excerpt ?? "",
     cover_image_url: initialData?.cover_image_url ?? "",
     content_markdown: initialData?.content_markdown ?? "",
@@ -72,6 +87,8 @@ export function AdminPostForm({ mode, postId, initialData }: AdminPostFormProps)
       const payload = {
         ...form,
         slug: form.slug.trim() || slugify(form.title),
+        read_time: form.read_time.trim().length > 0 ? Number.parseInt(form.read_time, 10) : null,
+        author: form.author.trim().length > 0 ? form.author : null,
       };
 
       const response = await fetch(endpoint, {
@@ -138,6 +155,59 @@ export function AdminPostForm({ mode, postId, initialData }: AdminPostFormProps)
             onChange={(event) => setForm((prev) => ({ ...prev, category: event.target.value }))}
             placeholder="ex: noticias, guides, announcements"
             required
+          />
+        </label>
+
+        <label className="flex flex-col gap-1 text-sm text-zinc-300 md:col-span-2">
+          Summary
+          <textarea
+            className={`${inputClass} min-h-20`}
+            value={form.summary}
+            onChange={(event) => setForm((prev) => ({ ...prev, summary: event.target.value }))}
+          />
+        </label>
+
+        <label className="flex flex-col gap-1 text-sm text-zinc-300 md:col-span-2">
+          Content (texto puro)
+          <textarea
+            className={`${inputClass} min-h-24`}
+            value={form.content}
+            onChange={(event) => setForm((prev) => ({ ...prev, content: event.target.value }))}
+          />
+        </label>
+
+        <label className="flex flex-col gap-1 text-sm text-zinc-300 md:col-span-2">
+          Cover image
+          <input
+            className={inputClass}
+            value={form.cover_image}
+            onChange={(event) => setForm((prev) => ({ ...prev, cover_image: event.target.value }))}
+          />
+        </label>
+
+        <label className="flex flex-col gap-1 text-sm text-zinc-300">
+          Tags (separadas por virgula)
+          <input className={inputClass} value={form.tags} onChange={(event) => setForm((prev) => ({ ...prev, tags: event.target.value }))} />
+        </label>
+
+        <label className="flex flex-col gap-1 text-sm text-zinc-300">
+          Read time (min)
+          <input
+            className={inputClass}
+            type="number"
+            min={0}
+            value={form.read_time}
+            onChange={(event) => setForm((prev) => ({ ...prev, read_time: event.target.value }))}
+          />
+        </label>
+
+        <label className="flex flex-col gap-1 text-sm text-zinc-300 md:col-span-2">
+          Author (JSON)
+          <textarea
+            className={`${inputClass} min-h-24 font-mono`}
+            value={form.author}
+            onChange={(event) => setForm((prev) => ({ ...prev, author: event.target.value }))}
+            placeholder='{"name":"Autor","avatar":"https://..."}'
           />
         </label>
 

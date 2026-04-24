@@ -10,6 +10,12 @@ export type PostWritePayload = {
   title: string;
   slug: string;
   category: string;
+  summary?: string | null;
+  content?: string | null;
+  coverImage?: string | null;
+  tags?: string[] | null;
+  author?: Record<string, unknown> | null;
+  readTime?: number | null;
   excerpt?: string | null;
   coverImageUrl?: string | null;
   contentMarkdown: string;
@@ -29,6 +35,12 @@ export function serializePost(row: PostRow) {
     slug: row.slug,
     title: row.title,
     category: row.category,
+    summary: row.summary,
+    content: row.content,
+    cover_image: row.coverImage,
+    tags: row.tags,
+    author: row.author,
+    read_time: row.readTime,
     excerpt: row.excerpt,
     cover_image_url: row.coverImageUrl,
     content_markdown: row.contentMarkdown,
@@ -106,6 +118,12 @@ export async function adminCreatePost(payload: PostWritePayload) {
     slug: payload.slug,
     title: payload.title,
     category: payload.category,
+    summary: payload.summary ?? null,
+    content: payload.content ?? null,
+    coverImage: payload.coverImage ?? null,
+    tags: payload.tags ?? null,
+    author: payload.author ?? null,
+    readTime: payload.readTime ?? null,
     excerpt: payload.excerpt ?? null,
     coverImageUrl: payload.coverImageUrl ?? null,
     contentMarkdown: payload.contentMarkdown,
@@ -140,6 +158,12 @@ export async function adminUpdatePostById(id: number, patch: PostPatchPayload) {
   if (patch.title !== undefined) updates.title = patch.title;
   if (patch.slug !== undefined) updates.slug = patch.slug;
   if (patch.category !== undefined) updates.category = patch.category;
+  if (patch.summary !== undefined) updates.summary = patch.summary;
+  if (patch.content !== undefined) updates.content = patch.content;
+  if (patch.coverImage !== undefined) updates.coverImage = patch.coverImage;
+  if (patch.tags !== undefined) updates.tags = patch.tags;
+  if (patch.author !== undefined) updates.author = patch.author;
+  if (patch.readTime !== undefined) updates.readTime = patch.readTime;
   if (patch.excerpt !== undefined) updates.excerpt = patch.excerpt;
   if (patch.coverImageUrl !== undefined) updates.coverImageUrl = patch.coverImageUrl;
   if (patch.contentMarkdown !== undefined) updates.contentMarkdown = patch.contentMarkdown;
