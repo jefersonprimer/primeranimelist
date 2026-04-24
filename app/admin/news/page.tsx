@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { isAdminEmail } from "@/lib/admin";
 import { listAllPostsForAdmin, serializePost } from "@/lib/services/post.service";
+import { buildNewsPostPath } from "@/lib/post-url";
 
 function formatDate(iso: string | null) {
   if (!iso) return "Rascunho";
@@ -51,7 +52,7 @@ export default async function AdminNewsPage() {
                     <Link href={`/admin/news/${post.id}/edit`} className="text-indigo-300 hover:text-indigo-200">
                       Editar
                     </Link>
-                    <Link href={`/news/${post.slug}`} className="text-zinc-300 hover:text-white">
+                    <Link href={buildNewsPostPath(post)} className="text-zinc-300 hover:text-white">
                       Abrir
                     </Link>
                   </div>

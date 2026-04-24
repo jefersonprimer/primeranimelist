@@ -7,8 +7,6 @@ import Link from 'next/link';
 import RecommendationPostCardRows from '../../../../../components/post/RecommendationPostCardRows';
 import { useTheme } from "../../../../../context/ThemeContext";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-
 export default function PostDetailPage() {
   const params = useParams();
   const [post, setPost] = useState<Post | null>(null);
@@ -26,26 +24,28 @@ export default function PostDetailPage() {
         setLoading(true);
         console.log("Fetching with params:", { category, year, month, day, slug });
 
-        // Busca o post específico
-        const postResponse = await fetch(`${API_URL}/api/posts/${category}/${year}/${month}/${day}/${slug}`);
+        // Busca o post específico pelo slug
+        const postResponse = await fetch(`/api/v1/posts/slug/${slug}`);
         if (!postResponse.ok) {
           throw new Error(`Failed to fetch post (${postResponse.status})`);
         }
-        const foundPost = await postResponse.json();
+        const postData = await postResponse.json();
+        const foundPost = postData.data ?? postData;
 
         if (foundPost) {
           console.log("Found post:", foundPost);
           setPost(foundPost);
           
           // Busca posts recomendados
-          const recommendationsResponse = await fetch(`${API_URL}/api/posts`);
+          const recommendationsResponse = await fetch('/api/v1/posts');
           if (!recommendationsResponse.ok) {
             throw new Error(`Failed to fetch recommendations (${recommendationsResponse.status})`);
           }
-          const allPosts = await recommendationsResponse.json();
+          const recData = await recommendationsResponse.json();
+          const allPosts = recData.data ?? recData;
           
           // Encontrar posts recomendados baseados na categoria
-          const recommendations = allPosts
+          const recommendations = (Array.isArray(allPosts) ? allPosts : [])
             .filter((p: Post) => 
               p.category.toLowerCase() === foundPost.category.toLowerCase() && 
               p.id !== foundPost.id
@@ -120,24 +120,25 @@ export default function PostDetailPage() {
 
           {/* Título e Summary */}
           <h1 className={`text-[36px] font-weight-700 mb-2 ${isDark ? "text-[#FFFFFF]" : "text-[#000000]"}`}>{post.title}</h1>
-          <h3 className={`text-[24px] font-weight-500 mb-2 ${isDark ? "text-[#DADADA]" : "text-[#000000]"}`}>{post.summary}</h3>
+          <h3 className={`text-[24px] font-weight-500 mb-2 ${isDark ? "text-[#DADADA]" : "text-[#000000]"}`}>{post.excerpt ?? post.summary ?? ''}</h3>
 
           {/* Author and Image */}
-          <div className="flex items-center gap-2 mb-4">
-            <img className='w-[50px] h-[50px] rounded-[50%]' src={post.author.image} alt={post.author.name} />
-            <a href={`http://localhost:3001/news/author/${post.author.name}`}
-             className="cursor-pointer hover:underline hover:text-[#51D6D5]">
+          {post.author?.name && (
+            <div className="flex items-center gap-2 mb-4">
+              {post.author.image && (
+                <img className='w-[50px] h-[50px] rounded-[50%]' src={post.author.image} alt={post.author.name} />
+              )}
               <span className={`text-[16px] font-weight-700 ${isDark ? "text-[#51D6D5]" : "text-[#51D6D5]"}`}>{post.author.name}</span>
-            </a>
-          </div>
+            </div>
+          )}
 
           {/* Conteúdo */}
           <div className={`prose max-w-none mb-8 border-t-1 border-[#4A4E58] pt-2 ${isDark ? "text-white" : "text-[#000000]"} border-b ${isDark ? "border-[#4A4E58]" : "border-[#00787E]"}`}>
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
+            <div>{post.content_markdown ?? post.content ?? ''}</div>
 
             {/* Tags */}
             <div className="flex flex-wrap gap-2 mb-4 mt-[60px]">
-              {post.tags.map((tag, index) => (
+              {(post.tags ?? [post.category]).map((tag, index) => (
                 <span
                   key={index}
                   className={`cursor-pointer ${

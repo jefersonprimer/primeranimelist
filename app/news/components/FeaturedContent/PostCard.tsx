@@ -48,7 +48,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, hideImage = false }) => {
       <Link href={getPostUrl(post)} className="block">
         {!hideImage && (
           <img
-            src={post.cover_image}
+            src={post.cover_image_url ?? ''}
             alt={post.title}
             className="w-full h-auto"
           />
@@ -56,7 +56,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, hideImage = false }) => {
         
         <div className={`py-8 px-12 ${isDark ? "bg-[url('https://a.storyblok.com/f/178900/576x324/d4c04e9deb/circles_scooter-1.png/m/filters:quality(95)format(webp)')] bg-cover" : "bg-[url('https://a.storyblok.com/f/178900/564x332/a4abdfe797/spotlight-background-lm.png/m/filters:quality(95)format(webp)')] bg-cover"}`}>
           <div className="flex flex-wrap gap-2">
-            {post.tags.map((tag: string, index: number) => (
+            {(post.tags ?? [post.category]).map((tag: string, index: number) => (
               <span
                 key={index}
                 className={`${
@@ -77,9 +77,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, hideImage = false }) => {
           >
             {post.title}
           </h2>
-          <p className={`text-[12px] font-weight-700 ${isDark ? "text-[#FFFFFF]" : "text-[#000000]"} mt-2`}>
-            {post.author.name}
-          </p>
+          {post.author?.name && (
+            <p className={`text-[12px] font-weight-700 ${isDark ? "text-[#FFFFFF]" : "text-[#000000]"} mt-2`}>
+              {post.author.name}
+            </p>
+          )}
         </div>
       </Link>
     </div>

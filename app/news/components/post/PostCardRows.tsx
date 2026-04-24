@@ -48,7 +48,7 @@ const PostCardRows: React.FC<PostCardRowsProps> = ({ post }) => {
         <div className="flex items-start gap-4">
           {/* Imagem à esquerda */}
           <img
-            src={post.cover_image}
+            src={post.cover_image_url ?? ''}
             alt={post.title}
             className="w-[237px] h-[133px] object-cover"
           />
@@ -56,7 +56,7 @@ const PostCardRows: React.FC<PostCardRowsProps> = ({ post }) => {
           {/* Conteúdo à direita */}
           <div className="flex-1">
             <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag: string, index: number) => (
+              {(post.tags ?? [post.category]).map((tag: string, index: number) => (
                 <span
                   key={index}
                   className={`${
@@ -77,9 +77,11 @@ const PostCardRows: React.FC<PostCardRowsProps> = ({ post }) => {
             >
               {post.title}
             </h2>
-            <p className={`text-[12px] font-weight-700 ${isDark ? "text-[#00787E]" : "text-[#00787E]"} mt-2`}>
-              {post.author.name}
-            </p>
+            {post.author?.name && (
+              <p className={`text-[12px] font-weight-700 ${isDark ? "text-[#00787E]" : "text-[#00787E]"} mt-2`}>
+                {post.author.name}
+              </p>
+            )}
           </div>
         </div>
       </Link>

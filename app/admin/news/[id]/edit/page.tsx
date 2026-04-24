@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import { isAdminEmail } from "@/lib/admin";
 import { getPostById } from "@/lib/services/post.service";
 import { AdminPostForm } from "@/app/components/AdminPostForm";
+import { buildNewsPostPath } from "@/lib/post-url";
 
 export default async function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
@@ -29,7 +30,15 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
           <p className="text-xs uppercase tracking-wide text-indigo-300">Admin</p>
           <h1 className="text-3xl font-black text-zinc-100">Editar post</h1>
         </div>
-        <Link href={`/news/${post.slug}`} className="text-sm font-semibold text-zinc-300 hover:text-white">
+        <Link
+          href={buildNewsPostPath({
+            slug: post.slug,
+            category: post.category,
+            published_at: post.publishedAt?.toISOString() ?? null,
+            created_at: post.createdAt?.toISOString() ?? null,
+          })}
+          className="text-sm font-semibold text-zinc-300 hover:text-white"
+        >
           Ver post
         </Link>
       </div>

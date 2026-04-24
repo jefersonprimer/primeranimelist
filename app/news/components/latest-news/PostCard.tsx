@@ -48,7 +48,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, hideImage = false }) => {
       <Link href={getPostUrl(post)} className="block">
         {!hideImage && (
           <img
-            src={post.cover_image}
+            src={post.cover_image_url ?? ''}
             alt={post.title}
             className="w-full h-auto mb-4"
           />
@@ -56,7 +56,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, hideImage = false }) => {
         
         <div>
           <div className="flex flex-wrap gap-2">
-            {post.tags.map((tag: string, index: number) => (
+            {(post.tags ?? [post.category]).map((tag: string, index: number) => (
               <span
                 key={index}
                 className={`${
@@ -77,9 +77,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, hideImage = false }) => {
           >
             {post.title}
           </h2>
-          <p className={`text-[12px] font-weight-700 ${isDark ? "text-[#00787E]" : "text-[#00787E]"} mt-2`}>
-            {post.author.name}
-          </p>
+          {post.author?.name && (
+            <p className={`text-[12px] font-weight-700 ${isDark ? "text-[#00787E]" : "text-[#00787E]"} mt-2`}>
+              {post.author.name}
+            </p>
+          )}
         </div>
       </Link>
     </div>

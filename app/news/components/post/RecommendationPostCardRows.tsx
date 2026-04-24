@@ -48,7 +48,7 @@ const RecommendationPostCardRows: React.FC<RecommendationPostCardRowsProps> = ({
         <div className="flex items-center gap-4">
           {/* Imagem à esquerda */}
           <img
-            src={post.cover_image}
+            src={post.cover_image_url ?? ''}
             alt={post.title}
             className="w-[160px] h-[96px] object-cover"
           />
@@ -62,9 +62,11 @@ const RecommendationPostCardRows: React.FC<RecommendationPostCardRowsProps> = ({
             <h2 className={`text-[16px] font-weight-700 ${isDark ? "text-white" : "text-[#000]"} mt-1`}>
               {post.title}
             </h2>
-            <p className={`text-[12px] font-weight-700 ${isDark ? "text-[#00787E]" : "text-[#00787E]"} mt-1`}>
-              {post.author.name}
-            </p>
+            {post.author?.name && (
+              <p className={`text-[12px] font-weight-700 ${isDark ? "text-[#00787E]" : "text-[#00787E]"} mt-1`}>
+                {post.author.name}
+              </p>
+            )}
           </div>
         </div>
       </Link>

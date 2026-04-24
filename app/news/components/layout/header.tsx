@@ -57,7 +57,8 @@ const Header = () => {
             {/* Logo */}
             <div className="flex-shrink-0">
               <Link href="/news" className="text-xl font-bold">
-                <img src="/logo.webp" alt="Logo" className="" />
+                <span className="text-orange-500">Primer</span>
+                <span>News</span>
               </Link>
             </div>
           </div>

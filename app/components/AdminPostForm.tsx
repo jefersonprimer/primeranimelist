@@ -3,6 +3,7 @@
 import { type FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
 import { MarkdownRenderer } from "./MarkdownRenderer";
+import { buildNewsPostPath } from "@/lib/post-url";
 
 type PostFormData = {
   title: string;
@@ -78,14 +79,22 @@ export function AdminPostForm({ mode, postId, initialData }: AdminPostFormProps)
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const result = (await response.json()) as { data?: { slug?: string }; error?: string };
+      const result = (await response.json()) as {
+        data?: { slug?: string; category?: string | null; published_at?: string | null; created_at?: string | null };
+        error?: string;
+      };
 
       if (!response.ok) {
         throw new Error(result.error || "Nao foi possivel salvar o post.");
       }
 
       const savedSlug = result.data?.slug ?? payload.slug;
-      window.location.href = `/news/${savedSlug}`;
+      window.location.href = buildNewsPostPath({
+        slug: savedSlug,
+        category: result.data?.category ?? payload.category,
+        published_at: result.data?.published_at ?? null,
+        created_at: result.data?.created_at ?? null,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao salvar post.");
     } finally {

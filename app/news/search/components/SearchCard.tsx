@@ -48,7 +48,7 @@ const SearchCardRows: React.FC<SearchCardRowsProps> = ({ post }) => {
         <div className="flex items-start gap-4">
           {/* Imagem à esquerda */}
           <img
-            src={post.cover_image}
+            src={post.cover_image_url ?? ''}
             alt={post.title}
             className="w-[300px] h-[200px] object-cover"
           />
@@ -58,7 +58,7 @@ const SearchCardRows: React.FC<SearchCardRowsProps> = ({ post }) => {
             {/* Tags e Data na mesma linha */}
             <div className="flex items-center gap-2">
               <div className="flex flex-wrap gap-2">
-                {post.tags.map((tag: string, index: number) => (
+                {(post.tags ?? [post.category]).map((tag: string, index: number) => (
                   <span
                     key={index}
                     className={`${
@@ -81,13 +81,15 @@ const SearchCardRows: React.FC<SearchCardRowsProps> = ({ post }) => {
 
             {/* Resumo */}
             <p className={`text-base ${isDark ? "text-gray-400" : "text-gray-600"} mt-1 line-clamp-2`}>
-              {post.summary}
+              {post.excerpt ?? post.summary ?? ''}
             </p>
 
             {/* Autor */}
-            <p className={`text-base ${isDark ? "text-[#00787E]" : "text-[#00787E]"} mt-2`}>
-              {post.author.name}
-            </p>
+            {post.author?.name && (
+              <p className={`text-base ${isDark ? "text-[#00787E]" : "text-[#00787E]"} mt-2`}>
+                {post.author.name}
+              </p>
+            )}
           </div>
         </div>
       </Link>
