@@ -266,14 +266,14 @@ export function WatchlistButton({
         onClick={handleOpen}
         className={
           triggerClassName ??
-          "inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/60 px-3 py-2 text-xs font-semibold text-white transition hover:border-indigo-400 hover:bg-black/80"
+          "inline-flex items-center text-white transition hover:border-indigo-400 hover:cursor-pointer"
         }
         aria-label={
           hasSavedEntry ? "Edit watchlist entry" : "Add anime to watchlist"
         }
       >
         <Bookmark
-          size={18}
+          size={24}
           className={
             hasSavedEntry ? "fill-indigo-400 text-indigo-400" : "text-white"
           }

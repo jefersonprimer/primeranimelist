@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Bookmark, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { RatingIcon10 } from "./icons/Rating10Icon";
 import { RatingIcon12 } from "./icons/Rating12Icon";
@@ -10,12 +10,14 @@ import { RatingIcon14 } from "./icons/Rating14Icon";
 import { RatingIcon16 } from "./icons/Rating16Icon";
 import { RatingIcon18 } from "./icons/Rating18Icon";
 import { RatingIconAL } from "./icons/RatingALIcon";
+import { WatchlistButton } from "./WatchlistButton";
 
 type HeroAnimeItem = {
   malId: number;
   title: string;
   thumbnail: string;
   logo: string | null;
+  episodes?: number | null;
   rating: string | null;
   genres: string[];
   synopsis: string | null;
@@ -171,13 +173,12 @@ export function HomeHeroAnimeCarouselClient({
                   <Play size={24} />
                   <span>START WATCHING E1</span>
                 </Link>
-                <button
-                  type="button"
-                  className="inline-flex h-10 w-10 items-center justify-center border border-white/60 text-white transition hover:bg-white/1 hover:cursor-pointer"
-                  aria-label="Add anime to watchlist"
-                >
-                  <Bookmark size={24} />
-                </button>
+                <WatchlistButton
+                  malId={active.malId}
+                  title={active.title}
+                  episodes={active.episodes ?? null}
+                  triggerClassName="inline-flex items-center gap-2  border border-white/20 p-2 text-xs font-semibold text-white transition hover:border-indigo-400 hover:cursor-pointer"
+                />
               </div>
 
               {total > 1 ? (

@@ -245,12 +245,7 @@ export function AnimeCard({
         </p>
 
         <div className="mt-auto flex justify-end pb-2 pt-4">
-          <WatchlistButton
-            malId={malId}
-            title={title}
-            episodes={episodes}
-            triggerClassName="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/60 px-3 py-2 text-xs font-semibold text-white transition hover:border-indigo-400 hover:bg-black/80"
-          />
+          <WatchlistButton malId={malId} title={title} episodes={episodes} />
         </div>
       </div>
     </Link>
