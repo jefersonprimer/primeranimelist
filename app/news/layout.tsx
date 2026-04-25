@@ -26,7 +26,7 @@ export default function NewsLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <div className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
       <ThemeProvider>
         <AppWrapper>
           <div className="fixed-header">
