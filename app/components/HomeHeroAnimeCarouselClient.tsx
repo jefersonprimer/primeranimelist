@@ -127,8 +127,8 @@ export function HomeHeroAnimeCarouselClient({
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/65 to-black/30" />
 
-          <div className="absolute -translate-y-20 inset-0 flex items-center mx-auto w-full max-w-7xl -trabs p-8 sm:py-10 md:py-12">
-            <div className="max-w-md text-white">
+          <div className="absolute inset-0 flex items-end sm:items-center justify-center sm:justify-start mx-auto w-full max-w-7xl p-8 pb-24 sm:py-10 md:py-12 sm:-translate-y-20">
+            <div className="max-w-md text-white text-center sm:text-left flex flex-col items-center sm:items-start">
               <Link
                 href={`/anime/${active.malId}/${slug}`}
                 className="block w-fit"
@@ -139,7 +139,7 @@ export function HomeHeroAnimeCarouselClient({
                       src={active.logo}
                       alt={`${active.title} logo`}
                       fill
-                      className="object-contain object-left"
+                      className="object-contain object-center sm:object-left"
                       sizes="340px"
                     />
                   </div>
@@ -150,7 +150,7 @@ export function HomeHeroAnimeCarouselClient({
                 )}
               </Link>
 
-              <div className="mb-4 flex items-center gap-1 text-sm text-zinc-200">
+              <div className="sm:mb-4 flex items-center gap-1 text-sm text-zinc-200">
                 {ratingIcon}
                 <span
                   className="flex items-center text-[0.8rem] relative pl-[14px] 
@@ -161,11 +161,11 @@ export function HomeHeroAnimeCarouselClient({
                 <p className="line-clamp-1">{genresText}</p>
               </div>
 
-              <p className="line-clamp-4 text-sm leading-relaxed text-[#bbb] sm:text-base">
+              <p className="hidden sm:line-clamp-4 text-sm leading-relaxed text-[#bbb] sm:text-base">
                 {active.synopsis || "No synopsis available."}
               </p>
 
-              <div className="mt-5 mb-12 flex items-center gap-2">
+              <div className="mt-5 mb-4 sm:mb-12 flex items-center justify-center sm:justify-start gap-2">
                 <Link
                   href={`/anime/${active.malId}/${slug}`}
                   className="inline-flex items-center gap-2 bg-white px-5 py-2 text-xs font-semibold tracking-wide text-black transition hover:bg-zinc-200 sm:text-sm"
@@ -183,7 +183,7 @@ export function HomeHeroAnimeCarouselClient({
 
               {total > 1 ? (
                 <div
-                  className="mt-4 flex items-center gap-2"
+                  className="mt-4 flex items-center justify-center sm:justify-start gap-2"
                   aria-hidden="true"
                 >
                   {items.map((_, index) => {
@@ -217,7 +217,7 @@ export function HomeHeroAnimeCarouselClient({
                 onClick={() =>
                   setCurrentIndex((prev) => (prev - 1 + total) % total)
                 }
-                className="absolute left-3 top-1/2 z-20 -translate-y-27 p-2 text-white transition hover:text-[#41414166] hover:cursor-pointer"
+                className="hidden sm:block absolute left-3 top-1/2 z-20 -translate-y-27 p-2 text-white transition hover:text-[#41414166] hover:cursor-pointer"
                 aria-label="Previous anime"
               >
                 <ChevronLeft size={38} />
@@ -225,7 +225,7 @@ export function HomeHeroAnimeCarouselClient({
               <button
                 type="button"
                 onClick={() => setCurrentIndex((prev) => (prev + 1) % total)}
-                className="absolute right-3 top-1/2 z-20 -translate-y-27  p-2 text-white transition hover:text-[#41414166]  hover:cursor-pointer"
+                className="hidden sm:block absolute right-3 top-1/2 z-20 -translate-y-27  p-2 text-white transition hover:text-[#41414166]  hover:cursor-pointer"
                 aria-label="Next anime"
               >
                 <ChevronRight size={38} />
