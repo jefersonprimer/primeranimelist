@@ -16,6 +16,7 @@ type HeroAnimeItem = {
   malId: number;
   title: string;
   thumbnail: string;
+  image_url: string;
   logo: string | null;
   episodes?: number | null;
   rating: string | null;
@@ -118,11 +119,19 @@ export function HomeHeroAnimeCarouselClient({
       <div className="mx-auto">
         <div className="relative h-[90vh] min-h-[520px] w-full overflow-hidden bg-zinc-900">
           <Image
+            src={active.image_url}
+            alt={active.title}
+            fill
+            priority
+            className="object-cover sm:hidden"
+            sizes="100vw"
+          />
+          <Image
             src={active.thumbnail}
             alt={active.title}
             fill
             priority
-            className="object-cover"
+            className="hidden object-cover sm:block"
             sizes="(max-width: 1280px) 100vw, 1280px"
           />
 

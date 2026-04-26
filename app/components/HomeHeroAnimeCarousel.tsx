@@ -42,6 +42,9 @@ export async function HomeHeroAnimeCarousel() {
       thumbnail: (anime.imageThumbnail ||
         anime.imageUrl ||
         anime.imageBannerDesktop) as string,
+      image_url: (anime.imageUrl ||
+        anime.imageThumbnail ||
+        anime.imageBannerDesktop) as string,
       logo: anime.imageLogo,
       rating: anime.rating,
       genres: normalizeGenres(anime.genres),
