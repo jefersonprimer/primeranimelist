@@ -125,16 +125,18 @@ export function HomeHeroAnimeCarouselClient({
             className="object-cover"
             sizes="(max-width: 1280px) 100vw, 1280px"
           />
+
+          {/* Bottom Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/65 to-black/30" />
 
-          <div className="absolute inset-0 flex items-end sm:items-center justify-center sm:justify-start mx-auto w-full max-w-7xl p-8 pb-24 sm:py-10 md:py-12 sm:-translate-y-20">
+          <div className="absolute inset-0 flex items-end sm:items-center justify-center sm:justify-start mx-auto w-full max-w-7xl p-8 sm:pb-24 sm:py-10 md:py-12 sm:-translate-y-20">
             <div className="max-w-md text-white text-center sm:text-left flex flex-col items-center sm:items-start">
               <Link
                 href={`/anime/${active.malId}/${slug}`}
                 className="block w-fit"
               >
                 {active.logo ? (
-                  <div className="relative mb-6 h-24 w-[280px] sm:h-28 sm:w-[340px]">
+                  <div className="relative mb-2 sm:mb-6 h-24 w-[280px] sm:h-28 sm:w-[340px]">
                     <Image
                       src={active.logo}
                       alt={`${active.title} logo`}
@@ -144,7 +146,7 @@ export function HomeHeroAnimeCarouselClient({
                     />
                   </div>
                 ) : (
-                  <h2 className="mb-6 line-clamp-2 text-3xl font-black sm:text-4xl">
+                  <h2 className="mb-2 sm:mb-6 line-clamp-2 text-3xl font-black sm:text-4xl">
                     {active.title}
                   </h2>
                 )}
@@ -161,7 +163,7 @@ export function HomeHeroAnimeCarouselClient({
                 <p className="line-clamp-1">{genresText}</p>
               </div>
 
-              <p className="hidden sm:line-clamp-4 text-sm leading-relaxed text-[#bbb] sm:text-base">
+              <p className="hidden sm:line-clamp-4 text-sm leading-relaxed text-[#bbb] sm:text-base px-1">
                 {active.synopsis || "No synopsis available."}
               </p>
 
@@ -177,7 +179,7 @@ export function HomeHeroAnimeCarouselClient({
                   malId={active.malId}
                   title={active.title}
                   episodes={active.episodes ?? null}
-                  triggerClassName="inline-flex items-center gap-2  border border-white/20 p-2 text-xs font-semibold text-white transition hover:border-indigo-400 hover:cursor-pointer"
+                  triggerClassName="inline-flex items-center gap-2  border-2 border-white/20 p-2 text-xs font-semibold text-white transition hover:border-indigo-400 hover:cursor-pointer"
                 />
               </div>
 
