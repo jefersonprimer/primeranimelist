@@ -23,6 +23,18 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'a.storyblok.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'imgsrv.crunchyroll.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.crunchyroll.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'static.crunchyroll.com',
+      },
     ],
   },
 };
