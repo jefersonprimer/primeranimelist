@@ -33,11 +33,37 @@ export default function Header() {
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [isAnonymousModalOpen, setIsAnonymousModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNewsDropdownOpen, setIsNewsDropdownOpen] = useState(false);
+  const [isCategoriesDropdownOpen, setIsCategoriesDropdownOpen] =
+    useState(false);
 
   // Close menu when route changes
   useEffect(() => {
     setIsMenuOpen(false);
+    setIsNewsDropdownOpen(false);
+    setIsCategoriesDropdownOpen(false);
   }, [pathname]);
+
+  // Close news dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (isNewsDropdownOpen && !target.closest(".news-dropdown-container")) {
+        setIsNewsDropdownOpen(false);
+      }
+      if (
+        isCategoriesDropdownOpen &&
+        !target.closest(".categories-dropdown-container")
+      ) {
+        setIsCategoriesDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isNewsDropdownOpen]);
 
   // Prevent scroll when menu is open
   useEffect(() => {
@@ -79,6 +105,7 @@ export default function Header() {
       href: `/anime/season/${currentYear}/${currentSeason}`,
       label: "Season Anime",
     },
+    { href: "/categories", label: "Categories" },
     { href: "/news", label: "News" },
   ];
 
@@ -114,7 +141,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="h-16 bg-[#272727] px-4 md:px-6 sticky top-0 z-[1000] border-b border-white/5">
+      <header className="h-16 bg-[#272727] px-4 md:px-6 sticky top-0 z-[1000]">
         <div className="mx-auto flex h-full max-w-7xl flex-row items-center justify-between">
           <div className="flex flex-row items-center h-full">
             {/* Mobile Menu Toggle - Now on the left */}
@@ -146,13 +173,182 @@ export default function Header() {
           <nav className="hidden md:flex h-full flex-1 px-6">
             <ul className="flex h-full flex-row">
               {navLinks.map((link) => (
-                <li key={link.href} className="h-full">
-                  <Link
-                    href={link.href}
-                    className="flex h-full items-center px-4 text-sm font-medium text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
-                  >
-                    {link.label}
-                  </Link>
+                <li key={link.href} className="h-full relative group">
+                  {link.label === "Categories" ? (
+                    <div className="h-full categories-dropdown-container">
+                      <button
+                        onClick={() =>
+                          setIsCategoriesDropdownOpen(!isCategoriesDropdownOpen)
+                        }
+                        className={`flex h-full items-center px-4 text-sm font-medium transition-colors hover:cursor-pointer hover:bg-[#181818] hover:text-white ${
+                          isCategoriesDropdownOpen
+                            ? "bg-[#181818] text-white"
+                            : "text-[#bbb]"
+                        }`}
+                      >
+                        {link.label}
+                        <DropdownIcon />
+                      </button>
+                      {isCategoriesDropdownOpen && (
+                        <div className="absolute top-full left-0 w-[820px] bg-[#181818] shadow-2xl py-2 z-[1001] animate-in fade-in slide-in-from-top-1 duration-200">
+                          <div className="grid grid-cols-4">
+                            {/* Main Options Column */}
+                            <div className="flex flex-col border-r border-white/5">
+                              <Link
+                                href="/anime/browse"
+                                onClick={() =>
+                                  setIsCategoriesDropdownOpen(false)
+                                }
+                                className="text-sm font-bold text-[#f8f8f8] hover:text-white hover:bg-[#272727] py-2 px-4 transition-colors"
+                              >
+                                Browse All (A-Z)
+                              </Link>
+                              <Link
+                                href="/anime/calendar"
+                                onClick={() =>
+                                  setIsCategoriesDropdownOpen(false)
+                                }
+                                className="text-sm font-bold text-[#f8f8f8] hover:text-white hover:bg-[#272727] py-2 px-4 transition-colors"
+                              >
+                                Release Calendar
+                              </Link>
+                              <Link
+                                href="/anime/music"
+                                onClick={() =>
+                                  setIsCategoriesDropdownOpen(false)
+                                }
+                                className="text-sm font-bold text-[#f8f8f8] hover:text-white hover:bg-[#272727] py-2 px-4 transition-colors"
+                              >
+                                Music Videos & Concerts
+                              </Link>
+                            </div>
+
+                            {/* Genres Section - 3 Columns */}
+                            <div className="col-span-3">
+                              <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 py-2 px-4">
+                                Genres
+                              </h3>
+                              <div className="grid grid-cols-3">
+                                {/* Genre Col 1 */}
+                                <div className="flex flex-col">
+                                  {[
+                                    "Action",
+                                    "Adventure",
+                                    "Comedy",
+                                    "Drama",
+                                    "Fantasy",
+                                  ].map((genre) => (
+                                    <Link
+                                      key={genre}
+                                      href={`/search?genre=${genre.toLowerCase()}`}
+                                      onClick={() =>
+                                        setIsCategoriesDropdownOpen(false)
+                                      }
+                                      className="text-sm text-[#bbb] hover:text-white hover:bg-[#272727] py-2 px-4 transition-colors"
+                                    >
+                                      {genre}
+                                    </Link>
+                                  ))}
+                                </div>
+                                {/* Genre Col 2 */}
+                                <div className="flex flex-col">
+                                  {[
+                                    "Music",
+                                    "Romance",
+                                    "Sci-Fi",
+                                    "Seinen",
+                                    "Shojo",
+                                  ].map((genre) => (
+                                    <Link
+                                      key={genre}
+                                      href={`/search?genre=${genre.toLowerCase()}`}
+                                      onClick={() =>
+                                        setIsCategoriesDropdownOpen(false)
+                                      }
+                                      className="text-sm text-[#bbb] hover:text-white hover:bg-[#272727] py-2 px-4 transition-colors"
+                                    >
+                                      {genre}
+                                    </Link>
+                                  ))}
+                                </div>
+                                {/* Genre Col 3 */}
+                                <div className="flex flex-col">
+                                  {[
+                                    "Shonen",
+                                    "Slice of Life",
+                                    "Sports",
+                                    "Supernatural",
+                                    "Thriller",
+                                  ].map((genre) => (
+                                    <Link
+                                      key={genre}
+                                      href={`/search?genre=${genre.toLowerCase()}`}
+                                      onClick={() =>
+                                        setIsCategoriesDropdownOpen(false)
+                                      }
+                                      className="text-sm text-[#bbb] hover:text-white transition-colors hover:bg-[#272727] py-2 px-4"
+                                    >
+                                      {genre}
+                                    </Link>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : link.label === "News" ? (
+                    <div className="h-full news-dropdown-container flex items-center">
+                      <div className="w-[1px] h-[20px] bg-[#4A4E58] my-0 mx-[4px]" />
+
+                      <button
+                        onClick={() =>
+                          setIsNewsDropdownOpen(!isNewsDropdownOpen)
+                        }
+                        className={`flex h-full items-center px-4  text-sm font-medium transition-colors hover:cursor-pointer hover:bg-[#181818] hover:text-white ${
+                          isNewsDropdownOpen
+                            ? "bg-[#181818] text-white"
+                            : "text-[#bbb]"
+                        }`}
+                      >
+                        {link.label}
+                        <DropdownIcon />
+                      </button>
+                      {isNewsDropdownOpen && (
+                        <div className="absolute top-full left-0 w-56 bg-[#181818] shadow-2xl py-2 z-[1001] animate-in fade-in slide-in-from-top-1 duration-200">
+                          <Link
+                            href="/news"
+                            onClick={() => setIsNewsDropdownOpen(false)}
+                            className="block px-4 py-2 text-sm text-[#bbb] hover:bg-[#272727] hover:text-white transition-colors"
+                          >
+                            All news
+                          </Link>
+                          <Link
+                            href="/news/anime-awards"
+                            onClick={() => setIsNewsDropdownOpen(false)}
+                            className="block px-4 py-2 text-sm text-[#bbb] hover:bg-[#272727] hover:text-white transition-colors"
+                          >
+                            Anime Awards
+                          </Link>
+                          <Link
+                            href="/news/events-experiences"
+                            onClick={() => setIsNewsDropdownOpen(false)}
+                            className="block px-4 py-2 text-sm text-[#bbb] hover:bg-[#272727] hover:text-white transition-colors"
+                          >
+                            Events & Experiences
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className="flex h-full items-center px-4 text-sm font-medium text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -244,16 +440,152 @@ export default function Header() {
           <ul className="space-y-1">
             {navLinks.map((link) => (
               <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className={`flex items-center rounded-xl px-4 py-3 text-base font-medium transition-colors ${
-                    pathname === link.href
-                      ? "bg-indigo-600/10 text-indigo-400"
-                      : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
-                  }`}
-                >
-                  {link.label}
-                </Link>
+                {link.label === "Categories" ? (
+                  <div className="flex flex-col">
+                    <button
+                      onClick={() =>
+                        setIsCategoriesDropdownOpen(!isCategoriesDropdownOpen)
+                      }
+                      className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-base font-medium transition-colors ${
+                        isCategoriesDropdownOpen
+                          ? "bg-indigo-600/10 text-indigo-400"
+                          : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
+                      }`}
+                    >
+                      {link.label}
+                      <DropdownIcon
+                        className={`transition-transform ${
+                          isCategoriesDropdownOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    {isCategoriesDropdownOpen && (
+                      <div className="ml-4 mt-1 flex flex-col space-y-4 border-l border-zinc-800 pl-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                        {/* Main Options */}
+                        <div className="flex flex-col space-y-1">
+                          {[
+                            "Browse All (A-Z)",
+                            "Release Calendar",
+                            "Music Videos & Concerts",
+                          ].map((item) => (
+                            <Link
+                              key={item}
+                              href={`/anime/${item.toLowerCase().replace(/ /g, "-").replace(/\(|\)/g, "")}`}
+                              onClick={() => {
+                                setIsCategoriesDropdownOpen(false);
+                                setIsMenuOpen(false);
+                              }}
+                              className="rounded-lg px-4 py-2 text-sm font-bold text-white hover:bg-zinc-800/50 transition-colors"
+                            >
+                              {item}
+                            </Link>
+                          ))}
+                        </div>
+
+                        {/* Genres */}
+                        <div>
+                          <span className="px-4 text-[10px] font-black uppercase tracking-widest text-zinc-600">
+                            Genres
+                          </span>
+                          <div className="grid grid-cols-2 gap-x-2 mt-2">
+                            {[
+                              "Action",
+                              "Adventure",
+                              "Comedy",
+                              "Drama",
+                              "Fantasy",
+                              "Music",
+                              "Romance",
+                              "Sci-Fi",
+                              "Seinen",
+                              "Shojo",
+                              "Shonen",
+                              "Slice of Life",
+                              "Sports",
+                              "Supernatural",
+                              "Thriller",
+                            ].map((genre) => (
+                              <Link
+                                key={genre}
+                                href={`/search?genre=${genre.toLowerCase()}`}
+                                onClick={() => {
+                                  setIsCategoriesDropdownOpen(false);
+                                  setIsMenuOpen(false);
+                                }}
+                                className="rounded-lg px-4 py-1.5 text-xs text-zinc-500 hover:bg-zinc-800/50 hover:text-white transition-colors"
+                              >
+                                {genre}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : link.label === "News" ? (
+                  <div className="flex flex-col">
+                    <button
+                      onClick={() => setIsNewsDropdownOpen(!isNewsDropdownOpen)}
+                      className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-base font-medium transition-colors ${
+                        isNewsDropdownOpen
+                          ? "bg-indigo-600/10 text-indigo-400"
+                          : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
+                      }`}
+                    >
+                      {link.label}
+                      <DropdownIcon
+                        className={`transition-transform ${
+                          isNewsDropdownOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    {isNewsDropdownOpen && (
+                      <div className="ml-4 mt-1 flex flex-col space-y-1 border-l border-zinc-800 pl-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                        <Link
+                          href="/news"
+                          onClick={() => {
+                            setIsNewsDropdownOpen(false);
+                            setIsMenuOpen(false);
+                          }}
+                          className="rounded-lg px-4 py-2 text-sm font-medium text-zinc-500 hover:bg-zinc-800/50 hover:text-white transition-colors"
+                        >
+                          All news
+                        </Link>
+                        <Link
+                          href="/news/anime-awards"
+                          onClick={() => {
+                            setIsNewsDropdownOpen(false);
+                            setIsMenuOpen(false);
+                          }}
+                          className="rounded-lg px-4 py-2 text-sm font-medium text-zinc-500 hover:bg-zinc-800/50 hover:text-white transition-colors"
+                        >
+                          Anime Awards
+                        </Link>
+                        <Link
+                          href="/news/events-experiences"
+                          onClick={() => {
+                            setIsNewsDropdownOpen(false);
+                            setIsMenuOpen(false);
+                          }}
+                          className="rounded-lg px-4 py-2 text-sm font-medium text-zinc-500 hover:bg-zinc-800/50 hover:text-white transition-colors"
+                        >
+                          Events & Experiences
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    href={link.href}
+                    className={`flex items-center rounded-xl px-4 py-3 text-base font-medium transition-colors ${
+                      pathname === link.href
+                        ? "bg-indigo-600/10 text-indigo-400"
+                        : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
