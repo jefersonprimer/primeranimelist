@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/auth";
+import { WatchlistButton } from "@/app/components/WatchlistButton";
 import { listAnime, parseTopAnimeFilter, type TopAnimeFilter } from "@/lib/services/anime.service";
 import { listWatchlistEntriesByMalIds } from "@/lib/services/watchlist.service";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -152,7 +153,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                   className={`inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-bold transition-colors ${
                     isActive
                       ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
-                      : "border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
+                        : "border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
                   }`}
                 >
                   {item.label}
@@ -267,7 +268,13 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                             {watchlistEntry.status}
                           </span>
                         ) : (
-                          <span className="text-sm font-medium text-zinc-400 dark:text-zinc-500">-</span>
+                          <WatchlistButton
+                            malId={anime.malId}
+                            title={anime.title}
+                            episodes={anime.episodes}
+                            triggerLabel="Add to my list"
+                            triggerClassName="inline-flex items-center justify-center rounded-full border border-indigo-300 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 transition-colors hover:border-indigo-400 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 dark:hover:border-indigo-700 dark:hover:bg-indigo-900"
+                          />
                         )}
                       </td>
                     </tr>
