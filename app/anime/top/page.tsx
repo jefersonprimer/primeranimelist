@@ -166,12 +166,12 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
           <table className="w-full text-left border-collapse bg-white dark:bg-zinc-950">
             <thead className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
               <tr>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-wider text-sm w-24">Rank</th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-wider text-sm w-32">Image</th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-wider text-sm">Title</th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-wider text-sm text-center w-32">Score</th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-wider text-sm text-center w-40">Your Status</th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 uppercase tracking-wider text-sm text-center w-32">Your Score</th>
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm w-24">Rank</th>
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm w-32">Image</th>
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm">Title</th>
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-32">Score</th>
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-40">Your Score</th>
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-32">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
@@ -254,8 +254,8 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                       </td>
                       <td className="px-6 py-4 text-center align-middle">
                         {watchlistEntry ? (
-                          <span className="inline-flex rounded-full border border-indigo-400/20 bg-indigo-400/10 px-3 py-1 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
-                            {watchlistEntry.status}
+                          <span className="text-base font-black text-zinc-900 dark:text-zinc-50">
+                            {watchlistEntry.score ?? "N/A"}
                           </span>
                         ) : (
                           <span className="text-sm font-medium text-zinc-400 dark:text-zinc-500">-</span>
@@ -263,8 +263,8 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                       </td>
                       <td className="px-6 py-4 text-center align-middle">
                         {watchlistEntry ? (
-                          <span className="text-base font-black text-zinc-900 dark:text-zinc-50">
-                            {watchlistEntry.score ?? "N/A"}
+                          <span className="inline-flex rounded-full border border-indigo-400/20 bg-indigo-400/10 px-3 py-1 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+                            {watchlistEntry.status}
                           </span>
                         ) : (
                           <span className="text-sm font-medium text-zinc-400 dark:text-zinc-500">-</span>
