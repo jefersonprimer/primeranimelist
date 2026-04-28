@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { ensureDatabase } from "@/lib/db/bootstrap";
 import { anime } from "@/lib/db/schema";
-import { asc, and, count, desc, eq, gt, ilike, isNotNull, or } from "drizzle-orm";
+import { asc, and, count, desc, eq, gt, ilike, isNotNull, or, sql } from "drizzle-orm";
 import type { InferSelectModel } from "drizzle-orm";
 
 type ListAnimeOptions = {
@@ -13,6 +13,23 @@ type ListAnimeOptions = {
 type SearchAnimeOptions = {
   query: string;
   limit?: number;
+};
+
+type ListAlphabeticalAnimeOptions = {
+  letter?: string;
+  limit?: number;
+};
+
+type ListNewestAnimeOptions = {
+  page?: number;
+  limit?: number;
+};
+
+type ListAnimeByGenreOptions = {
+  genreName: string;
+  page?: number;
+  limit?: number;
+  sort?: "popular" | "newest";
 };
 
 type AnimeRow = InferSelectModel<typeof anime>;
@@ -447,6 +464,107 @@ export async function searchAnime({ query, limit = 24 }: SearchAnimeOptions) {
     )
     .orderBy(asc(anime.rank), desc(anime.members))
     .limit(safeLimit);
+}
+
+export async function listAlphabeticalAnime({ letter, limit = 500 }: ListAlphabeticalAnimeOptions = {}) {
+  await ensureDatabase();
+
+  const safeLimit = Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : 500;
+  const normalizedLetter = letter?.trim().slice(0, 1).toUpperCase() ?? "";
+  const hasLetterFilter = /^[A-Z]$/.test(normalizedLetter);
+
+  const items = await db
+    .select()
+    .from(anime)
+    .where(hasLetterFilter ? ilike(anime.title, `${normalizedLetter}%`) : undefined)
+    .orderBy(asc(anime.title), asc(anime.rank), desc(anime.members))
+    .limit(safeLimit);
+
+  return {
+    items,
+    letter: hasLetterFilter ? normalizedLetter : "#",
+    limit: safeLimit,
+  };
+}
+
+export async function listNewestAnime({ page = 1, limit = 50 }: ListNewestAnimeOptions = {}) {
+  await ensureDatabase();
+
+  const safePage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+  const safeLimit = Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : 50;
+  const offset = (safePage - 1) * safeLimit;
+
+  const [items, [{ total }]] = await Promise.all([
+    db
+      .select()
+      .from(anime)
+      .orderBy(
+        sql`${anime.airedFrom} desc nulls last`,
+        sql`${anime.year} desc nulls last`,
+        desc(anime.createdAt),
+        desc(anime.members),
+        asc(anime.title)
+      )
+      .limit(safeLimit)
+      .offset(offset),
+    db.select({ total: count() }).from(anime),
+  ]);
+
+  return {
+    items,
+    limit: safeLimit,
+    page: safePage,
+    total,
+    totalPages: Math.max(1, Math.ceil(total / safeLimit)),
+  };
+}
+
+export async function listAnimeByGenre({
+  genreName,
+  page = 1,
+  limit = 50,
+  sort = "popular",
+}: ListAnimeByGenreOptions) {
+  await ensureDatabase();
+
+  const safePage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+  const safeLimit = Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : 50;
+  const offset = (safePage - 1) * safeLimit;
+  const genreFilter = sql<boolean>`${anime.genres} ? ${genreName}`;
+
+  const orderBy =
+    sort === "newest"
+      ? ([
+          sql`${anime.airedFrom} desc nulls last`,
+          sql`${anime.year} desc nulls last`,
+          desc(anime.createdAt),
+          desc(anime.members),
+          asc(anime.title),
+        ] as const)
+      : ([
+          sql`${anime.popularity} asc nulls last`,
+          desc(anime.members),
+          asc(anime.title),
+        ] as const);
+
+  const [items, [{ total }]] = await Promise.all([
+    db
+      .select()
+      .from(anime)
+      .where(genreFilter)
+      .orderBy(...orderBy)
+      .limit(safeLimit)
+      .offset(offset),
+    db.select({ total: count() }).from(anime).where(genreFilter),
+  ]);
+
+  return {
+    items,
+    limit: safeLimit,
+    page: safePage,
+    total,
+    totalPages: Math.max(1, Math.ceil(total / safeLimit)),
+  };
 }
 
 const VALID_SEASONS = ["winter", "spring", "summer", "fall"] as const;

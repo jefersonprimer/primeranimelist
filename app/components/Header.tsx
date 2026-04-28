@@ -195,7 +195,7 @@ export default function Header() {
                             {/* Main Options Column */}
                             <div className="flex flex-col border-r border-white/5">
                               <Link
-                                href="/anime/browse"
+                                href="/videos/alphabetical"
                                 onClick={() =>
                                   setIsCategoriesDropdownOpen(false)
                                 }
@@ -240,7 +240,7 @@ export default function Header() {
                                   ].map((genre) => (
                                     <Link
                                       key={genre}
-                                      href={`/search?genre=${genre.toLowerCase()}`}
+                                      href={`/videos/${genre.toLowerCase()}`}
                                       onClick={() =>
                                         setIsCategoriesDropdownOpen(false)
                                       }
@@ -261,7 +261,7 @@ export default function Header() {
                                   ].map((genre) => (
                                     <Link
                                       key={genre}
-                                      href={`/search?genre=${genre.toLowerCase()}`}
+                                      href={`/videos/${genre.toLowerCase()}`}
                                       onClick={() =>
                                         setIsCategoriesDropdownOpen(false)
                                       }
@@ -282,7 +282,7 @@ export default function Header() {
                                   ].map((genre) => (
                                     <Link
                                       key={genre}
-                                      href={`/search?genre=${genre.toLowerCase()}`}
+                                      href={`/videos/${genre.toLowerCase()}`}
                                       onClick={() =>
                                         setIsCategoriesDropdownOpen(false)
                                       }
