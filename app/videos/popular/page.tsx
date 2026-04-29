@@ -1,7 +1,7 @@
 import VideoListPage from "@/app/videos/components/VideoListPage";
 import { listAnime } from "@/lib/services/anime.service";
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 30;
 
 function getPageNumber(value: string | string[] | undefined) {
   const rawValue = Array.isArray(value) ? value[0] : value;
@@ -37,12 +37,13 @@ export default async function PopularPage({
 
   return (
     <VideoListPage
+      key={`popular-${currentPage}`}
       animes={result.items}
       title="Most Popular Anime"
       currentPage={currentPage}
       totalPages={result.totalPages}
       total={result.total}
-      basePath="/videos/popular"
+      mode="popular"
     />
   );
 }

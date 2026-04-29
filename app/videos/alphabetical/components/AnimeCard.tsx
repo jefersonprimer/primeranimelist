@@ -40,7 +40,7 @@ const AnimeCard = ({ anime }: AnimeCardProps) => {
   return (
     <Link
       href={`/anime/${anime.malId}/${slug}`}
-      className="group flex w-full gap-5 p-4 transition-all duration-300 hover:bg-zinc-900/90 hover:ring-1 hover:ring-zinc-800"
+      className="group flex w-full gap-5 p-2 transition-all duration-300 hover:bg-zinc-900/90"
     >
       <div className="relative h-32 w-24 flex-shrink-0 overflow-hidden bg-zinc-900 shadow-lg">
         {imageSrc ? (

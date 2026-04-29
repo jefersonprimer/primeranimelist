@@ -1,7 +1,14 @@
-import { listManga, parseTopMangaFilter, type TopMangaFilter } from "@/lib/services/manga.service";
+import { getSession } from "@/lib/auth";
+import { MangaWatchlistButton } from "@/app/components/MangaWatchlistButton";
+import {
+  listManga,
+  parseTopMangaFilter,
+  type TopMangaFilter,
+} from "@/lib/services/manga.service";
+import { listMangaWatchlistEntriesByMalIds } from "@/lib/services/manga-watchlist.service";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { MangaCard } from "@/app/components/MangaCard";
-import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -18,25 +25,55 @@ function getPageNumber(value: string | string[] | undefined) {
   return page;
 }
 
-function getPageHrefWithFilter(page: number, filter: TopMangaFilter | null) {
+function getPageHref(page: number, filter: TopMangaFilter | null) {
   if (!filter) {
     return page <= 1 ? "/manga/top" : `/manga/top?page=${page}`;
   }
 
-  return page <= 1 ? `/manga/top?filter=${filter}` : `/manga/top?filter=${filter}&page=${page}`;
+  return page <= 1
+    ? `/manga/top?filter=${filter}`
+    : `/manga/top?filter=${filter}&page=${page}`;
+}
+
+function formatDate(date: Date | null | undefined) {
+  if (!date) return null;
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    year: "numeric",
+  }).format(date);
 }
 
 export default async function MangaListPage(props: PageProps<"/manga/top">) {
   const { page: pageParam, filter: filterParam } = await props.searchParams;
   const page = getPageNumber(pageParam);
   const filter = parseTopMangaFilter(filterParam);
-  const { items: mangaList, total, totalPages } = await listManga({
-    page,
-    limit: PAGE_SIZE,
-    filter: filter ?? undefined,
-  });
+  const [session, { items: mangaList, total, totalPages }] = await Promise.all([
+    getSession(),
+    listManga({
+      page,
+      limit: PAGE_SIZE,
+      filter: filter ?? undefined,
+    }),
+  ]);
+  const watchlistEntries =
+    session && mangaList.length > 0
+      ? await listMangaWatchlistEntriesByMalIds(
+          session.user.id,
+          mangaList.map((manga) => manga.malId),
+        )
+      : [];
+  const watchlistByMalId = new Map(
+    watchlistEntries.map((entry) => [
+      entry.manga.malId,
+      {
+        status: entry.status,
+        score: entry.score,
+      },
+    ]),
+  );
   const currentPage = Math.min(page, totalPages);
   const startRank = total === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
+  const endRank = total === 0 ? 0 : startRank + mangaList.length - 1;
   const hasPreviousPage = currentPage > 1;
   const hasNextPage = currentPage < totalPages;
 
@@ -53,142 +90,268 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
   ];
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-zinc-50 py-12 dark:bg-zinc-950/40">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:20px_20px]" />
+    <div className="max-w-7xl mx-auto py-12 px-6">
+      <div className="flex flex-col gap-8">
+        <div>
+          <h1 className="text-[28px] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+            Top Manga
+          </h1>
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+            Updated twice a day. (How do we rank series?)
+          </p>
+        </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
-        {/* Header - Manga Carousel Style */}
-        <div className="relative z-20 mb-16">
-          <div className="relative">
-            <div className="absolute -left-4 -top-6 h-12 w-12 bg-indigo-600/10 dark:bg-indigo-400/10 rounded-full blur-2xl" />
-            <span className="block text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 dark:text-indigo-400 mb-2">
-              Ranking Collection
-            </span>
-            <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-zinc-900 dark:text-zinc-50 uppercase italic leading-none">
-              Top Manga
-            </h1>
-            <div className="mt-4 flex gap-1">
-              <div className="h-2 w-16 bg-indigo-600 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]" />
-              <div className="h-2 w-6 bg-zinc-900 dark:bg-zinc-100" />
-              <div className="h-2 w-4 bg-zinc-300 dark:bg-zinc-700" />
-            </div>
-            <p className="mt-6 max-w-xl text-lg font-bold text-zinc-600 dark:text-zinc-400 italic">
-              Explore the most acclaimed and popular manga in the community.
+        <div className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white/80 px-4 py-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/80 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
+              Ranking
+            </p>
+            <p className="mt-1 text-base font-bold text-zinc-900 dark:text-zinc-50">
+              {total === 0
+                ? "No ranked manga found"
+                : `Showing #${startRank} to #${endRank} of ${total}`}
             </p>
           </div>
-        </div>
 
-        {/* Filters & Navigation Toolbar */}
-        <div className="mb-12 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <div className="flex-1">
-            <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 mb-4">
-              Filter by Category
-            </span>
-            <nav className="flex flex-wrap items-center gap-3">
-              {FILTERS.map((item) => {
-                const isActive = item.value === filter;
-                const href = item.value ? `/manga/top?filter=${item.value}` : "/manga/top";
-
-                return (
-                  <Link
-                    key={item.value ?? "all"}
-                    href={href}
-                    className={`px-4 py-2 text-xs font-black uppercase tracking-widest transition-all ${
-                      isActive
-                        ? "bg-indigo-600 text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]"
-                        : "bg-white text-zinc-900 border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-100 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:bg-indigo-50 dark:hover:bg-indigo-950/30"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-
-          <div className="flex flex-col gap-4 min-w-[300px]">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex flex-col">
-                 <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Total Found</span>
-                 <span className="text-xl font-black italic text-indigo-600 dark:text-indigo-400 leading-none">
-                    {total.toLocaleString()} Manga
-                 </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Link
-                  href={hasPreviousPage ? getPageHrefWithFilter(currentPage - 1, filter) : "#"}
-                  className={`flex h-12 w-12 items-center justify-center border-2 border-zinc-900 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all dark:border-white dark:bg-zinc-900 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] ${
-                    hasPreviousPage ? "hover:translate-x-[-2px] hover:translate-y-[-2px] hover:bg-indigo-50 dark:hover:bg-indigo-950/30" : "opacity-30 pointer-events-none"
-                  }`}
-                >
-                  <ArrowBigLeft className="h-6 w-6" />
-                </Link>
-                <div className="flex h-12 px-4 items-center justify-center border-2 border-zinc-900 bg-zinc-900 text-white font-black italic shadow-[4px_4px_0px_0px_rgba(79,70,229,0.5)] dark:border-white dark:bg-white dark:text-black">
-                  {currentPage} / {totalPages}
-                </div>
-                <Link
-                  href={hasNextPage ? getPageHrefWithFilter(currentPage + 1, filter) : "#"}
-                  className={`flex h-12 w-12 items-center justify-center border-2 border-zinc-900 bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all dark:border-white dark:bg-zinc-900 dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] ${
-                    hasNextPage ? "hover:translate-x-[-2px] hover:translate-y-[-2px] hover:bg-indigo-50 dark:hover:bg-indigo-950/30" : "opacity-30 pointer-events-none"
-                  }`}
-                >
-                  <ArrowBigRight className="h-6 w-6" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Manga Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-y-16 gap-x-6 md:gap-x-10">
-          {mangaList.length > 0 ? (
-            mangaList.map((manga, index) => (
-              <MangaCard
-                key={manga.id}
-                malId={manga.malId}
-                title={manga.title}
-                imageUrl={manga.imageUrl}
-                score={manga.score}
-                type={manga.type}
-                chapters={manga.chapters}
-                volumes={manga.volumes}
-                rank={filter ? startRank + index : (manga.rank || manga.popularity || startRank + index)}
-              />
-            ))
-          ) : (
-            <div className="col-span-full flex flex-col items-center justify-center py-32 border-4 border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl">
-              <p className="text-2xl font-black uppercase italic text-zinc-300 dark:text-zinc-700">
-                Empty Database
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Bottom Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-20 flex justify-center items-center gap-4">
-             <Link
-              href={hasPreviousPage ? getPageHrefWithFilter(currentPage - 1, filter) : "#"}
-              className={`flex items-center gap-2 px-6 py-3 border-2 border-zinc-900 bg-white text-xs font-black uppercase tracking-[0.2em] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all dark:border-white dark:bg-zinc-900 dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)] ${
-                hasPreviousPage ? "hover:translate-x-[-2px] hover:translate-y-[-2px] hover:bg-indigo-50 dark:hover:bg-indigo-950/30" : "opacity-30 pointer-events-none"
-              }`}
-            >
-              <ArrowBigLeft className="h-5 w-5" />
-              Previous
-            </Link>
+          <div className="flex items-center gap-3 self-start md:self-auto">
             <Link
-              href={hasNextPage ? getPageHrefWithFilter(currentPage + 1, filter) : "#"}
-              className={`flex items-center gap-2 px-6 py-3 border-2 border-zinc-900 bg-indigo-600 text-white text-xs font-black uppercase tracking-[0.2em] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all ${
-                hasNextPage ? "hover:translate-x-[-2px] hover:translate-y-[-2px] hover:bg-indigo-500" : "opacity-30 pointer-events-none"
+              href={
+                hasPreviousPage
+                  ? getPageHref(currentPage - 1, filter)
+                  : getPageHref(1, filter)
+              }
+              aria-disabled={!hasPreviousPage}
+              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
+                hasPreviousPage
+                  ? "border-zinc-300 text-zinc-900 hover:border-zinc-400 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-50 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
+                  : "pointer-events-none border-zinc-200 text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
               }`}
             >
-              Next Page
-              <ArrowBigRight className="h-5 w-5" />
+              <ChevronLeft />
+              Previous 50
+            </Link>
+
+            <span className="text-sm font-bold text-zinc-500 dark:text-zinc-400">
+              Page {currentPage} of {totalPages}
+            </span>
+
+            <Link
+              href={
+                hasNextPage
+                  ? getPageHref(currentPage + 1, filter)
+                  : getPageHref(currentPage, filter)
+              }
+              aria-disabled={!hasNextPage}
+              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
+                hasNextPage
+                  ? "border-indigo-300 bg-indigo-50 text-indigo-700 hover:border-indigo-400 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 dark:hover:border-indigo-700 dark:hover:bg-indigo-900"
+                  : "pointer-events-none border-zinc-200 text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
+              }`}
+            >
+              Next 50
+              <ChevronRight />
             </Link>
           </div>
-        )}
+        </div>
+
+        <div className="rounded-xl border border-zinc-200 bg-white/80 px-2 py-2 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/80">
+          <nav className="flex items-center gap-2 overflow-x-auto whitespace-nowrap px-1 py-1">
+            {FILTERS.map((item) => {
+              const isActive = item.value === filter;
+              const href = item.value
+                ? `/manga/top?filter=${item.value}`
+                : "/manga/top";
+
+              return (
+                <Link
+                  key={item.value ?? "all"}
+                  href={href}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-bold transition-colors ${
+                    isActive
+                      ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
+                      : "border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        <div className="w-full overflow-x-auto rounded-xl border border-zinc-200 shadow-sm overflow-hidden dark:border-zinc-800">
+          <table className="w-full border-collapse bg-white text-left dark:bg-zinc-950">
+            <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
+              <tr>
+                <th className="w-24 px-6 py-4 text-sm font-bold tracking-wider text-zinc-900 dark:text-zinc-50">
+                  Rank
+                </th>
+                <th className="w-32 px-6 py-4 text-sm font-bold tracking-wider text-zinc-900 dark:text-zinc-50">
+                  Image
+                </th>
+                <th className="px-6 py-4 text-sm font-bold tracking-wider text-zinc-900 dark:text-zinc-50">
+                  Title
+                </th>
+                <th className="w-32 px-6 py-4 text-center text-sm font-bold tracking-wider text-zinc-900 dark:text-zinc-50">
+                  Score
+                </th>
+                <th className="w-40 px-6 py-4 text-center text-sm font-bold tracking-wider text-zinc-900 dark:text-zinc-50">
+                  Your Score
+                </th>
+                <th className="w-32 px-6 py-4 text-center text-sm font-bold tracking-wider text-zinc-900 dark:text-zinc-50">
+                  Status
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+              {mangaList.length > 0 ? (
+                mangaList.map((manga, index) => {
+                  const watchlistEntry = watchlistByMalId.get(manga.malId);
+
+                  return (
+                    <tr
+                      key={manga.id}
+                      className="transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                    >
+                      <td className="px-6 py-8 align-middle">
+                        <span className="text-3xl font-black text-zinc-400 dark:text-zinc-600">
+                          #
+                          {filter
+                            ? startRank + index
+                            : manga.rank ||
+                              manga.popularity ||
+                              startRank + index}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 align-middle">
+                        <Link
+                          href={`/manga/${manga.malId}/${encodeURIComponent(manga.title)}`}
+                        >
+                          {manga.imageUrl ? (
+                            <div className="relative h-28 w-20 overflow-hidden border border-zinc-200 shadow-sm transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700">
+                              <Image
+                                src={manga.imageUrl}
+                                alt={manga.title}
+                                fill
+                                className="object-cover"
+                                sizes="80px"
+                              />
+                            </div>
+                          ) : (
+                            <div className="flex h-28 w-20 items-center justify-center rounded bg-zinc-200 dark:bg-zinc-800">
+                              <span className="text-[10px] text-zinc-400">
+                                No image
+                              </span>
+                            </div>
+                          )}
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4 align-middle">
+                        <div className="flex flex-col gap-1">
+                          <Link
+                            href={`/manga/${manga.malId}/${encodeURIComponent(manga.title)}`}
+                            className="transition-colors hover:text-indigo-600 dark:hover:text-indigo-400"
+                          >
+                            <h3 className="text-lg font-bold leading-tight text-zinc-900 dark:text-zinc-50">
+                              {manga.title}
+                            </h3>
+                          </Link>
+                          {manga.titleJapanese && (
+                            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                              {manga.titleJapanese}
+                            </p>
+                          )}
+                          <div className="mt-1.5 flex flex-wrap gap-2">
+                            {manga.type && (
+                              <span className="rounded border border-indigo-100 bg-indigo-50 px-1.5 py-0.5 text-[9px] font-black uppercase text-indigo-600 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-400">
+                                {manga.type}
+                              </span>
+                            )}
+                            {manga.volumes && (
+                              <span className="rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+                                {manga.volumes} vols
+                              </span>
+                            )}
+                            {manga.chapters && (
+                              <span className="rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+                                {manga.chapters} chs
+                              </span>
+                            )}
+                          </div>
+                          {(manga.publishedFrom || manga.publishedTo) && (
+                            <p className="mt-0.5 text-[10px] font-bold uppercase tracking-tight text-zinc-500 dark:text-zinc-400">
+                              {formatDate(manga.publishedFrom)}
+                              {manga.publishedTo
+                                ? ` - ${formatDate(manga.publishedTo)}`
+                                : ""}
+                            </p>
+                          )}
+                          {manga.members !== null &&
+                            manga.members !== undefined && (
+                              <p className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500">
+                                {new Intl.NumberFormat("en-US").format(
+                                  manga.members,
+                                )}{" "}
+                                members
+                              </p>
+                            )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center align-middle">
+                        <div className="inline-flex flex-col items-center">
+                          <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400">
+                            {manga.score ? manga.score.toFixed(2) : "N/A"}
+                          </span>
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                            Score
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center align-middle">
+                        {watchlistEntry ? (
+                          <span className="text-base font-black text-zinc-900 dark:text-zinc-50">
+                            {watchlistEntry.score ?? "N/A"}
+                          </span>
+                        ) : (
+                          <span className="text-sm font-medium text-zinc-400 dark:text-zinc-500">
+                            -
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-center align-middle">
+                        {watchlistEntry ? (
+                          <span className="inline-flex rounded-full border border-indigo-400/20 bg-indigo-400/10 px-3 py-1 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+                            {watchlistEntry.status}
+                          </span>
+                        ) : (
+                          <MangaWatchlistButton
+                            malId={manga.malId}
+                            title={manga.title}
+                            volumes={manga.volumes}
+                            chapters={manga.chapters}
+                            triggerLabel="Add to my list"
+                            triggerClassName="inline-flex items-center justify-center rounded-full border border-indigo-300 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 transition-colors hover:border-indigo-400 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 dark:hover:border-indigo-700 dark:hover:bg-indigo-900"
+                          />
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="px-6 py-12 text-center text-sm font-medium text-zinc-500 dark:text-zinc-400"
+                  >
+                    No ranked manga available for this page.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

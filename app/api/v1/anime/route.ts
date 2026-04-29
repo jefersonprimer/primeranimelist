@@ -3,6 +3,7 @@ import {
   isValidAnimeSeason,
   listAnime,
   listAnimeBySeasonYear,
+  listNewestAnime,
   parseTopAnimeFilter,
   serializeAnimeListResponse,
   serializeSingleAnimeResponse,
@@ -58,6 +59,22 @@ export async function GET(request: Request) {
         total: result.items.length,
       })
     );
+  }
+
+  if (filterRaw === "newest") {
+    const result = await listNewestAnime({
+      page,
+      limit,
+    });
+
+    return Response.json({
+      ...serializeAnimeListResponse(result.items, {
+        page: result.page,
+        limit: result.limit,
+        total: result.total,
+      }),
+      filter: "newest",
+    });
   }
 
   const result = await listAnime({

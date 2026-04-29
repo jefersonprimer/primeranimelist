@@ -28,8 +28,8 @@ const AlphabeticalClient = ({
   onLetterChange,
 }: AlphabeticalClientProps) => {
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col items-center px-6 py-15">
-      <div className="mb-8 flex w-full items-center justify-between">
+    <div className="mx-auto flex w-full max-w-[1130px] flex-col items-center px-6 py-15">
+      <div className="mb-8 px-2 flex w-full items-center justify-between">
         <h1 className="m-0 p-0 text-[28px] font-bold font-lato text-left">
           Alphabetical
         </h1>

@@ -1,7 +1,7 @@
 import VideoListPage from "@/app/videos/components/VideoListPage";
 import { listNewestAnime } from "@/lib/services/anime.service";
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 30;
 
 function getPageNumber(value: string | string[] | undefined) {
   const rawValue = Array.isArray(value) ? value[0] : value;
@@ -33,12 +33,13 @@ export default async function NewPage({
 
   return (
     <VideoListPage
+      key={`newest-${currentPage}`}
       animes={result.items}
       title="Newest Anime"
       currentPage={currentPage}
       totalPages={result.totalPages}
       total={result.total}
-      basePath="/videos/new"
+      mode="newest"
     />
   );
 }

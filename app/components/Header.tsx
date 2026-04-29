@@ -99,8 +99,8 @@ export default function Header() {
   };
 
   const navLinks = [
-    { href: "/anime/top", label: "Top Anime" },
-    { href: "/manga/top", label: "Top Manga" },
+    { href: "/anime/top", label: "Anime" },
+    { href: "/manga/top", label: "Manga" },
     {
       href: `/anime/season/${currentYear}/${currentSeason}`,
       label: "Season Anime",

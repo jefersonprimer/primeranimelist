@@ -1,6 +1,10 @@
 import { getSession } from "@/lib/auth";
 import { WatchlistButton } from "@/app/components/WatchlistButton";
-import { listAnime, parseTopAnimeFilter, type TopAnimeFilter } from "@/lib/services/anime.service";
+import {
+  listAnime,
+  parseTopAnimeFilter,
+  type TopAnimeFilter,
+} from "@/lib/services/anime.service";
 import { listWatchlistEntriesByMalIds } from "@/lib/services/watchlist.service";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
@@ -26,12 +30,17 @@ function getPageHref(page: number, filter: TopAnimeFilter | null) {
     return page <= 1 ? "/anime/top" : `/anime/top?page=${page}`;
   }
 
-  return page <= 1 ? `/anime/top?filter=${filter}` : `/anime/top?filter=${filter}&page=${page}`;
+  return page <= 1
+    ? `/anime/top?filter=${filter}`
+    : `/anime/top?filter=${filter}&page=${page}`;
 }
 
 function formatDate(date: Date | null | undefined) {
   if (!date) return null;
-  return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(date);
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    year: "numeric",
+  }).format(date);
 }
 
 export default async function AnimeListPage(props: PageProps<"/anime/top">) {
@@ -50,7 +59,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
     session && animeList.length > 0
       ? await listWatchlistEntriesByMalIds(
           session.user.id,
-          animeList.map((anime) => anime.malId)
+          animeList.map((anime) => anime.malId),
         )
       : [];
   const watchlistByMalId = new Map(
@@ -60,7 +69,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
         status: entry.status,
         score: entry.score,
       },
-    ])
+    ]),
   );
   const currentPage = Math.min(page, totalPages);
   const startRank = total === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
@@ -86,11 +95,11 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
     <div className="max-w-7xl mx-auto py-12 px-6">
       <div className="flex flex-col gap-8">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-zinc-900 dark:text-zinc-50 uppercase italic">
+          <h1 className="text-[28px] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
             Top Anime
           </h1>
-          <p className="mt-2 text-lg text-zinc-600 dark:text-zinc-400">
-            Most popular anime on PrimerAnimeList
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+            Updated twice a day. (How do we rank shows?)
           </p>
         </div>
 
@@ -108,7 +117,11 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
 
           <div className="flex items-center gap-3 self-start md:self-auto">
             <Link
-              href={hasPreviousPage ? getPageHref(currentPage - 1, filter) : getPageHref(1, filter)}
+              href={
+                hasPreviousPage
+                  ? getPageHref(currentPage - 1, filter)
+                  : getPageHref(1, filter)
+              }
               aria-disabled={!hasPreviousPage}
               className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
                 hasPreviousPage
@@ -116,7 +129,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                   : "pointer-events-none border-zinc-200 text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
               }`}
             >
-              <ChevronLeft/>
+              <ChevronLeft />
               Previous 50
             </Link>
 
@@ -125,7 +138,11 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
             </span>
 
             <Link
-              href={hasNextPage ? getPageHref(currentPage + 1, filter) : getPageHref(currentPage, filter)}
+              href={
+                hasNextPage
+                  ? getPageHref(currentPage + 1, filter)
+                  : getPageHref(currentPage, filter)
+              }
               aria-disabled={!hasNextPage}
               className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
                 hasNextPage
@@ -134,7 +151,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
               }`}
             >
               Next 50
-              <ChevronRight/>
+              <ChevronRight />
             </Link>
           </div>
         </div>
@@ -143,7 +160,9 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
           <nav className="flex items-center gap-2 overflow-x-auto whitespace-nowrap px-1 py-1">
             {FILTERS.map((item) => {
               const isActive = item.value === filter;
-              const href = item.value ? `/anime/top?filter=${item.value}` : "/anime/top";
+              const href = item.value
+                ? `/anime/top?filter=${item.value}`
+                : "/anime/top";
 
               return (
                 <Link
@@ -153,7 +172,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                   className={`inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-bold transition-colors ${
                     isActive
                       ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
-                        : "border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
+                      : "border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
                   }`}
                 >
                   {item.label}
@@ -167,12 +186,24 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
           <table className="w-full text-left border-collapse bg-white dark:bg-zinc-950">
             <thead className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
               <tr>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm w-24">Rank</th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm w-32">Image</th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm">Title</th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-32">Score</th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-40">Your Score</th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-32">Status</th>
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm w-24">
+                  Rank
+                </th>
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm w-32">
+                  Image
+                </th>
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm">
+                  Title
+                </th>
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-32">
+                  Score
+                </th>
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-40">
+                  Your Score
+                </th>
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-32">
+                  Status
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
@@ -181,14 +212,24 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                   const watchlistEntry = watchlistByMalId.get(anime.malId);
 
                   return (
-                    <tr key={anime.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
+                    <tr
+                      key={anime.id}
+                      className="hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
+                    >
                       <td className="px-6 py-8 align-middle">
                         <span className="text-3xl font-black text-zinc-400 dark:text-zinc-600">
-                          #{filter ? startRank + index : anime.rank || anime.popularity || startRank + index}
+                          #
+                          {filter
+                            ? startRank + index
+                            : anime.rank ||
+                              anime.popularity ||
+                              startRank + index}
                         </span>
                       </td>
                       <td className="px-6 py-4 align-middle">
-                        <Link href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`}>
+                        <Link
+                          href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`}
+                        >
                           {anime.imageUrl ? (
                             <div className="relative h-28 w-20 overflow-hidden border border-zinc-200 shadow-sm dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
                               <Image
@@ -201,14 +242,19 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                             </div>
                           ) : (
                             <div className="flex h-28 w-20 items-center justify-center rounded bg-zinc-200 dark:bg-zinc-800">
-                              <span className="text-[10px] text-zinc-400">No image</span>
+                              <span className="text-[10px] text-zinc-400">
+                                No image
+                              </span>
                             </div>
                           )}
                         </Link>
                       </td>
                       <td className="px-6 py-4 align-middle">
                         <div className="flex flex-col gap-1">
-                          <Link href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                          <Link
+                            href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`}
+                            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                          >
                             <h3 className="text-lg font-bold leading-tight text-zinc-900 dark:text-zinc-50">
                               {anime.title}
                             </h3>
@@ -233,14 +279,20 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                           {(anime.airedFrom || anime.airedTo) && (
                             <p className="mt-0.5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">
                               {formatDate(anime.airedFrom)}
-                              {anime.airedTo ? ` - ${formatDate(anime.airedTo)}` : ""}
+                              {anime.airedTo
+                                ? ` - ${formatDate(anime.airedTo)}`
+                                : ""}
                             </p>
                           )}
-                          {anime.members !== null && anime.members !== undefined && (
-                            <p className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500">
-                              {new Intl.NumberFormat("en-US").format(anime.members)} members
-                            </p>
-                          )}
+                          {anime.members !== null &&
+                            anime.members !== undefined && (
+                              <p className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500">
+                                {new Intl.NumberFormat("en-US").format(
+                                  anime.members,
+                                )}{" "}
+                                members
+                              </p>
+                            )}
                         </div>
                       </td>
                       <td className="px-6 py-4 text-center align-middle">
@@ -259,7 +311,9 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                             {watchlistEntry.score ?? "N/A"}
                           </span>
                         ) : (
-                          <span className="text-sm font-medium text-zinc-400 dark:text-zinc-500">-</span>
+                          <span className="text-sm font-medium text-zinc-400 dark:text-zinc-500">
+                            -
+                          </span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-center align-middle">
