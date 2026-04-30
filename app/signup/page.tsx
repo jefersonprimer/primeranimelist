@@ -29,6 +29,7 @@ export default function SignupPage() {
         throw new Error(data.error || "Signup failed");
       }
 
+      window.dispatchEvent(new Event("auth-state-changed"));
       router.push("/");
       router.refresh();
     } catch (err: any) {

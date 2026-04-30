@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface User {
@@ -10,6 +10,7 @@ interface User {
   username?: string | null;
   profileImageUrl?: string | null;
   backgroundImageUrl?: string | null;
+  sessionToken?: string;
   isAdmin?: boolean;
 }
 
@@ -28,22 +29,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    async function loadUser() {
-      try {
-        const res = await fetch("/api/v1/auth/me");
-        const data = await res.json();
-        if (data.user) {
-          setUser(data.user);
-        }
-      } catch (error) {
-        console.error("Failed to load user:", error);
-      } finally {
-        setLoading(false);
+  const refreshUser = useCallback(async () => {
+    try {
+      const res = await fetch("/api/v1/auth/me", { cache: "no-store" });
+      const data = await res.json();
+      if (data.user) {
+        setUser(data.user);
+      } else {
+        setUser(null);
       }
+    } catch (error) {
+      console.error("Failed to load user:", error);
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
-    loadUser();
   }, []);
+
+  useEffect(() => {
+    refreshUser();
+  }, [refreshUser]);
+
+  useEffect(() => {
+    const handleAuthStateChanged = () => {
+      setLoading(true);
+      refreshUser();
+    };
+
+    window.addEventListener("auth-state-changed", handleAuthStateChanged);
+    return () => {
+      window.removeEventListener("auth-state-changed", handleAuthStateChanged);
+    };
+  }, [refreshUser]);
 
   const login = async (email: string, password: string) => {
     const res = await fetch("/api/v1/auth/login", {

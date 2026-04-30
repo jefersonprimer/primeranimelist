@@ -134,6 +134,7 @@ const ProfileClient = () => {
       setInitialData(nextData);
       setFormData(nextData);
       setHasChanges(false);
+      window.dispatchEvent(new Event("auth-state-changed"));
     } catch (error) {
       console.error("Error saving profile:", error);
     } finally {

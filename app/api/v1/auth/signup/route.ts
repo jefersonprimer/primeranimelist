@@ -55,7 +55,7 @@ export async function POST(req: Request) {
       })
       .returning();
 
-    await createSession(newUser.id);
+    const sessionToken = await createSession(newUser.id);
 
     return NextResponse.json({
       user: {
@@ -65,6 +65,7 @@ export async function POST(req: Request) {
         username: newUser.username,
         profileImageUrl: newUser.profileImageUrl,
         backgroundImageUrl: newUser.backgroundImageUrl,
+        sessionToken,
         isAdmin: isAdminEmail(newUser.email),
       },
     });

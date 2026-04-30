@@ -37,6 +37,12 @@ export async function createSession(userId: number) {
     expiresAt,
   });
 
+  await setSessionCookie(sessionToken, expiresAt);
+
+  return sessionToken;
+}
+
+export async function setSessionCookie(sessionToken: string, expiresAt: Date) {
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, sessionToken, {
     httpOnly: true,
@@ -45,8 +51,6 @@ export async function createSession(userId: number) {
     expires: expiresAt,
     path: "/",
   });
-
-  return sessionToken;
 }
 
 export async function getSession(): Promise<SessionData | null> {

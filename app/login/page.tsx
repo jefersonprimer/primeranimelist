@@ -28,6 +28,7 @@ export default function LoginPage() {
         throw new Error(data.error || "Login failed");
       }
 
+      window.dispatchEvent(new Event("auth-state-changed"));
       router.push("/");
       router.refresh();
     } catch (err: any) {
