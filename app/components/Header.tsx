@@ -204,7 +204,7 @@ export default function Header() {
                                 Browse All (A-Z)
                               </Link>
                               <Link
-                                href="/anime/calendar"
+                                href="/calendar"
                                 onClick={() =>
                                   setIsCategoriesDropdownOpen(false)
                                 }
@@ -464,20 +464,29 @@ export default function Header() {
                         {/* Main Options */}
                         <div className="flex flex-col space-y-1">
                           {[
-                            "Browse All (A-Z)",
-                            "Release Calendar",
-                            "Music Videos & Concerts",
+                            {
+                              label: "Browse All (A-Z)",
+                              href: "/videos/alphabetical",
+                            },
+                            {
+                              label: "Release Calendar",
+                              href: "/calendar",
+                            },
+                            {
+                              label: "Music Videos & Concerts",
+                              href: "/anime/music",
+                            },
                           ].map((item) => (
                             <Link
-                              key={item}
-                              href={`/anime/${item.toLowerCase().replace(/ /g, "-").replace(/\(|\)/g, "")}`}
+                              key={item.label}
+                              href={item.href}
                               onClick={() => {
                                 setIsCategoriesDropdownOpen(false);
                                 setIsMenuOpen(false);
                               }}
                               className="rounded-lg px-4 py-2 text-sm font-bold text-white hover:bg-zinc-800/50 transition-colors"
                             >
-                              {item}
+                              {item.label}
                             </Link>
                           ))}
                         </div>
