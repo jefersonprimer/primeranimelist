@@ -114,6 +114,23 @@ export const sessions = pgTable("sessions", {
   userIdIdx: index("sessions_user_id_idx").on(table.userId),
 }));
 
+export const passwordResetCodes = pgTable(
+  "password_reset_codes",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    codeHash: text("code_hash").notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    usedAt: timestamp("used_at"),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (table) => ({
+    userIdIdx: index("password_reset_codes_user_id_idx").on(table.userId),
+  })
+);
+
 export const animeWatchlist = pgTable(
   "anime_watchlist",
   {

@@ -156,6 +156,24 @@ async function createAuthTables() {
   `);
 }
 
+async function createPasswordResetCodesTable() {
+  await db.execute(sql`
+    create table if not exists "password_reset_codes" (
+      "id" serial primary key,
+      "user_id" integer not null references "users"("id") on delete cascade,
+      "code_hash" text not null,
+      "expires_at" timestamp not null,
+      "used_at" timestamp,
+      "created_at" timestamp default now()
+    )
+  `);
+
+  await db.execute(sql`
+    create index if not exists "password_reset_codes_user_id_idx"
+    on "password_reset_codes" ("user_id")
+  `);
+}
+
 async function createWatchlistTable() {
   await db.execute(sql`
     create table if not exists "anime_watchlist" (
@@ -316,6 +334,7 @@ export async function ensureDatabase() {
       await createAnimeTable();
       await createMangaTable();
       await createAuthTables();
+      await createPasswordResetCodesTable();
       await createWatchlistTable();
       await createMangaWatchlistTable();
       await createPostsTable();
@@ -330,6 +349,7 @@ export async function ensureMangaDatabase() {
     mangaDatabaseReady = (async () => {
       await createMangaTable();
       await createAuthTables();
+      await createPasswordResetCodesTable();
       await createMangaWatchlistTable();
     })();
   }
