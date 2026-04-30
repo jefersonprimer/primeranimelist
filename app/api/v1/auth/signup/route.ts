@@ -62,6 +62,9 @@ export async function POST(req: Request) {
         id: newUser.id,
         email: newUser.email,
         fullName: newUser.fullName,
+        username: newUser.username,
+        profileImageUrl: newUser.profileImageUrl,
+        backgroundImageUrl: newUser.backgroundImageUrl,
         isAdmin: isAdminEmail(newUser.email),
       },
     });

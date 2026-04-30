@@ -122,9 +122,27 @@ async function createAuthTables() {
       "email" text not null unique,
       "password_hash" text not null,
       "full_name" text,
+      "username" text,
+      "profile_image_url" text,
+      "background_image_url" text,
       "created_at" timestamp default now(),
       "updated_at" timestamp default now()
     )
+  `);
+
+  await db.execute(sql`
+    alter table "users"
+    add column if not exists "username" text
+  `);
+
+  await db.execute(sql`
+    alter table "users"
+    add column if not exists "profile_image_url" text
+  `);
+
+  await db.execute(sql`
+    alter table "users"
+    add column if not exists "background_image_url" text
   `);
 
   await db.execute(sql`

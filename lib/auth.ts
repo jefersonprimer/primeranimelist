@@ -12,6 +12,9 @@ export interface SessionUser {
   id: number;
   email: string;
   fullName: string | null;
+  username: string | null;
+  profileImageUrl: string | null;
+  backgroundImageUrl: string | null;
 }
 
 export interface SessionData {
@@ -64,6 +67,9 @@ export async function getSession(): Promise<SessionData | null> {
         id: users.id,
         email: users.email,
         fullName: users.fullName,
+        username: users.username,
+        profileImageUrl: users.profileImageUrl,
+        backgroundImageUrl: users.backgroundImageUrl,
       },
       session: sessions,
     })

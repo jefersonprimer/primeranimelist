@@ -83,8 +83,8 @@ export default function Header() {
         email: user.email,
         username: user.email.split("@")[0],
         display_name: user.fullName || user.email.split("@")[0],
-        profile_image_url: null,
-        background_image_url: null,
+        profile_image_url: user.profileImageUrl || null,
+        background_image_url: user.backgroundImageUrl || null,
         created_at: new Date().toISOString(),
         last_login_at: new Date().toISOString(),
       }
@@ -364,7 +364,7 @@ export default function Header() {
               className="flex h-full items-center px-4 text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
               aria-label="Search"
             >
-              <Search size={20} />
+              <Search size={24} />
             </Link>
 
             <div className="flex h-full items-center">
@@ -374,7 +374,7 @@ export default function Header() {
                   className="flex h-full items-center px-4 text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
                   aria-label="Library"
                 >
-                  <Bookmark size={20} />
+                  <Bookmark size={24} />
                 </Link>
               )}
 
@@ -388,8 +388,14 @@ export default function Header() {
                 }`}
                 aria-label="User Menu"
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white shadow-sm transition hover:bg-indigo-500">
-                  {user ? (
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white shadow-sm transition hover:bg-indigo-500">
+                  {user?.profileImageUrl ? (
+                    <img
+                      src={user.profileImageUrl}
+                      alt="Profile"
+                      className="h-9 w-9 rounded-full object-cover"
+                    />
+                  ) : user ? (
                     getUserInitial(user.fullName, user.email)
                   ) : (
                     <svg
@@ -613,8 +619,18 @@ export default function Header() {
 
         <div className="absolute bottom-0 w-full border-t border-white/5 p-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white shadow-lg">
-              {user ? getUserInitial(user.fullName, user.email) : "?"}
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white shadow-lg">
+              {user?.profileImageUrl ? (
+                <img
+                  src={user.profileImageUrl}
+                  alt="Profile"
+                  className="h-9 w-9 rounded-full object-cover"
+                />
+              ) : user ? (
+                getUserInitial(user.fullName, user.email)
+              ) : (
+                "?"
+              )}
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-white truncate max-w-[150px]">

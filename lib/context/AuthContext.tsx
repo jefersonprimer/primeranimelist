@@ -7,6 +7,9 @@ interface User {
   id: number;
   email: string;
   fullName: string | null;
+  username?: string | null;
+  profileImageUrl?: string | null;
+  backgroundImageUrl?: string | null;
   isAdmin?: boolean;
 }
 

@@ -97,6 +97,9 @@ export const users = pgTable("users", {
   email: text("email").unique().notNull(),
   passwordHash: text("password_hash").notNull(),
   fullName: text("full_name"),
+  username: text("username"),
+  profileImageUrl: text("profile_image_url"),
+  backgroundImageUrl: text("background_image_url"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -1,0 +1,759 @@
+{
+    "seasons": {
+        "singular": "season",
+        "plural": "seasons"
+    },
+    "episodes": {
+        "singular": "episode",
+        "plural": "episodes"
+    },
+    "audioTypes": {
+        "subtitled": "Subtitled",
+        "dubbed": "Dubbed",
+        "subtitled_dubbed": "Sub | Dub"
+    },
+    "buttons": {
+        "watch_episode": "start watching e1"
+    },
+    "AddButton": {
+        "tooltiptext": "Add to CrunchyList"
+    },
+    "BookmarkButton": {
+        "addToQueue": "Add to Queue",
+        "removeFromQueue": "Remove from Queue"
+    },
+    "Play": {
+        "play": "Play E1"
+    },
+    "ShareButton": {
+        "copy": "Link copiado!",
+        "share": "Compartilhar"
+    },
+    "EpisodePlayButton": {
+        "watch_episode": "Start Watching"
+    },
+    "EpisodeSearchCard": {
+        "play": "Play"
+    },
+    "carousels": {
+        "animeOfTheDay": {
+            "title": "Today's Anime ({day})",
+            "titlePlural": "Today's Animes ({day})",
+            "subtitle": "Check out the anime being shown today!",
+            "subtitlePlural": "Check out the animes being shown today!"
+        },
+        "dubbed": {
+            "title": "Portuguese Dubs",
+            "subtitle": "Discover anime available with dubbed audio!"
+        },
+        "releases": {
+            "title": "A preview of the spring 2025 season",
+            "subtitle": "Watch the first three episodes of these Spring 2025 simulcasts for free!"
+        },
+        "nextseason": {
+            "title": "Next Season Anime",
+            "subtitle": "Check out the most anticipated anime for the next season!"
+        },
+        "popular": {
+            "title": "Popular Anime",
+            "subtitle": "Watch the first three episodes of these October 2024 simulcasts for free!"
+        },
+        "popularseason": {
+            "title": " Popular Anime of the Season",
+            "subtitle": "Watch the top three!"
+        },
+        "movies": {
+            "title": "Movies",
+            "subtitle": "Check out the available movies!"
+        }
+    },
+    "Crunchylist": {
+        "title": "Crie e Gerencie Crunchylistas | Crunchyroll",
+        "description": "Crie e Gerencie Crunchylistas | Crunchyroll",
+        "mylists": "My lists",
+        "queue": "queue",
+        "crunchylists": "crunchylists",
+        "history": "history",
+        "createNewList": "create new list",
+        "listsCount": "{count}/10 lists",
+        "noLists": "No lists created yet.",
+        "items": "Items",
+        "updatedAt": "Updated at",
+        "noItems": "No items in list.",
+        "remove": "Remove",
+        "rename": "Rename",
+        "deleteList": "Delete List",
+        "renameList": "Rename Crunchylist",
+        "cancel": "cancel",
+        "renameButton": "rename list",
+        "listLimit": "You have reached the limit of 10 lists.",
+        "listName": "List name"
+    },
+    "AnimeCardCrunchylist": {
+        "audioTypes": {
+            "subtitled": "Subtitled",
+            "dubbed": "Dubbed",
+            "subtitled_dubbed": "Sub | Dub"
+        },
+        "addToQueue": "Add to Queue",
+        "removeFromQueue": "Remove from Queue"
+    },
+    "ListDetails": {
+        "backToLists": "back to crunchyLists",
+        "searchPlaceholder": "Search anime...",
+        "itemsCount": "{count} of 100 items",
+        "settings": "Settings",
+        "editListName": "Edit list name",
+        "deleteList": "Delete List",
+        "noAnimeFound": "No anime found.",
+        "renameTitle": "Rename Crunchylist",
+        "listName": "List name",
+        "renameButton": "rename list",
+        "cancelButton": "cancel",
+        "searchMessage": "Start typing in the search field to find a series and add it to your Crunchylist.",
+        "seasons": {
+            "singular": "season",
+            "plural": "seasons"
+        },
+        "episodes": {
+            "singular": "episode",
+            "plural": "episodes"
+        },
+        "audioTypes": {
+            "subtitled": "Subtitled",
+            "dubbed": "Dubbed",
+            "subtitled_dubbed": "Sub | Dub"
+        },
+        "close": "Close"
+    },
+    "navigation": {
+        "new": "New",
+        "popular": "Popular",
+        "simulcasts": "Simulcasts",
+        "categories": "Categories",
+        "exploreAll": "Explore All (A-Z)",
+        "releaseCalendar": "Release Calendar",
+        "videosAndShows": "Videos & Shows",
+        "genres": "genres",
+        "action": "Action",
+        "adventure": "Adventure",
+        "comedy": "Comedy",
+        "drama": "Drama",
+        "fantasy": "Fantasy",
+        "music": "Music",
+        "romance": "Romance",
+        "sciFi": "Sci-Fi",
+        "seinen": "Seinen",
+        "shoujo": "Shoujo",
+        "shounen": "Shounen",
+        "sliceOfLife": "Slice-of-Life",
+        "sports": "Sports",
+        "supernatural": "Supernatural",
+        "thriller": "Thriller",
+        "games": "Games",
+        "store": "Store",
+        "news": "News",
+        "allNews": "All News",
+        "animeAwards": "Anime Awards",
+        "experiencesAndEvents": "Experiences & Events"
+    },
+    "premiumPopup": {
+        "premiumOnly": "Premium Only",
+        "freeTrial": "7-Day Free Trial",
+        "description": "Premium includes unlimited access to all anime, ad-free, with new releases right after they air in Japan. Try it today!"
+    },
+    "header": {
+        "freeTrial": "free trial",
+        "premium": "premium"
+    },
+    "footer": {
+        "navigation": "Navigation",
+        "popular_series": "Popular Series",
+        "simulcasts": "Simulcast Series",
+        "release_calendar": "Release Calendar",
+        "news": "News",
+        "games": "Games",
+        "contact_us": "Contact Us",
+        "crunchyroll": "Crunchyroll",
+        "start_free_trial": "Start Free Trial",
+        "about": "About",
+        "help_center": "Help Center",
+        "terms_of_use": "Terms of Use",
+        "privacy_policy": "Privacy Policy",
+        "cookie_consent_tool": "Cookie Consent Tool",
+        "press_requests": "Press Requests",
+        "download_app": "Download App",
+        "redeem_code": "Redeem Code",
+        "jobs": "Jobs",
+        "account": "Account",
+        "switch_profile": "Switch Profile",
+        "queue": "Queue",
+        "crunchylists": "Crunchylists",
+        "history": "History",
+        "my_account": "My Account",
+        "logout": "Logout",
+        "copyright": "© Crunchyroll, LLC"
+    },
+    "History": {
+        "title": "Histórico de Animes Recentes | Crunchyroll",
+        "description": "Gerencie sua Crunchylistas | Crunchyroll",
+        "historyHeaderTitle": "Most Recent",
+        "clearHistory": "clear history",
+        "mylists": "My lists",
+        "queue": "queue",
+        "crunchylists": "crunchylists",
+        "history": "history"
+    },
+    "fallback_recommendation": {
+        "title": "Still looking for something to watch?",
+        "subtitle": "Check out our full library",
+        "button": "view all"
+    },
+    "MinimalFooter": {
+        "termsOfUse": "Terms of Use",
+        "privacyPolicy": "Privacy Policy",
+        "cookieConsentTool": "Cookie Consent Tool",
+        "copyright": "© Crunchyroll, LLC",
+        "language": "ENGLISH (US)"
+    },
+    "accountModal": {
+        "freeTrial": "7-DAY FREE TRIAL",
+        "switchProfile": "Switch Profile",
+        "settings": "Settings",
+        "queue": "Queue",
+        "crunchyLists": "CrunchyLists",
+        "history": "History",
+        "notifications": "Notifications",
+        "giftCard": "Gift Card",
+        "signOut": "Sign Out"
+    },
+    "anonymousUserModal": {
+        "createAccount": {
+            "title": "Create Account",
+            "description": "Sign up for free or become Premium."
+        },
+        "login": {
+            "title": "Login",
+            "description": "Already a Crunchyroll member? Welcome back."
+        },
+        "giftCard": {
+            "title": "Gift Card",
+            "description": "Have a gift card? Redeem it here."
+        },
+        "freeTrial": "7-day free trial"
+    },
+    "addToListModal": {
+        "title": "Add to CrunchyList",
+        "newListName": "New list name",
+        "listCount": "lists",
+        "createNewList": "create new list",
+        "items": "items"
+    },
+    "imageSelectionModal": {
+        "profileTitle": "Select Profile Picture",
+        "backgroundTitle": "Select Background Image",
+        "selectedImage": "Selected Image",
+        "save": "Save",
+        "cancel": "Cancel",
+        "loading": "Loading images..."
+    },
+    "perfilModal": {
+        "title": "Username",
+        "freeTrial": "7-day free trial",
+        "switchProfile": "Switch Profile",
+        "settings": "Settings",
+        "queue": "Queue",
+        "crunchyLists": "CrunchyLists",
+        "history": "History",
+        "notifications": "Notifications",
+        "giftCard": {
+            "title": "Gift Card",
+            "description": "Do you have a gift card? Redeem it here."
+        }
+    },
+    "NewsSection": {
+        "title": "Crunchyroll News",
+        "link": "view all"
+    },
+    "Common": {
+        "by": "by"
+    },
+    "NotFoundPage": {
+        "title": "404 - Page Not Found",
+        "message": "Yuzu says there's nothing here!",
+        "button": "take me away"
+    },
+    "Search": {
+        "searchPlaceholder": "Search...",
+        "searchResults": "Search Results",
+        "noResults": "No anime found.",
+        "loading": "Loading results...",
+        "clearSearch": "Clear search",
+        "searchTitle": "You searched for \"{searchTerm}\" - Bakashi TV",
+        "defaultTitle": "Anime Search - Bakashi TV",
+        "searchDescription": "Search results for \"{searchTerm}\" on Bakashi TV. Explore popular animes and discover new series!",
+        "defaultDescription": "Search your favorite animes on Bakashi TV, the best portal for anime fans!"
+    },
+    "AnimeCardSearch": {
+        "audioTypes": {
+            "subtitled": "Subtitled",
+            "dubbed": "Dubbed",
+            "subtitled_dubbed": "Sub | Dub"
+        },
+        "seasons": {
+            "singular": "Season",
+            "plural": "Seasons"
+        },
+        "episodes": {
+            "singular": "Episode",
+            "plural": "Episodes"
+        }
+    },
+    "RelatedAnimeCard": {
+        "seasons": {
+            "singular": "Season",
+            "plural": "Seasons"
+        },
+        "episodes": {
+            "singular": "Episode",
+            "plural": "Episodes"
+        },
+        "audioTypes": {
+            "subtitled": "Subtitled",
+            "dubbed": "Dubbed",
+            "subtitled_dubbed": "Sub | Dub"
+        }
+    },
+    "Series": {
+        "watch": "Watch",
+        "recommendationsTitle": "Similar to This"
+    },
+    "HeroSection": {
+        "metadata": {
+            "audio": "Audio",
+            "subtitles": "Subtitles",
+            "contentRating": "Content Rating",
+            "genres": "Genres",
+            "notAvailable": "Not available"
+        },
+        "buttons": {
+            "showMore": "Show more",
+            "showLess": "Show less"
+        },
+        "audioTypes": {
+            "sub": "Subtitled",
+            "dub": "Dubbed",
+            "subtitled": "Subtitled",
+            "dubbed": "Dubbed",
+            "subtitled_dubbed": "Sub | Dub"
+        }
+    },
+    "EpisodeSection": {
+        "sort": {
+            "newest": "newest",
+            "oldest": "oldest",
+            "newestLabel": "Newest",
+            "oldestLabel": "Oldest"
+        },
+        "options": {
+            "label": "options",
+            "markAllWatched": "Mark all as watched",
+            "markAllUnwatched": "Mark all as unwatched"
+        },
+        "episodes": {
+            "count": "Episodes",
+            "noEpisodes": "No episodes found for this season"
+        },
+        "season": {
+            "label": "Season",
+            "episodeCount": "{count} Episodes"
+        }
+    },
+    "AnimeHoverModal": {
+        "buttons": {
+            "watch": "Watch",
+            "addToFavorites": "Add to favorites",
+            "removeFromFavorites": "Remove from favorites"
+        },
+        "episode": "Episode {number}"
+    },
+    "DayCarousel": {
+        "today": "today",
+        "days": {
+            "mondayShort": "MON",
+            "tuesdayShort": "TUE",
+            "wednesdayShort": "WED",
+            "thursdayShort": "THU",
+            "fridayShort": "FRI",
+            "saturdayShort": "SAT",
+            "sundayShort": "SUN"
+        },
+        "episodeAvailable": "Episode {number} Available"
+    },
+    "footersimulcastcalendar": {
+        "sections": {
+            "mostWatched": "Most Watched Series",
+            "platforms": "Platforms and Devices",
+            "premium": "Premium Subscriptions",
+            "language": "Language",
+            "support": "Support",
+            "crunchyroll": "Crunchyroll"
+        },
+        "premium": {
+            "twoWeekTrial": "Two Week Free Trial",
+            "buyGiftSubscriptions": "Buy Gift Subscriptions",
+            "activateGiftCard": "Activate Crunchyroll/VRV Gift Card"
+        },
+        "language": {
+            "detectedLocation": "Your detected location is Brazil.",
+            "englishUS": "English (US)",
+            "spanishLatin": "Español (América Latina)",
+            "spanishSpain": "Español (España)",
+            "portugueseBrazil": "Português (Brasil)",
+            "portuguesePortugal": "Português (Portugal)",
+            "french": "Français (France)",
+            "german": "Deutsch",
+            "arabic": "العربية",
+            "italian": "Italiano",
+            "russian": "Русский",
+            "hindi": "हिन्द",
+            "indonesian": "Bahasa Indonesia"
+        },
+        "support": {
+            "helpFAQ": "Help/FAQ"
+        },
+        "crunchyroll": {
+            "about": "About",
+            "careers": "Careers",
+            "advertising": "Advertising",
+            "copyrightPolicy": "Copyright Policy",
+            "termsOfService": "Terms of Service",
+            "privacyPolicy": "Privacy Policy",
+            "cookieConsentTool": "Cookie Consent Tool"
+        },
+        "footer": {
+            "sonyPicturesLogo": "Sony Pictures Logo"
+        },
+        "social": {
+            "followTwitter": "Follow @crunchyroll_pt"
+        }
+    },
+    "headersimulcastcalendar": {
+        "navigation": {
+            "series": "Series",
+            "news": "News",
+            "games": "Games",
+            "premium": "Premium"
+        },
+        "userPanel": {
+            "queue": "Queue",
+            "random": "Random",
+            "profile": "Profile",
+            "login": "Login",
+            "notifications": "Notifications",
+            "settings": "Settings",
+            "orderHistory": "Order History",
+            "logout": "Logout",
+            "search": "Search"
+        }
+    },
+    "simulcastcalendarfooter": {
+        "goToPremium": "Go to",
+        "premium": "Premium",
+        "toWatchSimulcasts": "to watch the newest simulcasts",
+        "happyHimeAlt": "Happy Hime character"
+    },
+    "simulcastcalendarheader": {
+        "releaseCalendars": "release calendars",
+        "spring2025Lineup": "spring 2025 lineup",
+        "filters": {
+            "premiumEpisodes": "premium episodes",
+            "freeEpisodes": "free new episodes"
+        },
+        "premiumBanner": {
+            "access": "Access to the latest anime and dramas on the same day as broadcast in Japan.",
+            "premium": "Premium",
+            "trial": "Try 7 days for free."
+        }
+    },
+    "simulcasts": {
+        "season": {
+            "title": "Season Simulcasts",
+            "noAnimesFound": "No animes found for this season",
+            "seasons": {
+                "spring": "Spring",
+                "summer": "Summer",
+                "fall": "Fall",
+                "winter": "Winter"
+            }
+        }
+    },
+    "newReleases": {
+        "titlePage": "New Releases",
+        "subtitlePage": "Check out the latest anime releases!",
+        "latestReleases": "Latest Releases",
+        "filters": {
+            "sort": {
+                "label": "Sort",
+                "options": {
+                    "mostPopular": "Most Popular",
+                    "newest": "Newest",
+                    "alphabetical": "Alphabetical"
+                }
+            },
+            "audio": {
+                "label": "Audio",
+                "language": "Audio Language",
+                "options": {
+                    "all": "All",
+                    "subtitled": "Subtitled",
+                    "dubbed": "Dubbed"
+                }
+            }
+        }
+    },
+    "popular": {
+        "title": "Most Popular Anime",
+        "subtitle": "Popular Releases",
+        "titlePage": "Most Popular Anime",
+        "subtitlePage": "Trending Anime",
+        "latestReleases": "most popular",
+        "filters": {
+            "sort": {
+                "label": "Sort",
+                "options": {
+                    "mostPopular": "Most Popular",
+                    "newest": "Latest",
+                    "alphabetical": "Alphabetical Order"
+                }
+            },
+            "audio": {
+                "label": "Filter",
+                "language": "Language",
+                "options": {
+                    "all": "All",
+                    "subtitled": "Subtitled",
+                    "dubbed": "Dubbed"
+                }
+            }
+        }
+    },
+    "alphabetical": {
+        "title": "Alphabetical Order",
+        "filters": {
+            "alphabetical": "alphabetical order",
+            "mostPopular": "Most Popular",
+            "mostRecent": "Most Recent",
+            "alphabeticalOrder": "Alphabetical Order",
+            "filter": "filter",
+            "language": "Language",
+            "all": "all",
+            "subtitled": "Subtitled",
+            "dubbed": "Dubbed"
+        },
+        "noResults": "No anime found with the letter \"{letter}\"",
+        "actions": {
+            "play": "Play",
+            "removeFromQueue": "Remove from Queue",
+            "addToQueue": "Add to Queue",
+            "addToPrimerlist": "Add to Primerlist"
+        },
+        "tooltips": {
+            "play": "Play",
+            "removeFromQueue": "Remove from Queue",
+            "addToQueue": "Add to Queue",
+            "addToPrimerlist": "Add to Primerlist"
+        },
+        "sort": {
+            "label": "Sort",
+            "title": "Sort"
+        },
+        "filter": {
+            "label": "Filter",
+            "title": "Filter"
+        }
+    },
+    "genre": {
+        "filters": {
+            "audio": {
+                "label": "Filter",
+                "language": "Language",
+                "options": {
+                    "all": "All",
+                    "subtitled": "Subtitled",
+                    "dubbed": "Dubbed"
+                }
+            }
+        },
+        "title": "{genre} Anime",
+        "popular": "Popular",
+        "newReleases": "New Releases",
+        "viewAll": "view all",
+        "loading": "Loading...",
+        "error": "An error occurred: {error}",
+        "genreNotFound": "Genre \"{genre}\" not found.",
+        "genrePopularPage": {
+            "title": "{genre} / Trending",
+            "loading": "Loading...",
+            "error": "An error occurred: {error}",
+            "genreNotFound": "Genre \"{genre}\" not found."
+        },
+        "genreNewPage": {
+            "title": "All {genre} Anime",
+            "loading": "Loading...",
+            "error": "An error occurred: {error}",
+            "genreNotFound": "Genre \"{genre}\" not found."
+        }
+    },
+    "Watch": {
+        "watch": "Watch"
+    },
+    "EpisodeHeader": {
+        "addToQueue": "Add to Queue",
+        "removeFromQueue": "Remove from Queue",
+        "releasedOn": "Released on {date}",
+        "audioTypes": {
+            "sub": "Subtitled",
+            "dub": "Dubbed",
+            "subtitled_dubbed": "Sub | Dub",
+            "subtitled": "Subtitled",
+            "dubbed": "Dubbed"
+        }
+    },
+    "EpisodeNavigation": {
+        "previousEpisode": "previous episode",
+        "nextEpisode": "next episode",
+        "seeMoreEpisodes": "see more episodes",
+        "audioTypes": {
+            "sub": "Subtitled",
+            "dub": "Dubbed",
+            "subtitled_dubbed": "Sub | Dub",
+            "subtitled": "Subtitled",
+            "dubbed": "Dubbed"
+        }
+    },
+    "WatchlistPage": {
+        "title": "Curate Your Custom List | Crunchyroll",
+        "description": "Curate your custom list | Crunchyroll",
+        "mylists": "My lists",
+        "queue": "queue",
+        "crunchylists": "crunchylists",
+        "history": "history",
+        "emptyMessage": "Your queue deserves more love. <br /> Let's fill it with amazing anime.",
+        "backToHome": "back to home"
+    },
+    "AnimeCardWatchlist": {
+        "audioTypes": {
+            "subtitled": "Subtitled",
+            "dubbed": "Dubbed",
+            "subtitled_dubbed": "Sub | Dub"
+        },
+        "startWatching": "Start Watching: E1"
+    },
+    "WatchlistHeader": {
+        "sortOptions": {
+            "mostRecentUpdate": "Most Recent Update",
+            "updated": "Updated",
+            "watched": "Watched",
+            "added": "Added",
+            "alphabetical": "Alphabetical"
+        },
+        "dateSortOptions": {
+            "mostRecent": "Most Recent",
+            "oldest": "Oldest"
+        },
+        "filterOptions": {
+            "favorites": {
+                "onlyFavorites": "Only Favorites"
+            },
+            "languages": {
+                "all": "All",
+                "subtitled": "Subtitled",
+                "dubbed": "Dubbed"
+            },
+            "mediaType": {
+                "all": "All",
+                "anime": "Anime",
+                "movies": "Movies"
+            },
+            "sections": {
+                "languages": "Languages",
+                "mediaType": "Media Type"
+            }
+        },
+        "buttons": {
+            "sort": "sort",
+            "filter": "filter"
+        }
+    },
+    "root": {
+        "title": "Crunchyroll - Watch Anime, Play Games and Shop Online",
+        "description": "created by primerdev"
+    },
+    "genres": {
+        "action": "Action",
+        "adventure": "Adventure",
+        "comedy": "Comedy",
+        "drama": "Drama",
+        "fantasy": "Fantasy",
+        "music": "Music",
+        "romance": "Romance",
+        "sciFi": "Sci-Fi",
+        "seinen": "Seinen",
+        "shoujo": "Shoujo",
+        "shounen": "Shounen",
+        "sliceOfLife": "Slice of Life",
+        "sports": "Sports",
+        "supernatural": "Supernatural",
+        "thriller": "Thriller",
+        "games": "Games"
+    },
+    "gamesPage": {
+        "title": "Crunchyroll Games: Play Free-to-Play and Game Vault Anime-Inspired Games",
+        "description": "Discover and play a variety of anime-inspired games for free or in the Game Vault. Enjoy exclusive Crunchyroll titles and more!"
+    },
+    "simulcastcalendar": {
+        "title": "Simulcast Calendar - Crunchyroll",
+        "description": "Check the schedule for all simulcast anime releases on Crunchyroll."
+    },
+    "profile": {
+        "title": "Edit Profile",
+        "profileName": "Profile Name",
+        "profileNameDescription": "This is displayed within your home and can be changed at any time.",
+        "username": "Username (Optional)",
+        "usernameDescription": "Create a username to be ready for future experiences that will share your love for anime! Choose one you love, you can't change it later!",
+        "updateBackgroundImage": "Update Background Image",
+        "change": "Change",
+        "save": "Save",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "editProfile": "Edit Profile",
+        "editProfileMessage": "Are you sure you want to edit your profile?",
+        "errors": {
+            "updateProfile": "Error updating profile",
+            "unknownError": "Unknown error"
+        }
+    },
+    "confirmationModal": {
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+    },
+    "profileSelection": {
+        "title": "Who's watching?",
+        "subtitle": "Choose a profile to continue",
+        "addProfile": "Add Profile",
+        "manageProfiles": "Manage Profiles",
+        "switchAccount": "Switch Account",
+        "addNewAccount": "Add New Account",
+        "removeAccount": "Remove Account",
+        "lastLogin": "Last login: {date}",
+        "noProfiles": "No profiles found",
+        "loginToAddProfile": "Login to add profiles",
+        "loading": "Loading profiles...",
+        "error": "Error loading profiles",
+        "confirmRemove": "Are you sure you want to remove this account?",
+        "confirmRemoveDescription": "This action cannot be undone.",
+        "remove": "Remove",
+        "cancel": "Cancel"
+    }
+}
