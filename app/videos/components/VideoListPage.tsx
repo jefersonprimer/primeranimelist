@@ -172,9 +172,10 @@ export default function VideoListPage({
                 malId={anime.malId}
                 title={anime.title}
                 imageUrl={anime.imageUrl}
-                imageCardCompact={anime.imageCardCompact}
+                rating={anime.rating}
                 score={anime.score}
                 members={anime.members}
+                episodes={anime.episodes}
                 synopsis={anime.synopsis}
               />
             ))}
