@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, Bookmark, Play, Menu, X } from "lucide-react";
+import { Search, Bookmark, Play, Menu } from "lucide-react";
 import { useAuth } from "@/lib/context/AuthContext";
 import { DropdownIcon } from "./icons/DropdownIcon";
 import { AdminNavActions } from "./AdminNavActions";
@@ -141,23 +141,31 @@ export default function Header() {
 
   return (
     <>
-      <header className="h-16 bg-[#272727] md:px-6 sticky top-0 z-[1000]">
-        <div className="mx-auto flex h-full max-w-7xl flex-row items-center justify-between">
+      <header className="h-16 w-full bg-[#272727] sticky top-0 z-[1000]">
+        <div className="flex w-full h-full flex-row items-center justify-between">
           <div className="flex flex-row items-center h-full">
             {/* Mobile Menu Toggle - Now on the left */}
             <button
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="flex md:hidden h-full items-center px-4 text-[#bbb] transition-colors hover:text-white"
+              className={`flex h-full items-center px-4 transition-colors md:hidden hover:bg-[#181818] hover:cursor-pointer ${
+                isMenuOpen
+                  ? "bg-[#181818] text-white"
+                  : "text-[#bbb] hover:text-white"
+              }`}
               aria-label="Toggle Menu"
             >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              <Menu size={24} />
             </button>
 
-            <Link href="/" className="flex flex-row items-center gap-3 group">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 transition-transform group-hover:scale-105 group-hover:rotate-3 shadow-lg shadow-indigo-500/20">
+            <Link
+              href="/"
+              className="flex flex-row items-center md:mx-4 gap-3 group"
+            >
+              <div className="flex mx-4 md:mx-0 h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 transition-transform group-hover:scale-105 group-hover:rotate-3 shadow-lg shadow-indigo-500/20">
                 <Play className="fill-white text-white ml-0.5" size={20} />
               </div>
+
               <div className="hidden sm:flex flex-col leading-none">
                 <span className="text-lg font-black tracking-tight text-white uppercase">
                   Primer
@@ -371,7 +379,7 @@ export default function Header() {
               {user && (
                 <Link
                   href="/watchlist"
-                  className="flex h-full items-center px-4 text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
+                  className="hidden md:flex h-full items-center px-4 text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
                   aria-label="Library"
                 >
                   <Bookmark size={24} />
@@ -416,7 +424,7 @@ export default function Header() {
 
       {/* Mobile Sidebar Overlay */}
       <div
-        className={`fixed inset-0 z-[1001] bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
+        className={`fixed inset-x-0 bottom-0 top-16 z-[1001] bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
           isMenuOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
@@ -426,23 +434,13 @@ export default function Header() {
 
       {/* Mobile Sidebar - Changed to slide from the left */}
       <aside
-        className={`fixed inset-y-0 left-0 z-[1002] w-[280px] bg-[#1a1a1a] shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${
-          isMenuOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed inset-x-0 bottom-0 top-16 z-[1002] h-[calc(100vh-4rem)] w-full bg-[#1a1a1a] shadow-2xl transition-all duration-300 ease-in-out md:hidden ${
+          isMenuOpen
+            ? "translate-y-0 opacity-100"
+            : "-translate-y-4 opacity-0 pointer-events-none"
         }`}
       >
-        <div className="flex h-16 items-center justify-between px-6 border-b border-white/5">
-          <span className="text-sm font-bold uppercase tracking-widest text-zinc-500">
-            Menu
-          </span>
-          <button
-            onClick={() => setIsMenuOpen(false)}
-            className="rounded-full p-2 text-zinc-400 hover:bg-zinc-800 hover:text-white"
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        <nav className="p-4">
+        <nav className="p-4 pt-6">
           <ul className="space-y-1">
             {navLinks.map((link) => (
               <li key={link.href}>
@@ -616,32 +614,6 @@ export default function Header() {
             </div>
           )}
         </nav>
-
-        <div className="absolute bottom-0 w-full border-t border-white/5 p-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white shadow-lg">
-              {user?.profileImageUrl ? (
-                <img
-                  src={user.profileImageUrl}
-                  alt="Profile"
-                  className="h-9 w-9 rounded-full object-cover"
-                />
-              ) : user ? (
-                getUserInitial(user.fullName, user.email)
-              ) : (
-                "?"
-              )}
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-white truncate max-w-[150px]">
-                {user ? user.fullName || user.email : "Guest User"}
-              </span>
-              <span className="text-xs text-zinc-500">
-                {user ? "Logged in" : "Not logged in"}
-              </span>
-            </div>
-          </div>
-        </div>
       </aside>
 
       <UserModal
