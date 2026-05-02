@@ -434,97 +434,93 @@ export default function Header() {
 
       {/* Mobile Sidebar - Changed to slide from the left */}
       <aside
-        className={`fixed inset-x-0 bottom-0 top-16 z-[1002] h-[calc(100vh-4rem)] w-full bg-[#151515] shadow-2xl transition-all duration-300 ease-in-out md:hidden ${
+        className={`fixed inset-x-0 bottom-0 top-16 z-[1002] overflow-y-auto h-[calc(100vh-4rem)] w-full bg-[#151515] shadow-2xl transition-all duration-300 ease-in-out md:hidden ${
           isMenuOpen
             ? "translate-y-0 opacity-100"
             : "-translate-y-4 opacity-0 pointer-events-none"
         }`}
       >
-        <nav className="pt-6">
-          <ul className="space-y-1">
+        <nav className="pt-3">
+          <ul>
             {navLinks.map((link) => (
               <li key={link.href}>
                 {link.label === "Categories" ? (
-                  <div className="flex flex-col border-b-2 border-[#23252B]">
-                    <button
-                      onClick={() =>
-                        setIsCategoriesDropdownOpen(!isCategoriesDropdownOpen)
-                      }
-                      className={`flex w-full items-center justify-between px-4 py-3 text-base font-medium transition-colors ${
-                        isCategoriesDropdownOpen
-                          ? "bg-indigo-600/10 text-indigo-400"
-                          : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
-                      }`}
-                    >
-                      {link.label}
-                      <ChevronDown size={24} />
-                    </button>
-                    {isCategoriesDropdownOpen && (
-                      <div className="ml-4 my-1 flex flex-col space-y-4 border-l border-zinc-800 pl-4 animate-in fade-in slide-in-from-top-1 duration-200">
-                        {/* Main Options */}
-                        <div className="flex flex-col space-y-1">
-                          {[
-                            {
-                              label: "Browse All (A-Z)",
-                              href: "/videos/alphabetical",
-                            },
-                            {
-                              label: "Release Calendar",
-                              href: "/calendar",
-                            },
-                            {
-                              label: "Music Videos & Concerts",
-                              href: "/anime/music",
-                            },
-                          ].map((item) => (
-                            <Link
-                              key={item.label}
-                              href={item.href}
-                              onClick={() => {
-                                setIsCategoriesDropdownOpen(false);
-                                setIsMenuOpen(false);
-                              }}
-                              className="w-full px-4 py-2 text-sm font-bold text-white hover:bg-zinc-800/50 transition-colors"
-                            >
-                              {item.label}
-                            </Link>
-                          ))}
-                        </div>
+                  <div className="flex flex-col">
+                    {[
+                      {
+                        label: "Browse All (A-Z)",
+                        href: "/videos/alphabetical",
+                      },
+                      {
+                        label: "Release Calendar",
+                        href: "/calendar",
+                      },
+                      {
+                        label: "Music Videos & Concerts",
+                        href: "/anime/music",
+                      },
+                    ].map((item) => (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        onClick={() => setIsMenuOpen(false)}
+                        className="flex items-center px-4 py-3 text-base font-medium text-zinc-400 transition-colors hover:bg-zinc-800/50 hover:text-white"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
 
-                        {/* Genres */}
-                        <div className="flex flex-col mt-2">
-                          {[
-                            "Action",
-                            "Adventure",
-                            "Comedy",
-                            "Drama",
-                            "Fantasy",
-                            "Music",
-                            "Romance",
-                            "Sci-Fi",
-                            "Seinen",
-                            "Shojo",
-                            "Shonen",
-                            "Slice of Life",
-                            "Sports",
-                            "Supernatural",
-                            "Thriller",
-                          ].map((genre) => (
-                            <Link
-                              key={genre}
-                              href={`/search?genre=${genre.toLowerCase()}`}
-                              onClick={() => {
-                                setIsCategoriesDropdownOpen(false);
-                                setIsMenuOpen(false);
-                              }}
-                              className="rounded-lg px-4 py-1.5 text-xs text-zinc-500 hover:bg-zinc-800/50 hover:text-white transition-colors"
-                            >
-                              {genre}
-                            </Link>
-                          ))}
+                    <div className="flex flex-col border-b-2 border-[#23252B]">
+                      <button
+                        onClick={() =>
+                          setIsCategoriesDropdownOpen(!isCategoriesDropdownOpen)
+                        }
+                        className={`flex w-full items-center justify-between px-4 py-3 text-base font-medium transition-colors ${
+                          isCategoriesDropdownOpen
+                            ? "bg-indigo-600/10 text-indigo-400"
+                            : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
+                        }`}
+                      >
+                        {link.label}
+                        <ChevronDown size={24} />
+                      </button>
+                      {isCategoriesDropdownOpen && (
+                        <div className="flex flex-col space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                          {/* Genres */}
+                          <div className="flex flex-col">
+                            {[
+                              "Action",
+                              "Adventure",
+                              "Comedy",
+                              "Drama",
+                              "Fantasy",
+                              "Music",
+                              "Romance",
+                              "Sci-Fi",
+                              "Seinen",
+                              "Shojo",
+                              "Shonen",
+                              "Slice of Life",
+                              "Sports",
+                              "Supernatural",
+                              "Thriller",
+                            ].map((genre) => (
+                              <Link
+                                key={genre}
+                                href={`/search?genre=${genre.toLowerCase()}`}
+                                onClick={() => {
+                                  setIsCategoriesDropdownOpen(false);
+                                  setIsMenuOpen(false);
+                                }}
+                                className="px-4 py-3 text-xs text-zinc-500 hover:bg-zinc-800/50 hover:text-white transition-colors"
+                              >
+                                {genre}
+                              </Link>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 ) : link.label === "News" ? (
                   <div className="flex flex-col">
@@ -540,14 +536,14 @@ export default function Header() {
                       <ChevronDown size={24} />
                     </button>
                     {isNewsDropdownOpen && (
-                      <div className="ml-4 mt-1 flex flex-col space-y-1 border-l border-zinc-800 pl-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                      <div className="flex flex-col space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
                         <Link
                           href="/news"
                           onClick={() => {
                             setIsNewsDropdownOpen(false);
                             setIsMenuOpen(false);
                           }}
-                          className="rounded-lg px-4 py-2 text-sm font-medium text-zinc-500 hover:bg-zinc-800/50 hover:text-white transition-colors"
+                          className="px-4 py-3 text-sm font-medium text-zinc-500 hover:bg-zinc-800/50 hover:text-white transition-colors"
                         >
                           All news
                         </Link>
@@ -557,7 +553,7 @@ export default function Header() {
                             setIsNewsDropdownOpen(false);
                             setIsMenuOpen(false);
                           }}
-                          className="rounded-lg px-4 py-2 text-sm font-medium text-zinc-500 hover:bg-zinc-800/50 hover:text-white transition-colors"
+                          className="px-4 py-3 text-sm font-medium text-zinc-500 hover:bg-zinc-800/50 hover:text-white transition-colors"
                         >
                           Anime Awards
                         </Link>
@@ -567,7 +563,7 @@ export default function Header() {
                             setIsNewsDropdownOpen(false);
                             setIsMenuOpen(false);
                           }}
-                          className="rounded-lg px-4 py-2 text-sm font-medium text-zinc-500 hover:bg-zinc-800/50 hover:text-white transition-colors"
+                          className="px-4 py-3 text-sm font-medium text-zinc-500 hover:bg-zinc-800/50 hover:text-white transition-colors"
                         >
                           Events & Experiences
                         </Link>
