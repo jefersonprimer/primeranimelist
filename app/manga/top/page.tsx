@@ -6,9 +6,11 @@ import {
   type TopMangaFilter,
 } from "@/lib/services/manga.service";
 import { listMangaWatchlistEntriesByMalIds } from "@/lib/services/manga-watchlist.service";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+
+import { Pagination } from "@/app/components/Pagination";
+import { TopFilters } from "@/app/components/TopFilters";
 
 export const dynamic = "force-dynamic";
 
@@ -101,84 +103,11 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white/80 px-4 py-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/80 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
-              Ranking
-            </p>
-            <p className="mt-1 text-base font-bold text-zinc-900 dark:text-zinc-50">
-              {total === 0
-                ? "No ranked manga found"
-                : `Showing #${startRank} to #${endRank} of ${total}`}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3 self-start md:self-auto">
-            <Link
-              href={
-                hasPreviousPage
-                  ? getPageHref(currentPage - 1, filter)
-                  : getPageHref(1, filter)
-              }
-              aria-disabled={!hasPreviousPage}
-              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
-                hasPreviousPage
-                  ? "border-zinc-300 text-zinc-900 hover:border-zinc-400 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-50 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
-                  : "pointer-events-none border-zinc-200 text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
-              }`}
-            >
-              <ChevronLeft />
-              Previous 50
-            </Link>
-
-            <span className="text-sm font-bold text-zinc-500 dark:text-zinc-400">
-              Page {currentPage} of {totalPages}
-            </span>
-
-            <Link
-              href={
-                hasNextPage
-                  ? getPageHref(currentPage + 1, filter)
-                  : getPageHref(currentPage, filter)
-              }
-              aria-disabled={!hasNextPage}
-              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
-                hasNextPage
-                  ? "border-indigo-300 bg-indigo-50 text-indigo-700 hover:border-indigo-400 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 dark:hover:border-indigo-700 dark:hover:bg-indigo-900"
-                  : "pointer-events-none border-zinc-200 text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
-              }`}
-            >
-              Next 50
-              <ChevronRight />
-            </Link>
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-zinc-200 bg-white/80 px-2 py-2 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/80">
-          <nav className="flex items-center gap-2 overflow-x-auto whitespace-nowrap px-1 py-1">
-            {FILTERS.map((item) => {
-              const isActive = item.value === filter;
-              const href = item.value
-                ? `/manga/top?filter=${item.value}`
-                : "/manga/top";
-
-              return (
-                <Link
-                  key={item.value ?? "all"}
-                  href={href}
-                  aria-current={isActive ? "page" : undefined}
-                  className={`inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-bold transition-colors ${
-                    isActive
-                      ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
-                      : "border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
+        <TopFilters
+          basePath="/manga/top"
+          filters={FILTERS}
+          currentFilter={filter}
+        />
 
         <div className="w-full overflow-x-auto rounded-xl border border-zinc-200 shadow-sm overflow-hidden dark:border-zinc-800">
           <table className="w-full border-collapse bg-white text-left dark:bg-zinc-950">
@@ -315,7 +244,7 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
                           </span>
                         ) : (
                           <span className="text-sm font-medium text-zinc-400 dark:text-zinc-500">
-                            -
+                            N/A
                           </span>
                         )}
                       </td>
@@ -351,6 +280,23 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
             </tbody>
           </table>
         </div>
+
+        <Pagination
+          hasPreviousPage={hasPreviousPage}
+          hasNextPage={hasNextPage}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          prevHref={
+            hasPreviousPage
+              ? getPageHref(currentPage - 1, filter)
+              : getPageHref(1, filter)
+          }
+          nextHref={
+            hasNextPage
+              ? getPageHref(currentPage + 1, filter)
+              : getPageHref(currentPage, filter)
+          }
+        />
       </div>
     </div>
   );

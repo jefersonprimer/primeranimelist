@@ -6,9 +6,18 @@ import {
   type TopAnimeFilter,
 } from "@/lib/services/anime.service";
 import { listWatchlistEntriesByMalIds } from "@/lib/services/watchlist.service";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Star, Users } from "lucide-react";
+import { RatingIcon10 } from "@/app/components/icons/Rating10Icon";
+import { RatingIcon12 } from "@/app/components/icons/Rating12Icon";
+import { RatingIcon14 } from "@/app/components/icons/Rating14Icon";
+import { RatingIcon16 } from "@/app/components/icons/Rating16Icon";
+import { RatingIcon18 } from "@/app/components/icons/Rating18Icon";
+import { RatingIconAL } from "@/app/components/icons/RatingALIcon";
+
+import { Pagination } from "@/app/components/Pagination";
+import { TopFilters } from "@/app/components/TopFilters";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +52,49 @@ function formatDate(date: Date | null | undefined) {
   }).format(date);
 }
 
+function formatMembers(members: number | null | undefined) {
+  if (members === null || members === undefined) {
+    return "N/A";
+  }
+
+  return new Intl.NumberFormat("en-US").format(members);
+}
+
+function getRatingIcon(rating: string | null | undefined) {
+  if (!rating) return null;
+
+  const normalizedRating = rating.toLocaleLowerCase();
+
+  if (
+    /^rx\b/.test(normalizedRating) ||
+    /hentai|adult|18\+|r18|a18|18 anos/.test(normalizedRating)
+  ) {
+    return <RatingIcon18 size={16} />;
+  }
+
+  if (/^r\b|r\+|nudity|17\+|a16|16 anos|mature/.test(normalizedRating)) {
+    return <RatingIcon16 size={16} />;
+  }
+
+  if (/pg-13|teens|13\+|a14|14 anos/.test(normalizedRating)) {
+    return <RatingIcon14 size={16} />;
+  }
+
+  if (/kids|children|a12|12 anos/.test(normalizedRating)) {
+    return <RatingIcon12 size={16} />;
+  }
+
+  if (/^pg\b|a10|10 anos/.test(normalizedRating)) {
+    return <RatingIcon10 size={16} />;
+  }
+
+  if (/^g\b|all ages|livre/.test(normalizedRating)) {
+    return <RatingIconAL size={16} />;
+  }
+
+  return null;
+}
+
 export default async function AnimeListPage(props: PageProps<"/anime/top">) {
   const { page: pageParam, filter: filterParam } = await props.searchParams;
   const page = getPageNumber(pageParam);
@@ -73,7 +125,6 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
   );
   const currentPage = Math.min(page, totalPages);
   const startRank = total === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
-  const endRank = total === 0 ? 0 : startRank + animeList.length - 1;
   const hasPreviousPage = currentPage > 1;
   const hasNextPage = currentPage < totalPages;
 
@@ -93,7 +144,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
 
   return (
     <div className="max-w-7xl mx-auto py-12 px-6">
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col">
         <div>
           <h1 className="text-[28px] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
             Top Anime
@@ -103,71 +154,107 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white/80 px-4 py-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/80 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3 self-start md:self-auto">
-            <Link
-              href={
-                hasPreviousPage
-                  ? getPageHref(currentPage - 1, filter)
-                  : getPageHref(1, filter)
-              }
-              aria-disabled={!hasPreviousPage}
-              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
-                hasPreviousPage
-                  ? "border-zinc-300 text-zinc-900 hover:border-zinc-400 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-50 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
-                  : "pointer-events-none border-zinc-200 text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
-              }`}
-            >
-              <ChevronLeft />
-              Previous 50
-            </Link>
+        <TopFilters
+          basePath="/anime/top"
+          filters={FILTERS}
+          currentFilter={filter}
+        />
 
-            <Link
-              href={
-                hasNextPage
-                  ? getPageHref(currentPage + 1, filter)
-                  : getPageHref(currentPage, filter)
-              }
-              aria-disabled={!hasNextPage}
-              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition-colors ${
-                hasNextPage
-                  ? "border-indigo-300 bg-indigo-50 text-indigo-700 hover:border-indigo-400 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 dark:hover:border-indigo-700 dark:hover:bg-indigo-900"
-                  : "pointer-events-none border-zinc-200 text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
-              }`}
-            >
-              Next 50
-              <ChevronRight />
-            </Link>
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-zinc-200 bg-white/80 px-2 py-2 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/80">
-          <nav className="flex items-center gap-2 overflow-x-auto whitespace-nowrap px-1 py-1">
-            {FILTERS.map((item) => {
-              const isActive = item.value === filter;
-              const href = item.value
-                ? `/anime/top?filter=${item.value}`
-                : "/anime/top";
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4 lg:hidden">
+          {animeList.length > 0 ? (
+            animeList.map((anime, index) => {
+              const rankValue = filter
+                ? startRank + index
+                : anime.rank || anime.popularity || startRank + index;
+              const detailHref = `/anime/${anime.malId}/${encodeURIComponent(
+                anime.title,
+              )}`;
+              const ratingIcon = getRatingIcon(anime.rating);
 
               return (
-                <Link
-                  key={item.value ?? "all"}
-                  href={href}
-                  aria-current={isActive ? "page" : undefined}
-                  className={`inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-bold transition-colors ${
-                    isActive
-                      ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
-                      : "border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
-                  }`}
+                <article
+                  key={anime.id}
+                  className="overflow-hidden bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950"
                 >
-                  {item.label}
-                </Link>
+                  <div className="relative">
+                    <Link href={detailHref}>
+                      {anime.imageUrl ? (
+                        <div className="relative h-52 w-full md:h-48">
+                          <Image
+                            src={anime.imageUrl}
+                            alt={anime.title}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 320px"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex h-48 w-full items-center justify-center bg-zinc-200 dark:bg-zinc-800">
+                          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                            No image
+                          </span>
+                        </div>
+                      )}
+                    </Link>
+
+                    {ratingIcon ? (
+                      <div className="absolute left-[2px] top-[2px]">
+                        {ratingIcon}
+                      </div>
+                    ) : null}
+
+                    <div className="pointer-events-none absolute -right-[1px] -top-[1px] z-20 h-9 w-9 bg-black/90 [clip-path:polygon(100%_0,0_0,100%_100%)]" />
+                    <div className="absolute -right-[1px] -top-[1px] z-30">
+                      <WatchlistButton
+                        malId={anime.malId}
+                        title={anime.title}
+                        episodes={anime.episodes}
+                        triggerClassName="pointer-events-auto inline-flex items-center justify-center rounded-sm p-0.5 text-white transition hover:cursor-pointer"
+                        size={16}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2.5 p-3">
+                    <p className="text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                      #{rankValue}
+                    </p>
+
+                    <div className="flex items-center text-sm gap-2">
+                      {anime.type ? (
+                        <span className="w-fit rounded border border-indigo-100 bg-indigo-50 px-1.5 py-0.5 text-[10px] font-black uppercase text-indigo-600 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-400">
+                          {anime.type}
+                        </span>
+                      ) : null}
+
+                      <span className="inline-flex items-center gap-1">
+                        <Star className="h-3.5 w-3.5 text-amber-500" />
+                        {anime.score ? anime.score.toFixed(2) : "N/A"}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Users className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
+                        {formatMembers(anime.members)}
+                      </span>
+                    </div>
+
+                    <Link
+                      href={detailHref}
+                      className="block text-sm font-bold leading-tight text-zinc-900 transition-colors hover:text-indigo-600 dark:text-zinc-50 dark:hover:text-indigo-400 md:text-base"
+                    >
+                      {anime.title}
+                    </Link>
+                  </div>
+                </article>
               );
-            })}
-          </nav>
+            })
+          ) : (
+            <div className="col-span-full rounded-xl border border-zinc-200 bg-white px-4 py-10 text-center text-sm font-medium text-zinc-500 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400">
+              No ranked anime available for this page.
+            </div>
+          )}
         </div>
 
-        <div className="w-full overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="hidden w-full overflow-x-auto rounded-xl border border-zinc-200 shadow-sm overflow-hidden dark:border-zinc-800 lg:block">
           <table className="w-full text-left border-collapse bg-white dark:bg-zinc-950">
             <thead className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
               <tr>
@@ -272,10 +359,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                           {anime.members !== null &&
                             anime.members !== undefined && (
                               <p className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500">
-                                {new Intl.NumberFormat("en-US").format(
-                                  anime.members,
-                                )}{" "}
-                                members
+                                {formatMembers(anime.members)} members
                               </p>
                             )}
                         </div>
@@ -332,6 +416,23 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
             </tbody>
           </table>
         </div>
+
+        <Pagination
+          hasPreviousPage={hasPreviousPage}
+          hasNextPage={hasNextPage}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          prevHref={
+            hasPreviousPage
+              ? getPageHref(currentPage - 1, filter)
+              : getPageHref(1, filter)
+          }
+          nextHref={
+            hasNextPage
+              ? getPageHref(currentPage + 1, filter)
+              : getPageHref(currentPage, filter)
+          }
+        />
       </div>
     </div>
   );

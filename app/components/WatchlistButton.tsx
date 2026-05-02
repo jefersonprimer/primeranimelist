@@ -35,6 +35,7 @@ interface WatchlistButtonProps {
   triggerLabel?: string;
   triggerClassName?: string;
   initialEntry?: WatchlistEntry | null;
+  size?: number;
 }
 
 const defaultEntry: WatchlistEntry = {
@@ -53,6 +54,7 @@ export function WatchlistButton({
   triggerLabel,
   triggerClassName,
   initialEntry = null,
+  size = 24,
 }: WatchlistButtonProps) {
   const router = useRouter();
   const { user, loading } = useAuth();
@@ -273,7 +275,7 @@ export function WatchlistButton({
         }
       >
         <Bookmark
-          size={24}
+          size={size}
           className={
             hasSavedEntry ? "fill-indigo-400 text-indigo-400" : "text-white"
           }
