@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminDetailEditButton } from "@/app/components/AdminDetailEditButton";
 import { WatchlistButton } from "@/app/components/WatchlistButton";
+import { AnimeCarouselRecommendation } from "@/app/components/AnimeCarouselRecommendation";
 
 export async function generateMetadata({
   params,
@@ -49,6 +50,9 @@ export default async function AnimeDetailPage({
   }
 
   const anime = serializeAnime(rawAnime);
+  const recommendationGenres = anime.genres
+    .map((genre) => genre.name?.trim())
+    .filter((genreName): genreName is string => Boolean(genreName));
 
   return (
     <div className="mx-auto max-w-7xl bg-white p-4 shadow-sm dark:bg-zinc-950 md:p-6 lg:p-8">
@@ -422,6 +426,16 @@ export default async function AnimeDetailPage({
           )}
         </main>
       </div>
+
+      {recommendationGenres.length > 0 ? (
+        <section className="mt-10">
+          <AnimeCarouselRecommendation
+            title="Recommended anime from similar genres"
+            genreNames={recommendationGenres}
+            currentMalId={malId}
+          />
+        </section>
+      ) : null}
     </div>
   );
 }

@@ -29,7 +29,7 @@ type ListAnimeByGenreOptions = {
   genreName: string;
   page?: number;
   limit?: number;
-  sort?: "popular" | "newest";
+  sort?: "popular" | "newest" | "popular_newest";
 };
 
 type AnimeRow = InferSelectModel<typeof anime>;
@@ -541,6 +541,14 @@ export async function listAnimeByGenre({
           desc(anime.members),
           asc(anime.title),
         ] as const)
+      : sort === "popular_newest"
+        ? ([
+            sql`${anime.popularity} asc nulls last`,
+            sql`${anime.airedFrom} desc nulls last`,
+            sql`${anime.year} desc nulls last`,
+            desc(anime.members),
+            asc(anime.title),
+          ] as const)
       : ([
           sql`${anime.popularity} asc nulls last`,
           desc(anime.members),
