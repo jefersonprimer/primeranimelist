@@ -148,7 +148,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="flex md:hidden h-full items-center pr-4 text-[#bbb] transition-colors hover:text-white"
+              className="flex md:hidden h-full items-center px-4 text-[#bbb] transition-colors hover:text-white"
               aria-label="Toggle Menu"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
