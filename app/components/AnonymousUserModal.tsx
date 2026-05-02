@@ -1,11 +1,14 @@
-'use client';
+"use client";
 
 interface AnonymousUserModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function AnonymousUserModal({ isOpen, onClose }: AnonymousUserModalProps) {
+export default function AnonymousUserModal({
+  isOpen,
+  onClose,
+}: AnonymousUserModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -14,7 +17,7 @@ export default function AnonymousUserModal({ isOpen, onClose }: AnonymousUserMod
       onClick={onClose}
     >
       <div
-        className="bg-[#141519] mt-[60px] mr-[15px] w-[360px] py-4 top-15 left-0 h-screen z-[1100] overflow-y-auto"
+        className="bg-[#151515] mt-[60px] mr-[15px] w-[360px] py-4 top-15 left-0 h-screen z-[1100] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-full">
@@ -26,9 +29,13 @@ export default function AnonymousUserModal({ isOpen, onClose }: AnonymousUserMod
                 tabIndex={0}
               >
                 <div className="flex flex-col gap-1">
-                  <h5 className="text-base font-semibold m-0">Create Account</h5>
+                  <h5 className="text-base font-semibold m-0">
+                    Create Account
+                  </h5>
                   <div className="text-sm text-gray-400">
-                    <p className="m-0">Sign up for free or become a Premium member.</p>
+                    <p className="m-0">
+                      Sign up for free or become a Premium member.
+                    </p>
                   </div>
                 </div>
               </a>
@@ -66,7 +73,7 @@ export default function AnonymousUserModal({ isOpen, onClose }: AnonymousUserMod
                 className="block w-full bg-indigo-600 px-3 py-2 no-underline transition-opacity hover:opacity-90"
                 tabIndex={0}
               >
-                  <span className="flex text-white items-center justify-center gap-2 text-sm uppercase font-extrabold">
+                <span className="flex text-white items-center justify-center gap-2 text-sm uppercase font-extrabold">
                   <svg
                     className="w-6 h-6"
                     xmlns="http://www.w3.org/2000/svg"

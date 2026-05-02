@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, Bookmark, Play, Menu } from "lucide-react";
+import { Search, Bookmark, Play, Menu, ChevronDown } from "lucide-react";
 import { useAuth } from "@/lib/context/AuthContext";
 import { DropdownIcon } from "./icons/DropdownIcon";
 import { AdminNavActions } from "./AdminNavActions";
@@ -148,9 +148,9 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`flex h-full items-center px-4 transition-colors md:hidden hover:bg-[#181818] hover:cursor-pointer ${
+              className={`flex h-full items-center px-4 transition-colors md:hidden hover:bg-[#151515] hover:cursor-pointer ${
                 isMenuOpen
-                  ? "bg-[#181818] text-white"
+                  ? "bg-[#151515] text-white"
                   : "text-[#bbb] hover:text-white"
               }`}
               aria-label="Toggle Menu"
@@ -389,9 +389,9 @@ export default function Header() {
               <button
                 type="button"
                 onClick={handleUserClick}
-                className={`flex h-full items-center gap-1 px-4 transition-colors hover:bg-[#181818] hover:text-white cursor-pointer focus:outline-none ${
+                className={`flex h-full items-center gap-1 px-4 transition-colors hover:bg-[#151515] hover:text-white cursor-pointer focus:outline-none ${
                   isUserModalOpen || isAnonymousModalOpen
-                    ? "bg-[#181818] text-white"
+                    ? "bg-[#151515] text-white"
                     : "text-[#bbb]"
                 }`}
                 aria-label="User Menu"
@@ -434,37 +434,33 @@ export default function Header() {
 
       {/* Mobile Sidebar - Changed to slide from the left */}
       <aside
-        className={`fixed inset-x-0 bottom-0 top-16 z-[1002] h-[calc(100vh-4rem)] w-full bg-[#1a1a1a] shadow-2xl transition-all duration-300 ease-in-out md:hidden ${
+        className={`fixed inset-x-0 bottom-0 top-16 z-[1002] h-[calc(100vh-4rem)] w-full bg-[#151515] shadow-2xl transition-all duration-300 ease-in-out md:hidden ${
           isMenuOpen
             ? "translate-y-0 opacity-100"
             : "-translate-y-4 opacity-0 pointer-events-none"
         }`}
       >
-        <nav className="p-4 pt-6">
+        <nav className="pt-6">
           <ul className="space-y-1">
             {navLinks.map((link) => (
               <li key={link.href}>
                 {link.label === "Categories" ? (
-                  <div className="flex flex-col">
+                  <div className="flex flex-col border-b-2 border-[#23252B]">
                     <button
                       onClick={() =>
                         setIsCategoriesDropdownOpen(!isCategoriesDropdownOpen)
                       }
-                      className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-base font-medium transition-colors ${
+                      className={`flex w-full items-center justify-between px-4 py-3 text-base font-medium transition-colors ${
                         isCategoriesDropdownOpen
                           ? "bg-indigo-600/10 text-indigo-400"
                           : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
                       }`}
                     >
                       {link.label}
-                      <DropdownIcon
-                        className={`transition-transform ${
-                          isCategoriesDropdownOpen ? "rotate-180" : ""
-                        }`}
-                      />
+                      <ChevronDown size={24} />
                     </button>
                     {isCategoriesDropdownOpen && (
-                      <div className="ml-4 mt-1 flex flex-col space-y-4 border-l border-zinc-800 pl-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                      <div className="ml-4 my-1 flex flex-col space-y-4 border-l border-zinc-800 pl-4 animate-in fade-in slide-in-from-top-1 duration-200">
                         {/* Main Options */}
                         <div className="flex flex-col space-y-1">
                           {[
@@ -488,7 +484,7 @@ export default function Header() {
                                 setIsCategoriesDropdownOpen(false);
                                 setIsMenuOpen(false);
                               }}
-                              className="rounded-lg px-4 py-2 text-sm font-bold text-white hover:bg-zinc-800/50 transition-colors"
+                              className="w-full px-4 py-2 text-sm font-bold text-white hover:bg-zinc-800/50 transition-colors"
                             >
                               {item.label}
                             </Link>
@@ -496,41 +492,36 @@ export default function Header() {
                         </div>
 
                         {/* Genres */}
-                        <div>
-                          <span className="px-4 text-[10px] font-black uppercase tracking-widest text-zinc-600">
-                            Genres
-                          </span>
-                          <div className="grid grid-cols-2 gap-x-2 mt-2">
-                            {[
-                              "Action",
-                              "Adventure",
-                              "Comedy",
-                              "Drama",
-                              "Fantasy",
-                              "Music",
-                              "Romance",
-                              "Sci-Fi",
-                              "Seinen",
-                              "Shojo",
-                              "Shonen",
-                              "Slice of Life",
-                              "Sports",
-                              "Supernatural",
-                              "Thriller",
-                            ].map((genre) => (
-                              <Link
-                                key={genre}
-                                href={`/search?genre=${genre.toLowerCase()}`}
-                                onClick={() => {
-                                  setIsCategoriesDropdownOpen(false);
-                                  setIsMenuOpen(false);
-                                }}
-                                className="rounded-lg px-4 py-1.5 text-xs text-zinc-500 hover:bg-zinc-800/50 hover:text-white transition-colors"
-                              >
-                                {genre}
-                              </Link>
-                            ))}
-                          </div>
+                        <div className="flex flex-col mt-2">
+                          {[
+                            "Action",
+                            "Adventure",
+                            "Comedy",
+                            "Drama",
+                            "Fantasy",
+                            "Music",
+                            "Romance",
+                            "Sci-Fi",
+                            "Seinen",
+                            "Shojo",
+                            "Shonen",
+                            "Slice of Life",
+                            "Sports",
+                            "Supernatural",
+                            "Thriller",
+                          ].map((genre) => (
+                            <Link
+                              key={genre}
+                              href={`/search?genre=${genre.toLowerCase()}`}
+                              onClick={() => {
+                                setIsCategoriesDropdownOpen(false);
+                                setIsMenuOpen(false);
+                              }}
+                              className="rounded-lg px-4 py-1.5 text-xs text-zinc-500 hover:bg-zinc-800/50 hover:text-white transition-colors"
+                            >
+                              {genre}
+                            </Link>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -539,18 +530,14 @@ export default function Header() {
                   <div className="flex flex-col">
                     <button
                       onClick={() => setIsNewsDropdownOpen(!isNewsDropdownOpen)}
-                      className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-base font-medium transition-colors ${
+                      className={`flex w-full items-center justify-between px-4 py-3 text-base font-medium transition-colors ${
                         isNewsDropdownOpen
                           ? "bg-indigo-600/10 text-indigo-400"
                           : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
                       }`}
                     >
                       {link.label}
-                      <DropdownIcon
-                        className={`transition-transform ${
-                          isNewsDropdownOpen ? "rotate-180" : ""
-                        }`}
-                      />
+                      <ChevronDown size={24} />
                     </button>
                     {isNewsDropdownOpen && (
                       <div className="ml-4 mt-1 flex flex-col space-y-1 border-l border-zinc-800 pl-4 animate-in fade-in slide-in-from-top-1 duration-200">
@@ -590,7 +577,7 @@ export default function Header() {
                 ) : (
                   <Link
                     href={link.href}
-                    className={`flex items-center rounded-xl px-4 py-3 text-base font-medium transition-colors ${
+                    className={`flex items-center px-4 py-3 text-base font-medium transition-colors ${
                       pathname === link.href
                         ? "bg-indigo-600/10 text-indigo-400"
                         : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
