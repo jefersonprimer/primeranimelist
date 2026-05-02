@@ -141,7 +141,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="h-16 bg-[#272727] px-4 md:px-6 sticky top-0 z-[1000]">
+      <header className="h-16 bg-[#272727] md:px-6 sticky top-0 z-[1000]">
         <div className="mx-auto flex h-full max-w-7xl flex-row items-center justify-between">
           <div className="flex flex-row items-center h-full">
             {/* Mobile Menu Toggle - Now on the left */}
