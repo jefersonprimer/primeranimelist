@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { ensureDatabase } from "@/lib/db/bootstrap";
 import { manga } from "@/lib/db/schema";
-import { and, asc, count, desc, eq, gt, ilike, isNotNull, or } from "drizzle-orm";
+import { and, asc, count, desc, eq, gt, ilike, isNotNull, or, sql } from "drizzle-orm";
 import type { InferSelectModel } from "drizzle-orm";
 
 type ListMangaOptions = {
@@ -244,6 +244,67 @@ export function serializeMangaListResponse(
 export function serializeSingleMangaResponse(row: MangaRow) {
   return {
     data: serializeManga(row),
+  };
+}
+
+type ListMangaByGenreOptions = {
+  genreName: string;
+  page?: number;
+  limit?: number;
+  sort?: "popular" | "newest" | "popular_newest";
+};
+
+export async function listMangaByGenre({
+  genreName,
+  page = 1,
+  limit = 50,
+  sort = "popular",
+}: ListMangaByGenreOptions) {
+  await ensureDatabase();
+
+  const safePage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+  const safeLimit = Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : 50;
+  const offset = (safePage - 1) * safeLimit;
+  const genreFilter = sql<boolean>`${manga.genres} ? ${genreName}`;
+
+  const orderBy =
+    sort === "newest"
+      ? ([
+          sql`${manga.publishedFrom} desc nulls last`,
+          desc(manga.createdAt),
+          desc(manga.members),
+          asc(manga.title),
+        ] as const)
+      : sort === "popular_newest"
+        ? ([
+            sql`${manga.popularity} asc nulls last`,
+            sql`${manga.publishedFrom} desc nulls last`,
+            desc(manga.members),
+            asc(manga.title),
+          ] as const)
+        : ([
+            sql`${manga.popularity} asc nulls last`,
+            desc(manga.members),
+            asc(manga.title),
+          ] as const);
+
+  const [items, [{ total }]] = await Promise.all([
+    db
+      .select()
+      .from(manga)
+      .where(genreFilter)
+      .orderBy(...orderBy)
+      .limit(safeLimit)
+      .offset(offset),
+    db.select({ total: count() }).from(manga).where(genreFilter),
+  ]);
+
+  return {
+    items,
+    limit: safeLimit,
+    page: safePage,
+    total,
+    totalPages: Math.max(1, Math.ceil(total / safeLimit)),
   };
 }
 
