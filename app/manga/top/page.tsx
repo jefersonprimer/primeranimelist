@@ -8,6 +8,7 @@ import {
 import { listMangaWatchlistEntriesByMalIds } from "@/lib/services/manga-watchlist.service";
 import Image from "next/image";
 import Link from "next/link";
+import { Bookmark, Star, Users } from "lucide-react";
 
 import { Pagination } from "@/app/components/Pagination";
 import { TopFilters } from "@/app/components/TopFilters";
@@ -45,6 +46,14 @@ function formatDate(date: Date | null | undefined) {
   }).format(date);
 }
 
+function formatMembers(members: number | null | undefined) {
+  if (members === null || members === undefined) {
+    return "N/A";
+  }
+
+  return new Intl.NumberFormat("en-US").format(members);
+}
+
 export default async function MangaListPage(props: PageProps<"/manga/top">) {
   const { page: pageParam, filter: filterParam } = await props.searchParams;
   const page = getPageNumber(pageParam);
@@ -75,7 +84,6 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
   );
   const currentPage = Math.min(page, totalPages);
   const startRank = total === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
-  const endRank = total === 0 ? 0 : startRank + mangaList.length - 1;
   const hasPreviousPage = currentPage > 1;
   const hasNextPage = currentPage < totalPages;
 
@@ -93,7 +101,7 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
 
   return (
     <div className="max-w-7xl mx-auto py-12 px-6">
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col">
         <div>
           <h1 className="text-[28px] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
             Top Manga
@@ -109,7 +117,93 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
           currentFilter={filter}
         />
 
-        <div className="w-full overflow-x-auto rounded-xl border border-zinc-200 shadow-sm overflow-hidden dark:border-zinc-800">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:hidden ">
+          {mangaList.length > 0 ? (
+            mangaList.map((manga, index) => {
+              const rankValue = filter
+                ? startRank + index
+                : manga.rank || manga.popularity || startRank + index;
+              const detailHref = `/manga/${manga.malId}/${encodeURIComponent(
+                manga.title,
+              )}`;
+              const watchlistEntry = watchlistByMalId.get(manga.malId);
+
+              return (
+                <article
+                  key={manga.id}
+                  className="overflow-hidden bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950"
+                >
+                  <div className="relative">
+                    <Link href={detailHref}>
+                      {manga.imageUrl ? (
+                        <div className="relative h-52 w-full md:h-48">
+                          <Image
+                            src={manga.imageUrl}
+                            alt={manga.title}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 320px"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex h-48 w-full items-center justify-center bg-zinc-200 dark:bg-zinc-800">
+                          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                            No image
+                          </span>
+                        </div>
+                      )}
+                    </Link>
+
+                    {watchlistEntry ? (
+                      <>
+                        <div className="pointer-events-none absolute -right-[1px] -top-[1px] z-20 h-9 w-9 bg-black/90 [clip-path:polygon(100%_0,0_0,100%_100%)]" />
+                        <div className="pointer-events-none absolute -right-[1px] -top-[1px] z-30 p-0.5 text-white">
+                          <Bookmark className="h-4 w-4 fill-current" />
+                        </div>
+                      </>
+                    ) : null}
+                  </div>
+
+                  <div className="space-y-2.5 p-3">
+                    <p className="text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                      #{rankValue}
+                    </p>
+
+                    <div className="flex items-center text-sm gap-2">
+                      {manga.type ? (
+                        <span className="w-fit rounded border border-indigo-100 bg-indigo-50 px-1.5 py-0.5 text-[10px] font-black uppercase text-indigo-600 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-400">
+                          {manga.type}
+                        </span>
+                      ) : null}
+
+                      <span className="inline-flex items-center gap-1">
+                        <Star className="h-3.5 w-3.5 text-amber-500" />
+                        {manga.score ? manga.score.toFixed(2) : "N/A"}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Users className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
+                        {formatMembers(manga.members)}
+                      </span>
+                    </div>
+
+                    <Link
+                      href={detailHref}
+                      className="block text-sm font-bold leading-tight text-zinc-900 transition-colors hover:text-indigo-600 dark:text-zinc-50 dark:hover:text-indigo-400 md:text-base"
+                    >
+                      {manga.title}
+                    </Link>
+                  </div>
+                </article>
+              );
+            })
+          ) : (
+            <div className="col-span-full rounded-xl border border-zinc-200 bg-white px-4 py-10 text-center text-sm font-medium text-zinc-500 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400">
+              No ranked manga available for this page.
+            </div>
+          )}
+        </div>
+
+        <div className="hidden w-full overflow-x-auto rounded-xl border border-zinc-200 shadow-sm overflow-hidden dark:border-zinc-800 lg:block">
           <table className="w-full border-collapse bg-white text-left dark:bg-zinc-950">
             <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
               <tr>

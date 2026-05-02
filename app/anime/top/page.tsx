@@ -8,7 +8,7 @@ import {
 import { listWatchlistEntriesByMalIds } from "@/lib/services/watchlist.service";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Users } from "lucide-react";
+import { Bookmark, Star, Users } from "lucide-react";
 import { RatingIcon10 } from "@/app/components/icons/Rating10Icon";
 import { RatingIcon12 } from "@/app/components/icons/Rating12Icon";
 import { RatingIcon14 } from "@/app/components/icons/Rating14Icon";
@@ -160,7 +160,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
           currentFilter={filter}
         />
 
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4 lg:hidden">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:hidden ">
           {animeList.length > 0 ? (
             animeList.map((anime, index) => {
               const rankValue = filter
@@ -170,6 +170,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                 anime.title,
               )}`;
               const ratingIcon = getRatingIcon(anime.rating);
+              const watchlistEntry = watchlistByMalId.get(anime.malId);
 
               return (
                 <article
@@ -203,16 +204,14 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                       </div>
                     ) : null}
 
-                    <div className="pointer-events-none absolute -right-[1px] -top-[1px] z-20 h-9 w-9 bg-black/90 [clip-path:polygon(100%_0,0_0,100%_100%)]" />
-                    <div className="absolute -right-[1px] -top-[1px] z-30">
-                      <WatchlistButton
-                        malId={anime.malId}
-                        title={anime.title}
-                        episodes={anime.episodes}
-                        triggerClassName="pointer-events-auto inline-flex items-center justify-center rounded-sm p-0.5 text-white transition hover:cursor-pointer"
-                        size={16}
-                      />
-                    </div>
+                    {watchlistEntry ? (
+                      <>
+                        <div className="pointer-events-none absolute -right-[1px] -top-[1px] z-20 h-9 w-9 bg-black/90 [clip-path:polygon(100%_0,0_0,100%_100%)]" />
+                        <div className="pointer-events-none absolute -right-[1px] -top-[1px] z-30 p-0.5 text-white">
+                          <Bookmark className="h-4 w-4 fill-current" />
+                        </div>
+                      </>
+                    ) : null}
                   </div>
 
                   <div className="space-y-2.5 p-3">
