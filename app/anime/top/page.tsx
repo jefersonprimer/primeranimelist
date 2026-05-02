@@ -104,17 +104,6 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
         </div>
 
         <div className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white/80 px-4 py-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/80 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
-              Ranking
-            </p>
-            <p className="mt-1 text-base font-bold text-zinc-900 dark:text-zinc-50">
-              {total === 0
-                ? "No ranked anime found"
-                : `Showing #${startRank} to #${endRank} of ${total}`}
-            </p>
-          </div>
-
           <div className="flex items-center gap-3 self-start md:self-auto">
             <Link
               href={
@@ -132,10 +121,6 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
               <ChevronLeft />
               Previous 50
             </Link>
-
-            <span className="text-sm font-bold text-zinc-500 dark:text-zinc-400">
-              Page {currentPage} of {totalPages}
-            </span>
 
             <Link
               href={
@@ -312,7 +297,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                           </span>
                         ) : (
                           <span className="text-sm font-medium text-zinc-400 dark:text-zinc-500">
-                            -
+                            N/A
                           </span>
                         )}
                       </td>
