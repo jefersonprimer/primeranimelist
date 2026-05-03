@@ -18,6 +18,7 @@ import { RatingIconAL } from "@/app/components/icons/RatingALIcon";
 
 import { Pagination } from "@/app/components/Pagination";
 import { TopFilters } from "@/app/components/TopFilters";
+import { TopRankingInfoModal } from "@/app/components/TopRankingInfoModal";
 
 export const dynamic = "force-dynamic";
 
@@ -159,9 +160,10 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
           <h1 className="text-[28px] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
             Top Anime
           </h1>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Updated twice a day. (How do we rank shows?)
-          </p>
+          <div className="flex items-center my-2 gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+            <span>Updated twice a day.</span>
+            <TopRankingInfoModal />
+          </div>
         </div>
 
         <TopFilters
