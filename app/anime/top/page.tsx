@@ -218,7 +218,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                     <div className="space-y-2 py-2">
                       <div className="flex items-center text-xs font-bold text-[#8c8c8c] gap-2">
                         {anime.type ? (
-                          <span className="w-fit tex-[10px] rounded border border-indigo-100 bg-indigo-50 px-1.5 py-0.5 font-black uppercase text-indigo-600 dark:border-indigo-900/30 dark:bg-indigo-950/50 dark:text-indigo-400">
+                          <span className="w-fit rounded border border-[#345293] bg-gradient-to-br from-[#4F74C8] via-[#4065BA] to-[#2E51A2] px-1.5 py-0.5 text-[10px] font-black uppercase text-white shadow-sm dark:border-[#4065BA]/50 dark:shadow-[0_1px_8px_rgba(64,101,186,0.25)]">
                             {anime.type}
                           </span>
                         ) : null}
