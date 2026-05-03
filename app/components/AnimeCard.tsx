@@ -174,9 +174,7 @@ export function AnimeCard({
       className="group/card relative block h-65 w-full overflow-hidden transition-transform duration-200 hover:scale-105 sm:h-80 md:h-85 lg:h-95"
     >
       <div className="relative h-[82%] w-full overflow-hidden shadow-md transition-all duration-300 ease-in-out group-hover/card:h-full">
-        {isInWatchlist ? (
-          <BadgeWatchlistIcon size={16} />
-        ) : null}
+        {isInWatchlist ? <BadgeWatchlistIcon size={16} /> : null}
 
         {!isImageLoaded && (
           <div className="absolute inset-0 z-10 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
@@ -213,7 +211,7 @@ export function AnimeCard({
         )}
       </div>
 
-      <div className="absolute inset-0 flex flex-col justify-start overflow-hidden bg-black/85 px-3 pt-4 text-sm font-semibold text-white opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 z-20">
+      <div className="absolute inset-0 flex flex-col justify-start overflow-hidden bg-[#151515]/95 px-3 pt-4 text-sm font-semibold text-white opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 z-20">
         <h3 className="my-2 line-clamp-3 wrap-break-word font-semibold text-zinc-900 dark:text-zinc-100 leading-snug">
           {title}
         </h3>
