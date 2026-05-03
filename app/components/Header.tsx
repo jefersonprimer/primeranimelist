@@ -150,7 +150,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`flex h-full items-center px-4 transition-colors md:hidden hover:bg-[#151515] hover:cursor-pointer ${
+              className={`flex h-full items-center px-4 transition-colors lg:hidden hover:bg-[#151515] hover:cursor-pointer ${
                 isMenuOpen
                   ? "bg-[#151515] text-white"
                   : "text-[#bbb] hover:text-white"
@@ -177,10 +177,31 @@ export default function Header() {
                 </span>
               </div>
             </Link>
+
+            <nav className="hidden md:flex lg:hidden h-full items-center">
+              <Link
+                href="/anime/top"
+                className="flex h-full items-center px-3 text-sm font-medium text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
+              >
+                Anime
+              </Link>
+              <Link
+                href="/manga/top"
+                className="flex h-full items-center px-3 text-sm font-medium text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
+              >
+                Manga
+              </Link>
+              <Link
+                href={`/anime/season/${currentYear}/${currentSeason}`}
+                className="flex h-full items-center px-3 text-sm font-medium text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
+              >
+                Season Anime
+              </Link>
+            </nav>
           </div>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex h-full flex-1 px-6">
+          <nav className="hidden lg:flex h-full flex-1 px-6">
             <ul className="flex h-full flex-row">
               {navLinks.map((link) => (
                 <li key={link.href} className="h-full relative group">
@@ -381,7 +402,7 @@ export default function Header() {
               {user && (
                 <Link
                   href="/watchlist"
-                  className="hidden md:flex h-full items-center px-4 text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
+                  className="hidden min-[641px]:flex h-full items-center px-4 text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
                   aria-label="Library"
                 >
                   <BookmarkIcon size={24} />
@@ -426,7 +447,7 @@ export default function Header() {
 
       {/* Mobile Sidebar Overlay */}
       <div
-        className={`fixed inset-x-0 bottom-0 top-16 z-[1001] bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
+        className={`fixed inset-x-0 bottom-0 top-16 z-[1001] bg-black/60 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
           isMenuOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
@@ -434,12 +455,12 @@ export default function Header() {
         onClick={() => setIsMenuOpen(false)}
       />
 
-      {/* Mobile Sidebar - Changed to slide from the left */}
+      {/* Sidebar (mobile/tablet) */}
       <aside
-        className={`fixed inset-x-0 bottom-0 top-16 z-[1002] overflow-y-auto h-[calc(100vh-4rem)] w-full bg-[#151515] shadow-2xl transition-all duration-300 ease-in-out md:hidden ${
+        className={`fixed left-0 bottom-0 top-16 z-[1002] overflow-y-auto h-[calc(100vh-4rem)] w-[300px] bg-[#151515] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
           isMenuOpen
-            ? "translate-y-0 opacity-100"
-            : "-translate-y-4 opacity-0 pointer-events-none"
+            ? "translate-x-0"
+            : "-translate-x-full pointer-events-none"
         }`}
       >
         <nav className="pt-3">
