@@ -60,6 +60,16 @@ function formatMembers(members: number | null | undefined) {
   return new Intl.NumberFormat("en-US").format(members);
 }
 
+function getRankBadgeStyles(rank: number) {
+  if (rank === 1)
+    return "bg-gradient-to-br from-yellow-400 to-amber-600 text-white border-yellow-300 shadow-lg shadow-yellow-500/20";
+  if (rank === 2)
+    return "bg-gradient-to-br from-zinc-200 to-zinc-400 text-zinc-800 border-zinc-100 shadow-lg shadow-zinc-400/20";
+  if (rank === 3)
+    return "bg-gradient-to-br from-orange-300 to-orange-500 text-white border-orange-200 shadow-lg shadow-orange-500/20";
+  return "bg-zinc-900/80 backdrop-blur-sm text-zinc-100 border-white/10";
+}
+
 function getRatingIcon(rating: string | null | undefined) {
   if (!rating) return null;
 
@@ -175,12 +185,19 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
               return (
                 <article
                   key={anime.id}
-                  className="group relative overflow-hidden bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950"
+                  className="group relative overflow-hidden"
                 >
                   <Link href={detailHref} className="block">
                     <div className="relative">
+                      {/* Rank Badge */}
+                      <div
+                        className={`absolute left-0 top-0 z-20 flex h-8 w-10 items-center justify-center rounded-br-xl border-b border-r font-black text-sm shadow-md ${getRankBadgeStyles(rankValue)}`}
+                      >
+                        {rankValue}
+                      </div>
+
                       {anime.imageUrl ? (
-                        <div className="relative h-52 w-full md:h-48">
+                        <div className="relative h-56 w-full">
                           <Image
                             src={anime.imageUrl}
                             alt={anime.title}
@@ -190,7 +207,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                           />
                         </div>
                       ) : (
-                        <div className="flex h-48 w-full items-center justify-center bg-zinc-200 dark:bg-zinc-800">
+                        <div className="flex h-52 w-full items-center justify-center bg-zinc-200 dark:bg-zinc-800">
                           <span className="text-xs text-zinc-500 dark:text-zinc-400">
                             No image
                           </span>
@@ -198,29 +215,29 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                       )}
                     </div>
 
-                    <div className="space-y-2.5 p-3">
-                      <p className="text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-                        #{rankValue}
-                      </p>
-
-                      <div className="flex items-center text-xs font-medium text-[#8c8c8c] gap-2">
+                    <div className="space-y-2 py-2">
+                      <div className="flex items-center text-xs font-bold text-[#8c8c8c] gap-2">
                         {anime.type ? (
-                          <span className="w-fit rounded border border-[#2E51A2]/20 bg-[#2E51A2]/10 px-1.5 py-0.5 font-black uppercase text-[#2E51A2] dark:border-[#4F74C8]/30 dark:bg-[#4F74C8]/20 dark:text-[#4F74C8]">
+                          <span className="w-fit tex-[10px] rounded border border-indigo-100 bg-indigo-50 px-1.5 py-0.5 font-black uppercase text-indigo-600 dark:border-indigo-900/30 dark:bg-indigo-950/50 dark:text-indigo-400">
                             {anime.type}
                           </span>
                         ) : null}
 
-                        <span className="inline-flex items-center gap-1 text-xs">
-                          <Star className="h-3.5 w-3.5 fill-[#8c8c8c] text-[#8c8c8c]" />
-                          {anime.score ? anime.score.toFixed(2) : "N/A"}
+                        <span className="flex items-center gap-1">
+                          <Star className="h-3 w-3 fill-[#8c8c8c] text-[#8c8c8c]" />
+                          <span className="text-zinc-700 dark:text-zinc-300">
+                            {anime.score ? anime.score.toFixed(2) : "N/A"}
+                          </span>
                         </span>
-                        <span className="inline-flex items-center gap-1 text-xs">
-                          <Users className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
-                          {formatMembers(anime.members)}
+                        <span className="flex items-center gap-1">
+                          <Users className="h-3 w-3 text-[#8c8c8c]" />
+                          <span className="text-zinc-500">
+                            {formatMembers(anime.members)}
+                          </span>
                         </span>
                       </div>
 
-                      <h3 className="block text-sm font-bold leading-tight text-zinc-50">
+                      <h3 className="line-clamp-3 text-sm font-bold leading-tight text-zinc-900 dark:text-zinc-50">
                         {anime.title}
                       </h3>
                     </div>
@@ -232,7 +249,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                   */}
                   <div className="absolute inset-0 pointer-events-none">
                     {ratingIcon ? (
-                      <div className="absolute left-[2px] top-[2px]">
+                      <div className="absolute right-1 top-[200px] md:top-[180px] z-20">
                         {ratingIcon}
                       </div>
                     ) : null}
