@@ -219,7 +219,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                       #{rankValue}
                     </p>
 
-                    <div className="flex items-center text-sm gap-2">
+                    <div className="flex items-center text-xs font-medium text-[#8c8c8c] gap-2">
                       {anime.type ? (
                         <span className="w-fit rounded border border-indigo-100 bg-indigo-50 px-1.5 py-0.5 text-[10px] font-black uppercase text-indigo-600 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-400">
                           {anime.type}

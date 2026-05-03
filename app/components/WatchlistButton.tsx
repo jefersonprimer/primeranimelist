@@ -268,7 +268,7 @@ export function WatchlistButton({
         onClick={handleOpen}
         className={
           triggerClassName ??
-          "inline-flex items-center text-white transition hover:border-indigo-400 hover:cursor-pointer"
+          "inline-flex items-center text-white transition border-[#345293] hover:border-[#4065BA] hover:cursor-pointer"
         }
         aria-label={
           hasSavedEntry ? "Edit watchlist entry" : "Add anime to watchlist"
@@ -277,7 +277,7 @@ export function WatchlistButton({
         <Bookmark
           size={size}
           className={
-            hasSavedEntry ? "fill-indigo-400 text-indigo-400" : "text-white"
+            hasSavedEntry ? "fill-[#2E51A2] text-[#2E51A2]" : "text-[#2E51A2]"
           }
         />
         {triggerLabel ? <span>{triggerLabel}</span> : null}

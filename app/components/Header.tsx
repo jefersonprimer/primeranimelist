@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, Bookmark, Play, Menu, ChevronDown } from "lucide-react";
+import { Play, Menu, ChevronDown } from "lucide-react";
 import { useAuth } from "@/lib/context/AuthContext";
 import { DropdownIcon } from "./icons/DropdownIcon";
 import { AdminNavActions } from "./AdminNavActions";
@@ -10,6 +10,8 @@ import UserModal from "./UserModal";
 import AnonymousUserModal from "./AnonymousUserModal";
 import { UserProfile } from "@/types/UserProfile";
 import { usePathname } from "next/navigation";
+import { SearchIcon } from "./icons/SearchIcon";
+import { BookmarkIcon } from "./icons/BookmarkIcon";
 
 function getCurrentSeason(date = new Date()) {
   const month = date.getMonth(); // 0-11
@@ -195,7 +197,7 @@ export default function Header() {
                         }`}
                       >
                         {link.label}
-                        <DropdownIcon />
+                        <DropdownIcon size={24} />
                       </button>
                       {isCategoriesDropdownOpen && (
                         <div className="absolute top-full left-0 w-[820px] bg-[#181818] shadow-2xl py-2 z-[1001] animate-in fade-in slide-in-from-top-1 duration-200">
@@ -321,7 +323,7 @@ export default function Header() {
                         }`}
                       >
                         {link.label}
-                        <DropdownIcon />
+                        <DropdownIcon size={24} />
                       </button>
                       {isNewsDropdownOpen && (
                         <div className="absolute top-full left-0 w-56 bg-[#181818] shadow-2xl py-2 z-[1001] animate-in fade-in slide-in-from-top-1 duration-200">
@@ -372,7 +374,7 @@ export default function Header() {
               className="flex h-full items-center px-4 text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
               aria-label="Search"
             >
-              <Search size={24} />
+              <SearchIcon size={24} />
             </Link>
 
             <div className="flex h-full items-center">
@@ -382,7 +384,7 @@ export default function Header() {
                   className="hidden md:flex h-full items-center px-4 text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
                   aria-label="Library"
                 >
-                  <Bookmark size={24} />
+                  <BookmarkIcon size={24} />
                 </Link>
               )}
 
@@ -415,7 +417,7 @@ export default function Header() {
                     </svg>
                   )}
                 </div>
-                <DropdownIcon />
+                <DropdownIcon size={24} />
               </button>
             </div>
           </div>

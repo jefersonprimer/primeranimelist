@@ -179,7 +179,7 @@ export function HomeHeroAnimeCarouselClient({
               <div className="mt-5 mb-4 sm:mb-12 flex items-center justify-center sm:justify-start gap-2">
                 <Link
                   href={`/anime/${active.malId}/${slug}`}
-                  className="inline-flex items-center gap-2 bg-white px-5 py-2 text-xs font-semibold tracking-wide text-black transition hover:bg-zinc-200 sm:text-sm"
+                  className="inline-flex items-center gap-2 bg-[#2E51A2] px-5 py-2 text-xs font-semibold tracking-wide text-white transition hover:bg-[#4065BA] sm:text-sm"
                 >
                   <Play size={24} />
                   <span>START WATCHING E1</span>
@@ -188,7 +188,7 @@ export function HomeHeroAnimeCarouselClient({
                   malId={active.malId}
                   title={active.title}
                   episodes={active.episodes ?? null}
-                  triggerClassName="inline-flex items-center gap-2  border-2 border-white/20 p-2 text-xs font-semibold text-white transition hover:border-indigo-400 hover:cursor-pointer"
+                  triggerClassName="inline-flex items-center gap-2 border-2 border-[#345293] p-1.5 text-xs font-semibold text-white transition hover:border-[#4065BA] hover:cursor-pointer"
                 />
               </div>
 
