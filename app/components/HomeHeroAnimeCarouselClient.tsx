@@ -117,13 +117,13 @@ export function HomeHeroAnimeCarouselClient({
   return (
     <section className="relative z-0 w-full">
       <div className="mx-auto">
-        <div className="relative h-[90vh] min-h-[520px] w-full overflow-hidden bg-zinc-900">
+        <div className="relative h-screen md:h-[80vh] lg:h-screen min-h-130 w-full overflow-hidden bg-zinc-900">
           <Image
             src={active.image_url}
             alt={active.title}
             fill
             priority
-            className="object-cover sm:hidden"
+            className="object-cover md:hidden"
             sizes="100vw"
           />
           <Image
@@ -131,26 +131,26 @@ export function HomeHeroAnimeCarouselClient({
             alt={active.title}
             fill
             priority
-            className="hidden object-cover sm:block"
+            className="hidden object-cover md:block"
             sizes="(max-width: 1280px) 100vw, 1280px"
           />
 
           {/* Bottom Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/65 to-black/30" />
 
-          <div className="absolute inset-0 flex items-end sm:items-center justify-center sm:justify-start mx-auto w-full max-w-7xl p-6 sm:pb-24 sm:py-10 md:py-12 sm:-translate-y-20">
-            <div className="max-w-md text-white text-center sm:text-left flex flex-col items-center sm:items-start">
+          <div className="absolute inset-0 flex items-end md:items-center justify-center md:justify-start mx-auto w-full max-w-7xl pb-4 md:px-12 lg:p-6.5 md:pb-24 md:py-10 lg:py-12 lg:-translate-y-20">
+            <div className="max-w-md text-white text-center md:text-left flex flex-col items-center md:items-start">
               <Link
                 href={`/anime/${active.malId}/${slug}`}
                 className="block w-fit"
               >
                 {active.logo ? (
-                  <div className="relative mb-2 sm:mb-6 h-24 w-[280px] sm:h-28 sm:w-[340px]">
+                  <div className="relative mb-2 sm:mb-6 h-24 w-[280px] sm:h-28 md:w-[340px]">
                     <Image
                       src={active.logo}
                       alt={`${active.title} logo`}
                       fill
-                      className="object-contain object-center sm:object-left"
+                      className="object-contain object-center md:object-left"
                       sizes="340px"
                     />
                   </div>
@@ -176,7 +176,7 @@ export function HomeHeroAnimeCarouselClient({
                 {active.synopsis || "No synopsis available."}
               </p>
 
-              <div className="mt-5 mb-4 sm:mb-6 lg:mb-12 flex items-center justify-center sm:justify-start gap-2">
+              <div className="mt-5 mb-4 sm:mb-6 lg:mb-12 flex items-center justify-center md:justify-start gap-2">
                 <Link
                   href={`/anime/${active.malId}/${slug}`}
                   className="inline-flex items-center gap-2 bg-[#2E51A2] px-5 py-2 text-xs font-semibold tracking-wide text-white transition hover:bg-[#4065BA] sm:text-sm"
@@ -194,7 +194,7 @@ export function HomeHeroAnimeCarouselClient({
 
               {total > 1 ? (
                 <div
-                  className="mt-4 flex items-center justify-center sm:justify-start gap-2"
+                  className="mt-4 flex items-center justify-center md:justify-start gap-2"
                   aria-hidden="true"
                 >
                   {items.map((_, index) => {
@@ -228,7 +228,7 @@ export function HomeHeroAnimeCarouselClient({
                 onClick={() =>
                   setCurrentIndex((prev) => (prev - 1 + total) % total)
                 }
-                className="hidden sm:block absolute left-0 top-1/2 z-20 -translate-y-27 p-2 text-white transition hover:text-[#41414166] hover:cursor-pointer"
+                className="hidden md:block absolute left-0 top-1/2 z-20 -translate-y-27 p-2 text-white transition hover:text-[#41414166] hover:cursor-pointer"
                 aria-label="Previous anime"
               >
                 <ChevronLeft size={38} />
@@ -236,7 +236,7 @@ export function HomeHeroAnimeCarouselClient({
               <button
                 type="button"
                 onClick={() => setCurrentIndex((prev) => (prev + 1) % total)}
-                className="hidden sm:block absolute right-0 top-1/2 z-20 -translate-y-27  p-2 text-white transition hover:text-[#41414166]  hover:cursor-pointer"
+                className="hidden md:block absolute right-0 top-1/2 z-20 -translate-y-27  p-2 text-white transition hover:text-[#41414166]  hover:cursor-pointer"
                 aria-label="Next anime"
               >
                 <ChevronRight size={38} />
