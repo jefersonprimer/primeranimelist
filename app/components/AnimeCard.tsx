@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Bookmark, Star, Users } from "lucide-react";
+import { Star, Users } from "lucide-react";
 import { RatingIcon10 } from "./icons/Rating10Icon";
 import { RatingIcon12 } from "./icons/Rating12Icon";
 import { RatingIcon14 } from "./icons/Rating14Icon";
 import { RatingIcon16 } from "./icons/Rating16Icon";
 import { RatingIcon18 } from "./icons/Rating18Icon";
 import { RatingIconAL } from "./icons/RatingALIcon";
+import { BadgeWatchlistIcon } from "./icons/BadgeWatchlistIcon";
 import { WatchlistButton } from "./WatchlistButton";
 import {
   WATCHLIST_UPDATED_EVENT,
@@ -174,13 +175,7 @@ export function AnimeCard({
     >
       <div className="relative h-[82%] w-full overflow-hidden shadow-md transition-all duration-300 ease-in-out group-hover/card:h-full">
         {isInWatchlist ? (
-          <>
-            <div className="pointer-events-none absolute right-0 top-0 z-30 h-9 w-9 bg-black transition-opacity duration-200 group-hover/card:opacity-0 [clip-path:polygon(100%_0,0_0,100%_100%)]" />
-            <Bookmark
-              size={16}
-              className="pointer-events-none absolute right-0.5 top-0.5 z-40 fill-white text-white transition-opacity duration-200 group-hover/card:opacity-0"
-            />
-          </>
+          <BadgeWatchlistIcon size={16} />
         ) : null}
 
         {!isImageLoaded && (

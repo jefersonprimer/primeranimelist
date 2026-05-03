@@ -5,7 +5,7 @@ export default function Loading() {
       <div className="relative w-12 h-12">
         {/* Main Spinner */}
         <div className="absolute inset-0 border-4 border-zinc-800 rounded-full" />
-        <div className="absolute inset-0 border-4 border-indigo-600 rounded-full border-t-transparent animate-spin" />
+        <div className="absolute inset-0 border-4 border-[#4065BA] rounded-full border-t-transparent animate-spin" />
       </div>
     </div>
   );

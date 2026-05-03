@@ -203,12 +203,12 @@ export function HomeHeroAnimeCarouselClient({
                     return (
                       <div
                         key={`hero-dot-${index}`}
-                        className={`relative h-1.5 overflow-hidden rounded-full bg-white/35 transition-all duration-300 ${
-                          isActive ? "w-10" : "w-5"
+                        className={`relative h-2 overflow-hidden rounded-full bg-[#818181] transition-all duration-300 ${
+                          isActive ? "w-10" : "w-6"
                         }`}
                       >
                         <div
-                          className="absolute inset-y-0 left-0 rounded-full bg-white transition-[width] duration-75 ease-linear"
+                          className="absolute inset-y-0 left-0 rounded-full bg-[#4F74C8] transition-[width] duration-75 ease-linear"
                           style={{
                             width: `${isActive ? progressPercent : 0}%`,
                           }}
