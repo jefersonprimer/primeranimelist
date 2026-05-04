@@ -139,7 +139,7 @@ export function HomeHeroAnimeCarouselClient({
           <div className="pointer-events-none absolute inset-y-0 left-0 hidden md:block md:w-[36%] md:bg-gradient-to-r md:from-black/75 md:via-black/35 md:to-transparent md:backdrop-blur-[1px] lg:w-[44%] lg:from-black/85 lg:via-black/50 lg:backdrop-blur-[2px]" />
 
           {/* Bottom fade into pure black */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black via-black/75 to-transparent md:h-30" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black via-black/75 to-transparent md:h-24" />
 
           <div className="absolute inset-0 flex items-end md:items-center justify-center md:justify-start mx-auto w-full max-w-7xl pb-4 md:px-12 lg:p-6.5 md:pb-24 md:py-10 lg:py-12 lg:-translate-y-20">
             <div className="max-w-[390px] text-white text-center md:text-left flex flex-col items-center md:items-start">
@@ -164,7 +164,7 @@ export function HomeHeroAnimeCarouselClient({
                 )}
               </Link>
 
-              <div className="sm:mb-4 flex items-center gap-1 text-sm text-zinc-200">
+              <div className="sm:mb-4 flex items-center gap-1 text-sm text-[#8C8C8C]">
                 {ratingIcon}
                 <span
                   className="flex items-center text-[0.8rem] relative pl-[14px] 
@@ -231,7 +231,7 @@ export function HomeHeroAnimeCarouselClient({
                 onClick={() =>
                   setCurrentIndex((prev) => (prev - 1 + total) % total)
                 }
-                className="hidden md:block absolute left-0 top-1/2 z-20 -translate-y-27 p-2 text-white transition hover:text-[#41414166] hover:cursor-pointer"
+                className="hidden md:block absolute left-0 top-1/2 z-20 -translate-y-37 p-2 text-[#FFFFFF] hover:text-[#A0A0A0] transition hover:cursor-pointer"
                 aria-label="Previous anime"
               >
                 <ChevronLeft size={38} />
@@ -239,7 +239,7 @@ export function HomeHeroAnimeCarouselClient({
               <button
                 type="button"
                 onClick={() => setCurrentIndex((prev) => (prev + 1) % total)}
-                className="hidden md:block absolute right-0 top-1/2 z-20 -translate-y-27  p-2 text-white transition hover:text-[#41414166]  hover:cursor-pointer"
+                className="hidden md:block absolute right-0 top-1/2 z-20 -translate-y-27 text-[#FFFFFF] hover:text-[#A0A0A0] p-2 transition hover:cursor-pointer"
                 aria-label="Next anime"
               >
                 <ChevronRight size={38} />
