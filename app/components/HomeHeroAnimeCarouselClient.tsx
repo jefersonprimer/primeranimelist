@@ -135,11 +135,14 @@ export function HomeHeroAnimeCarouselClient({
             sizes="(max-width: 1280px) 100vw, 1280px"
           />
 
-          {/* Bottom Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/65 to-black/30" />
+          {/* Left content fade + subtle blur, stopping before empty right side */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 hidden md:block md:w-[36%] md:bg-gradient-to-r md:from-black/75 md:via-black/35 md:to-transparent md:backdrop-blur-[1px] lg:w-[44%] lg:from-black/85 lg:via-black/50 lg:backdrop-blur-[2px]" />
+
+          {/* Bottom fade into pure black */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black via-black/75 to-transparent md:h-30" />
 
           <div className="absolute inset-0 flex items-end md:items-center justify-center md:justify-start mx-auto w-full max-w-7xl pb-4 md:px-12 lg:p-6.5 md:pb-24 md:py-10 lg:py-12 lg:-translate-y-20">
-            <div className="max-w-md text-white text-center md:text-left flex flex-col items-center md:items-start">
+            <div className="max-w-[390px] text-white text-center md:text-left flex flex-col items-center md:items-start">
               <Link
                 href={`/anime/${active.malId}/${slug}`}
                 className="block w-fit"
@@ -168,11 +171,11 @@ export function HomeHeroAnimeCarouselClient({
                       before:content-['◆'] before:text-[#A0A0A0] before:text-[0.5rem] 
                       before:absolute before:left-[4px] before:top-1/2 before:-translate-y-1/2 
                       before:mr-[8px] first:before:hidden"
-                ></span>
+                />
                 <p className="line-clamp-1">{genresText}</p>
               </div>
 
-              <p className="hidden lg:line-clamp-4 text-sm leading-relaxed text-[#bbb] px-1">
+              <p className="hidden lg:line-clamp-4 text-sm leading-relaxed text-[#bbb] font-normal px-1">
                 {active.synopsis || "No synopsis available."}
               </p>
 
