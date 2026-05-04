@@ -118,17 +118,17 @@ export default function Header() {
           <div className="flex flex-row items-center gap-4">
             <div className="h-9 w-9 rounded-lg bg-zinc-700/60" />
             <div className="flex flex-col gap-1">
-              <div className="h-4 w-20 bg-zinc-700/60 rounded" />
-              <div className="h-2 w-16 bg-zinc-700/60 rounded" />
+              <div className="h-4 w-20 bg-zinc-700/60" />
+              <div className="h-2 w-16 bg-zinc-700/60" />
             </div>
           </div>
 
           <nav className="hidden md:flex flex-1 px-6">
             <div className="flex gap-4">
-              <div className="h-4 w-20 bg-zinc-700/60 rounded" />
-              <div className="h-4 w-20 bg-zinc-700/60 rounded" />
-              <div className="h-4 w-24 bg-zinc-700/60 rounded" />
-              <div className="h-4 w-16 bg-zinc-700/60 rounded" />
+              <div className="h-4 w-20 bg-zinc-700/60" />
+              <div className="h-4 w-20 bg-zinc-700/60" />
+              <div className="h-4 w-24 bg-zinc-700/60" />
+              <div className="h-4 w-16 bg-zinc-700/60" />
             </div>
           </nav>
 
@@ -458,9 +458,7 @@ export default function Header() {
       {/* Sidebar (mobile/tablet) */}
       <aside
         className={`fixed left-0 bottom-0 top-16 z-[1002] overflow-y-auto h-[calc(100vh-4rem)] w-[300px] bg-[#151515] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
-          isMenuOpen
-            ? "translate-x-0"
-            : "-translate-x-full pointer-events-none"
+          isMenuOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"
         }`}
       >
         <nav className="pt-3">
