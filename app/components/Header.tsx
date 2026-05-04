@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Play, Menu, ChevronDown } from "lucide-react";
+import { Menu, ChevronDown, MenuIcon } from "lucide-react";
 import { useAuth } from "@/lib/context/AuthContext";
 import { DropdownIcon } from "./icons/DropdownIcon";
 import { AdminNavActions } from "./AdminNavActions";
@@ -12,6 +12,8 @@ import { UserProfile } from "@/types/UserProfile";
 import { usePathname } from "next/navigation";
 import { SearchIcon } from "./icons/SearchIcon";
 import { BookmarkIcon } from "./icons/BookmarkIcon";
+import { LogoIcon } from "./icons/LogoIcon";
+import { LogoMobileIcon } from "./icons/LogoMobileIcon";
 
 function getCurrentSeason(date = new Date()) {
   const month = date.getMonth(); // 0-11
@@ -113,28 +115,37 @@ export default function Header() {
 
   if (loading) {
     return (
-      <header className="h-16 bg-[#272727] px-6">
+      <header className="h-16 bg-[#272727] px-4 lg:hidden">
         <div className="mx-auto flex h-full max-w-7xl flex-row items-center justify-between animate-pulse">
-          <div className="flex flex-row items-center gap-4">
-            <div className="h-9 w-9 rounded-lg bg-zinc-700/60" />
-            <div className="flex flex-col gap-1">
-              <div className="h-4 w-20 bg-zinc-700/60" />
-              <div className="h-2 w-16 bg-zinc-700/60" />
-            </div>
+          <div className="flex flex-row items-center">
+            <span className="hidden lg:flex">
+              <LogoIcon />
+            </span>
+
+            <span className="flex lg:hidden gap-6">
+              <MenuIcon size={24} />
+              <LogoMobileIcon />
+            </span>
           </div>
 
           <nav className="hidden md:flex flex-1 px-6">
             <div className="flex gap-4">
               <div className="h-4 w-20 bg-zinc-700/60" />
-              <div className="h-4 w-20 bg-zinc-700/60" />
-              <div className="h-4 w-24 bg-zinc-700/60" />
               <div className="h-4 w-16 bg-zinc-700/60" />
+              <div className="h-4 w-16 bg-zinc-700/60" />
+              <div className="h-4 w-16 bg-zinc-700/60" />
+              <div className="h-4 w-20 bg-zinc-700/60" />
             </div>
           </nav>
 
           <div className="flex items-center gap-4">
-            <div className="h-6 w-6 bg-zinc-700/60 rounded" />
-            <div className="h-9 w-9 rounded-full bg-zinc-700/60" />
+            <div className="hiden md:flex h-6 w-6 bg-zinc-700/60 rounded-full" />
+            <div className="h-6 w-6 bg-zinc-700/60 rounded-full" />
+
+            <div className="flex items-center gap-2">
+              <div className="h-9 w-9 rounded-full bg-zinc-700/60" />
+              <DropdownIcon size={24} />
+            </div>
           </div>
         </div>
       </header>
@@ -162,20 +173,15 @@ export default function Header() {
 
             <Link
               href="/"
-              className="flex flex-row items-center md:mx-4 gap-3 group"
+              className="flex flex-row items-center text-[#ff640a] hover:text-white px-4"
             >
-              <div className="flex mx-4 md:mx-0 h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 transition-transform group-hover:scale-105 group-hover:rotate-3 shadow-lg shadow-indigo-500/20">
-                <Play className="fill-white text-white ml-0.5" size={20} />
-              </div>
+              <span className="hidden lg:flex">
+                <LogoIcon />
+              </span>
 
-              <div className="hidden sm:flex flex-col leading-none">
-                <span className="text-lg font-black tracking-tight text-white uppercase">
-                  Primer
-                </span>
-                <span className="text-[9px] font-bold tracking-[0.25em] text-indigo-400 uppercase">
-                  AnimeList
-                </span>
-              </div>
+              <span className="flex lg:hidden">
+                <LogoMobileIcon />
+              </span>
             </Link>
 
             <nav className="hidden md:flex lg:hidden h-full items-center">
