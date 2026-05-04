@@ -2,18 +2,20 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, ChevronDown, MenuIcon } from "lucide-react";
 import { useAuth } from "@/lib/context/AuthContext";
-import { DropdownIcon } from "./icons/DropdownIcon";
 import { AdminNavActions } from "./AdminNavActions";
+
 import UserModal from "./UserModal";
 import AnonymousUserModal from "./AnonymousUserModal";
 import { UserProfile } from "@/types/UserProfile";
 import { usePathname } from "next/navigation";
-import { SearchIcon } from "./icons/SearchIcon";
-import { BookmarkIcon } from "./icons/BookmarkIcon";
+
+import { Menu, ChevronDown, MenuIcon } from "lucide-react";
 import { LogoIcon } from "./icons/LogoIcon";
 import { LogoMobileIcon } from "./icons/LogoMobileIcon";
+import { SearchIcon } from "./icons/SearchIcon";
+import { BookmarkIcon } from "./icons/BookmarkIcon";
+import { DropdownIcon } from "./icons/DropdownIcon";
 
 function getCurrentSeason(date = new Date()) {
   const month = date.getMonth(); // 0-11
@@ -173,7 +175,7 @@ export default function Header() {
 
             <Link
               href="/"
-              className="flex flex-row items-center text-[#ff640a] hover:text-white px-4"
+              className="flex flex-row items-center text-[#ff640a] hover:text-white sm:px-4 lg:px-0 lg:pl-4"
             >
               <span className="hidden lg:flex">
                 <LogoIcon />
