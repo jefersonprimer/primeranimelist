@@ -117,7 +117,7 @@ export default function Header() {
 
   if (loading) {
     return (
-      <header className="h-16 bg-[#272727] px-4 lg:hidden">
+      <header className="h-16 bg-[#272727] px-4">
         <div className="mx-auto flex h-full max-w-7xl flex-row items-center justify-between animate-pulse">
           <div className="flex flex-row items-center">
             <span className="hidden lg:flex">
