@@ -14,7 +14,7 @@ export default function Home() {
         <HomeHeroAnimeCarousel />
       </Suspense>
 
-      <div className="relative z-30 w-full -mt-14 md:-32 lg:-mt-45 xl:-mt-70 pb-20">
+      <div className="relative z-30 w-full sm:-mt-14 md:-32 lg:-mt-45 xl:-mt-70 pb-20">
         <Suspense fallback={<AnimeCarouselSkeleton title="Top Airing Anime" />}>
           <AnimeCarousel title="Top Airing Anime" filter="airing" />
         </Suspense>
