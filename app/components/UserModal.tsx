@@ -40,7 +40,7 @@ const UserModal: React.FC<UserModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="absolute top-[60px] right-0 bg-[#151515] py-3 w-[388px] h-[619px] animate-[slideDown_0.2s_ease-out] z-[1100] overflow-y-auto"
+        className="absolute top-[60px] right-0 bg-[#151515] py-3 w-full md:w-[388px] h-[619px] animate-[slideDown_0.2s_ease-out] z-[1100] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {userProfile && (

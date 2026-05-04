@@ -117,7 +117,7 @@ export function HomeHeroAnimeCarouselClient({
   return (
     <section className="relative z-0 w-full">
       <div className="mx-auto">
-        <div className="relative h-screen md:h-[80vh] lg:h-screen min-h-130 w-full overflow-hidden bg-zinc-900">
+        <div className="relative h-screen min-h-130 w-full overflow-hidden bg-zinc-900 md:h-auto md:min-h-0 md:aspect-video">
           <Image
             src={active.image_url}
             alt={active.title}
@@ -141,7 +141,7 @@ export function HomeHeroAnimeCarouselClient({
           {/* Bottom fade into pure black */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black via-black/75 to-transparent md:h-24" />
 
-          <div className="absolute inset-0 flex items-end md:items-center justify-center md:justify-start mx-auto w-full max-w-7xl pb-4 md:px-12 lg:p-6.5 md:pb-24 md:py-10 lg:py-12 lg:-translate-y-20">
+          <div className="absolute inset-0 flex items-end md:items-center justify-center md:justify-start mx-auto w-full max-w-7xl pb-4 md:px-12 lg:p-6.5 md:pb-24 md:py-10 lg:py-12 lg:-translate-y-20 xl:-translate-y-36">
             <div className="max-w-[390px] text-white text-center md:text-left flex flex-col items-center md:items-start">
               <Link
                 href={`/anime/${active.malId}/${slug}`}
@@ -164,7 +164,7 @@ export function HomeHeroAnimeCarouselClient({
                 )}
               </Link>
 
-              <div className="sm:mb-4 flex items-center gap-1 text-sm text-[#8C8C8C]">
+              <div className="sm:mb-2 flex items-center gap-1 text-sm text-[#8C8C8C]">
                 {ratingIcon}
                 <span
                   className="flex items-center text-[0.8rem] relative pl-[14px] 
@@ -175,7 +175,7 @@ export function HomeHeroAnimeCarouselClient({
                 <p className="line-clamp-1">{genresText}</p>
               </div>
 
-              <p className="hidden lg:line-clamp-4 text-sm leading-relaxed text-[#bbb] font-normal px-1">
+              <p className="hidden lg:line-clamp-4 text-sm leading-relaxed text-[#bbb] font-normal">
                 {active.synopsis || "No synopsis available."}
               </p>
 
@@ -231,7 +231,7 @@ export function HomeHeroAnimeCarouselClient({
                 onClick={() =>
                   setCurrentIndex((prev) => (prev - 1 + total) % total)
                 }
-                className="hidden md:block absolute left-0 top-1/2 z-20 -translate-y-37 p-2 text-[#FFFFFF] hover:text-[#A0A0A0] transition hover:cursor-pointer"
+                className="hidden md:block absolute left-0 top-1/2 z-20 -translate-y-20 lg:-translate-y-27 xl:-translate-y-48 p-2 text-[#FFFFFF] hover:text-[#A0A0A0] transition hover:cursor-pointer"
                 aria-label="Previous anime"
               >
                 <ChevronLeft size={38} />
@@ -239,7 +239,7 @@ export function HomeHeroAnimeCarouselClient({
               <button
                 type="button"
                 onClick={() => setCurrentIndex((prev) => (prev + 1) % total)}
-                className="hidden md:block absolute right-0 top-1/2 z-20 -translate-y-27 text-[#FFFFFF] hover:text-[#A0A0A0] p-2 transition hover:cursor-pointer"
+                className="hidden md:block absolute right-0 top-1/2 z-20 -translate-y-20 lg:-translate-y-27 xl:-translate-y-48 text-[#FFFFFF] hover:text-[#A0A0A0] p-2 transition hover:cursor-pointer"
                 aria-label="Next anime"
               >
                 <ChevronRight size={38} />

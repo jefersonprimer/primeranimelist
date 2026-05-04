@@ -175,7 +175,7 @@ export default function Header() {
 
             <Link
               href="/"
-              className="flex flex-row items-center text-[#ff640a] hover:text-white sm:px-4 lg:px-0 lg:pl-4"
+              className="flex flex-row items-center text-[#ff640a] hover:text-white px-4 lg:px-0 lg:pl-4"
             >
               <span className="hidden lg:flex">
                 <LogoIcon />
@@ -465,7 +465,7 @@ export default function Header() {
 
       {/* Sidebar (mobile/tablet) */}
       <aside
-        className={`fixed left-0 bottom-0 top-16 z-[1002] overflow-y-auto h-[calc(100vh-4rem)] w-[300px] bg-[#151515] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
+        className={`fixed left-0 bottom-0 top-16 z-[1002] overflow-y-auto h-[calc(100vh-4rem)] w-full md:w-[300px] bg-[#151515] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
           isMenuOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"
         }`}
       >
