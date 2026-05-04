@@ -286,11 +286,11 @@ export function WatchlistButton({
       {mounted && isOpen
         ? createPortal(
             <div
-              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 px-4 py-6"
+              className="fixed inset-0 z-100 flex items-center justify-center bg-black/75 px-4"
               onClick={() => setIsOpen(false)}
             >
               <div
-                className="w-full max-w-xl rounded-3xl border border-zinc-800 bg-zinc-950 p-6 text-zinc-50 shadow-2xl"
+                className="w-full max-w-xl border border-zinc-800 bg-[#272727] p-4 text-zinc-50 shadow-2xl"
                 onClick={(event) => event.stopPropagation()}
               >
                 <div className="flex items-start justify-between gap-4">
@@ -305,10 +305,10 @@ export function WatchlistButton({
                   <button
                     type="button"
                     onClick={() => setIsOpen(false)}
-                    className="rounded-full border border-zinc-700 p-2 text-zinc-400 transition hover:border-zinc-500 hover:text-white"
+                    className="text-[#f2f2f2] hover:text-white transition hover:cursor-pointer"
                     aria-label="Close watchlist modal"
                   >
-                    <X size={18} />
+                    <X size={24} />
                   </button>
                 </div>
 
@@ -448,7 +448,7 @@ export function WatchlistButton({
                             type="button"
                             onClick={handleDelete}
                             disabled={isDeleting}
-                            className="inline-flex items-center gap-2 rounded-full border border-red-900 bg-red-950/30 px-4 py-2 text-sm font-semibold text-red-300 transition hover:border-red-700 hover:bg-red-950/50 disabled:opacity-60"
+                            className="inline-flex items-center gap-2 rounded-full border border-red-900 bg-red-950/30 px-4 py-2 text-sm font-semibold text-red-300 transition hover:cursor-pointer hover:border-red-700 hover:bg-red-950/50 disabled:opacity-60"
                           >
                             <Trash2 size={16} />
                             {isDeleting ? "Removing..." : "Remove from list"}
@@ -460,14 +460,14 @@ export function WatchlistButton({
                         <button
                           type="button"
                           onClick={() => setIsOpen(false)}
-                          className="rounded-full border border-zinc-700 px-5 py-2 text-sm font-semibold text-zinc-300 transition hover:border-zinc-500 hover:text-white"
+                          className="rounded-full border border-zinc-700 px-5 py-2 text-sm font-semibold text-zinc-300 transition hover:cursor-pointer hover:border-zinc-500 hover:text-white"
                         >
                           Cancel
                         </button>
                         <button
                           type="submit"
                           disabled={isSaving}
-                          className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-60"
+                          className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white transition hover:cursor-pointer hover:bg-indigo-500 disabled:opacity-60"
                         >
                           {isSaving
                             ? "Saving..."
