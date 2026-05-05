@@ -14,7 +14,7 @@ const OutdoorCard: React.FC<OutdoorCardProps> = ({
   altText = "Outdoor do Anime",
 }) => {
   return (
-    <div className="relative w-[445px] h-[200px] sm:w-full sm:h-[260px] sm:px-4 md:px-8 lg:w-[1230px] md:h-[317px] lg:h-[340px] xl:h-[400px] lg:px-12 xl:px-0 max-w-full overflow-hidden mx-auto">
+    <div className="mx-auto relative w-[390px] h-[174.64px] sm:w-full sm:h-[260px] sm:px-4 md:px-8 lg:w-[1230px] md:h-[317px] lg:h-[340px] xl:h-[400px] lg:px-12 xl:px-0 max-w-full overflow-hidden mx-auto">
       <Link
         href={link}
         target="_blank"

@@ -52,7 +52,7 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
         <button
           onClick={() => scroll("left")}
           style={{ width: dynamicPadding }}
-          className="absolute left-0 top-0 z-30 h-full flex items-center justify-center text-zinc-400 transition-all hover:text-[#f2f2f2] hover:cursor-pointer bg-transparent hover:bg-black/20"
+          className="absolute left-0 top-0 z-30 h-full hidden sm:flex items-center justify-center text-zinc-400 transition-all hover:text-[#f2f2f2] hover:cursor-pointer bg-transparent hover:bg-black/20"
           aria-label="Scroll left"
         >
           <div className="max-w-7xl w-full mx-auto px-6 flex justify-start">
@@ -70,7 +70,7 @@ export function CarouselContainer({ children }: CarouselContainerProps) {
         <button
           onClick={() => scroll("right")}
           style={{ width: dynamicPadding }}
-          className="absolute right-0 top-0 z-30 h-full flex items-center justify-center text-zinc-400 transition-all hover:text-[#f2f2f2] hover:cursor-pointer bg-transparent hover:bg-black/20"
+          className="absolute right-0 top-0 z-30 h-full hidden sm:flex items-center justify-center text-zinc-400 transition-all hover:text-[#f2f2f2] hover:cursor-pointer bg-transparent hover:bg-black/20"
           aria-label="Scroll right"
         >
           <div className="max-w-7xl w-full mx-auto px-6 flex justify-end">

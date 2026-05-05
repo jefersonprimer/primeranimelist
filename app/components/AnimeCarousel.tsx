@@ -24,7 +24,7 @@ export async function AnimeCarousel({ title, filter }: AnimeCarouselProps) {
         {animeList.map((anime) => (
           <div
             key={anime.malId}
-            className="snap-start shrink-0 w-[140px] sm:w-[180px] md:w-[190px] lg:w-[227.2px]"
+            className="snap-start shrink-0 w-[190px] sm:w-[180px] md:w-[190px] lg:w-[227.2px]"
           >
             <AnimeCard
               malId={anime.malId}

@@ -18,7 +18,7 @@ export function AnimeCarouselSkeleton({ title }: AnimeCarouselSkeletonProps) {
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className="snap-start shrink-0 w-[280px] sm:w-[220px] md:w-[210px] lg:w-[227.2px]"
+            className="snap-start shrink-0 w-[190px] sm:w-[220px] md:w-[210px] lg:w-[227.2px]"
           >
             <AnimeCardSkeleton />
           </div>
