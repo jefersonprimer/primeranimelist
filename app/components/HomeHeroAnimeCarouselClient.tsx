@@ -148,17 +148,18 @@ export function HomeHeroAnimeCarouselClient({
                 className="block w-fit"
               >
                 {active.logo ? (
-                  <div className="relative mb-2 sm:mb-6 h-24 w-[280px] sm:h-28 md:w-[340px]">
+                  <div className="mb-2 sm:mb-6">
                     <Image
                       src={active.logo}
                       alt={`${active.title} logo`}
-                      fill
-                      className="object-contain object-center md:object-left"
-                      sizes="340px"
+                      width={340}
+                      height={112}
+                      className="h-auto w-auto object-contain object-center md:object-left max-h-16 max-w-[220px] sm:max-h-20 sm:max-w-[280px] lg:max-h-28 lg:max-w-[340px]"
+                      sizes="(max-width: 640px) 220px, (max-width: 1024px) 280px, 340px"
                     />
                   </div>
                 ) : (
-                  <h2 className="mb-2 sm:mb-6 line-clamp-2 text-3xl font-black sm:text-4xl">
+                  <h2 className="mb-2 sm:mb-6 line-clamp-2 text-2xl font-black sm:text-3xl lg:text-4xl">
                     {active.title}
                   </h2>
                 )}
@@ -179,10 +180,10 @@ export function HomeHeroAnimeCarouselClient({
                 {active.synopsis || "No synopsis available."}
               </p>
 
-              <div className="mt-5 mb-4 sm:mb-6 lg:mb-12 flex items-center justify-center md:justify-start gap-2">
+              <div className="w-[445px] sm:w-auto mt-5 mb-4 sm:mb-6 lg:mb-12 flex items-center justify-center md:justify-start gap-2">
                 <Link
                   href={`/anime/${active.malId}/${slug}`}
-                  className="inline-flex items-center gap-2 bg-[#2E51A2] px-5 py-2 text-xs font-semibold tracking-wide text-white transition hover:bg-[#4065BA] sm:text-sm"
+                  className="inline-flex w-full justify-center items-center gap-2 bg-[#2E51A2] px-5 py-2 text-xs font-semibold tracking-wide text-white transition hover:bg-[#4065BA] sm:w-auto sm:text-sm"
                 >
                   <Play size={24} />
                   <span>START WATCHING E1</span>
