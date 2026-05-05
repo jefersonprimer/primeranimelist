@@ -1,5 +1,4 @@
 import { getSession } from "@/lib/auth";
-import { WatchlistButton } from "@/app/components/WatchlistButton";
 import {
   listAnime,
   parseTopAnimeFilter,
@@ -8,6 +7,9 @@ import {
 import { listWatchlistEntriesByMalIds } from "@/lib/services/watchlist.service";
 import Image from "next/image";
 import Link from "next/link";
+
+import { WatchlistButton } from "@/app/components/WatchlistButton";
+
 import { Bookmark, Star, Users } from "lucide-react";
 import { RatingIcon10 } from "@/app/components/icons/Rating10Icon";
 import { RatingIcon12 } from "@/app/components/icons/Rating12Icon";
@@ -199,7 +201,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                       </div>
 
                       {anime.imageUrl ? (
-                        <div className="relative h-56 w-full">
+                        <div className="relative h-[300px] w-full">
                           <Image
                             src={anime.imageUrl}
                             alt={anime.title}
@@ -225,33 +227,25 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                           </span>
                         ) : null}
 
-                        <span className="flex items-center gap-1">
-                          <Star className="h-3 w-3 fill-[#8c8c8c] text-[#8c8c8c]" />
-                          <span className="text-zinc-700 dark:text-zinc-300">
-                            {anime.score ? anime.score.toFixed(2) : "N/A"}
-                          </span>
+                        <span className="flex items-center gap-1 text-[#8c8c8c]">
+                          <Star className="h-3 w-3 fill-[#8c8c8c]" />
+                          {anime.score ? anime.score.toFixed(2) : "N/A"}
                         </span>
-                        <span className="flex items-center gap-1">
+                        <span className="flex items-center gap-1 text-[#8c8c8c]">
                           <Users className="h-3 w-3 text-[#8c8c8c]" />
-                          <span className="text-zinc-500">
-                            {formatMembers(anime.members)}
-                          </span>
+                          {formatMembers(anime.members)}
                         </span>
                       </div>
 
-                      <h3 className="line-clamp-3 text-sm font-bold leading-tight text-zinc-900 dark:text-zinc-50">
+                      <h3 className="line-clamp-3 text-white text-sm font-bold leading-tight">
                         {anime.title}
                       </h3>
                     </div>
                   </Link>
 
-                  {/* Absolute positioned items outside the Link if they shouldn't trigger it, 
-                      but since they are just overlays, they can stay inside relative container if needed.
-                      However, to keep the Link clean, I'll move ratingIcon and bookmark back into the relative div inside the Link.
-                  */}
                   <div className="absolute inset-0 pointer-events-none">
                     {ratingIcon ? (
-                      <div className="absolute right-1 top-[200px] md:top-[180px] z-20">
+                      <div className="absolute right-1 bottom-20 z-20">
                         {ratingIcon}
                       </div>
                     ) : null}
