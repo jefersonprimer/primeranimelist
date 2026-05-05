@@ -117,7 +117,7 @@ export function HomeHeroAnimeCarouselClient({
   return (
     <section className="relative z-0 w-full">
       <div className="mx-auto">
-        <div className="relative h-screen min-h-130 w-full overflow-hidden bg-zinc-900 md:h-auto md:min-h-0 md:aspect-video">
+        <div className="relative w-full overflow-hidden bg-zinc-900 h-[542.5px] sm:h-[844.84px] md:h-auto md:min-h-0 md:aspect-video">
           <Image
             src={active.image_url}
             alt={active.title}

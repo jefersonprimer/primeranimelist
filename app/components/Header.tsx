@@ -186,7 +186,7 @@ export default function Header() {
               </span>
             </Link>
 
-            <nav className="hidden md:flex lg:hidden h-full items-center">
+            <nav className="hidden sm:flex lg:hidden h-full items-center">
               <Link
                 href="/anime/top"
                 className="flex h-full items-center px-3 text-sm font-medium text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
@@ -410,7 +410,7 @@ export default function Header() {
               {user && (
                 <Link
                   href="/watchlist"
-                  className="hidden min-[641px]:flex h-full items-center px-4 text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
+                  className="hidden sm:flex h-full items-center px-4 text-[#bbb] transition-colors hover:bg-[#181818] hover:text-white"
                   aria-label="Library"
                 >
                   <BookmarkIcon size={24} />
