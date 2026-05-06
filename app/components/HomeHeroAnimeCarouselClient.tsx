@@ -122,7 +122,11 @@ export function HomeHeroAnimeCarouselClient({
     touchStartYRef.current = touch.clientY;
   };
   const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (total <= 1 || touchStartXRef.current === null || touchStartYRef.current === null) {
+    if (
+      total <= 1 ||
+      touchStartXRef.current === null ||
+      touchStartYRef.current === null
+    ) {
       touchStartXRef.current = null;
       touchStartYRef.current = null;
       return;
@@ -153,7 +157,7 @@ export function HomeHeroAnimeCarouselClient({
     <section className="relative z-0 w-full">
       <div className="mx-auto">
         <div
-          className="relative w-full overflow-hidden bg-zinc-900 h-[552.5px] sm:h-[844.84px] md:h-auto md:min-h-0 md:aspect-video"
+          className="relative w-full overflow-hidden bg-zinc-900 h-[572.5px] sm:h-[844.84px] md:h-auto md:min-h-0 md:aspect-video"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           style={{ touchAction: "pan-y" }}
@@ -220,7 +224,7 @@ export function HomeHeroAnimeCarouselClient({
                 {active.synopsis || "No synopsis available."}
               </p>
 
-              <div className="w-[425px] sm:w-[445px] md:w-auto mt-5 mb-4 sm:mb-6 lg:mb-12 flex items-center justify-center md:justify-start gap-2">
+              <div className="w-[400px] sm:w-[445px] md:w-auto mt-5 mb-4 sm:mb-6 lg:mb-12 flex items-center justify-center md:justify-start gap-2">
                 <Link
                   href={`/anime/${active.malId}/${slug}`}
                   className="inline-flex w-full justify-center items-center gap-2 bg-[#2E51A2] px-5 py-2 text-xs font-semibold tracking-wide text-white transition hover:bg-[#4065BA] sm:w-auto sm:text-sm"
