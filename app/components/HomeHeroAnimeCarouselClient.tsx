@@ -117,7 +117,7 @@ export function HomeHeroAnimeCarouselClient({
   return (
     <section className="relative z-0 w-full">
       <div className="mx-auto">
-        <div className="relative w-full overflow-hidden bg-zinc-900 h-[542.5px] sm:h-[844.84px] md:h-auto md:min-h-0 md:aspect-video">
+        <div className="relative w-full overflow-hidden bg-zinc-900 h-[552.5px] sm:h-[844.84px] md:h-auto md:min-h-0 md:aspect-video">
           <Image
             src={active.image_url}
             alt={active.title}
@@ -180,7 +180,7 @@ export function HomeHeroAnimeCarouselClient({
                 {active.synopsis || "No synopsis available."}
               </p>
 
-              <div className="w-[445px] sm:w-auto mt-5 mb-4 sm:mb-6 lg:mb-12 flex items-center justify-center md:justify-start gap-2">
+              <div className="w-[425px] sm:w-[445px] md:w-auto mt-5 mb-4 sm:mb-6 lg:mb-12 flex items-center justify-center md:justify-start gap-2">
                 <Link
                   href={`/anime/${active.malId}/${slug}`}
                   className="inline-flex w-full justify-center items-center gap-2 bg-[#2E51A2] px-5 py-2 text-xs font-semibold tracking-wide text-white transition hover:bg-[#4065BA] sm:w-auto sm:text-sm"

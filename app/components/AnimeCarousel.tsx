@@ -15,7 +15,7 @@ export async function AnimeCarousel({ title, filter }: AnimeCarouselProps) {
   return (
     <section className="w-full py-4 overflow-hidden">
       <div className="max-w-7xl px-6 mx-auto flex items-center justify-between mb-5">
-        <h2 className="text-[28px] font-bold text-zinc-900 dark:text-zinc-50">
+        <h2 className="text-[20px] sm:text-[28px] font-bold text-zinc-900 dark:text-zinc-50">
           {title}
         </h2>
       </div>
