@@ -12,6 +12,7 @@ import { Bookmark, Star, Users } from "lucide-react";
 
 import { Pagination } from "@/app/components/Pagination";
 import { TopFilters } from "@/app/components/TopFilters";
+import { TopRankingInfoModal } from "@/app/components/TopRankingInfoModal";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,8 @@ function getPageNumber(value: string | string[] | undefined) {
 
   return page;
 }
+
+
 
 function getPageHref(page: number, filter: TopMangaFilter | null) {
   if (!filter) {
@@ -52,6 +55,16 @@ function formatMembers(members: number | null | undefined) {
   }
 
   return new Intl.NumberFormat("en-US").format(members);
+}
+
+function getRankBadgeStyles(rank: number) {
+  if (rank === 1)
+    return "bg-gradient-to-br from-yellow-400 to-amber-600 text-white border-yellow-300 shadow-lg shadow-yellow-500/20";
+  if (rank === 2)
+    return "bg-gradient-to-br from-zinc-200 to-zinc-400 text-zinc-800 border-zinc-100 shadow-lg shadow-zinc-400/20";
+  if (rank === 3)
+    return "bg-gradient-to-br from-orange-300 to-orange-500 text-white border-orange-200 shadow-lg shadow-orange-500/20";
+  return "bg-zinc-900/80 backdrop-blur-sm text-zinc-100 border-white/10";
 }
 
 export default async function MangaListPage(props: PageProps<"/manga/top">) {
@@ -106,9 +119,10 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
           <h1 className="text-[28px] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
             Top Manga
           </h1>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Updated twice a day. (How do we rank series?)
-          </p>
+          <div className="flex items-center my-2 gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+            <span>Updated twice a day.</span>
+            <TopRankingInfoModal />
+          </div>
         </div>
 
         <TopFilters
@@ -117,7 +131,7 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
           currentFilter={filter}
         />
 
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:hidden ">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 md:grid-cols-4 lg:hidden">
           {mangaList.length > 0 ? (
             mangaList.map((manga, index) => {
               const rankValue = filter
@@ -131,12 +145,19 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
               return (
                 <article
                   key={manga.id}
-                  className="overflow-hidden bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950"
+                  className="group relative overflow-hidden"
                 >
-                  <div className="relative">
-                    <Link href={detailHref}>
+                  <Link href={detailHref} className="block">
+                    <div className="relative">
+                      {/* Rank Badge */}
+                      <div
+                        className={`absolute left-0 top-0 z-20 flex h-8 w-10 items-center justify-center rounded-br-xl border-b border-r font-black text-sm shadow-md ${getRankBadgeStyles(rankValue)}`}
+                      >
+                        {rankValue}
+                      </div>
+
                       {manga.imageUrl ? (
-                        <div className="relative h-52 w-full md:h-48">
+                        <div className="relative h-[300px] w-full">
                           <Image
                             src={manga.imageUrl}
                             alt={manga.title}
@@ -146,52 +167,47 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
                           />
                         </div>
                       ) : (
-                        <div className="flex h-48 w-full items-center justify-center bg-zinc-200 dark:bg-zinc-800">
+                        <div className="flex h-52 w-full items-center justify-center bg-zinc-200 dark:bg-zinc-800">
                           <span className="text-xs text-zinc-500 dark:text-zinc-400">
                             No image
                           </span>
                         </div>
                       )}
-                    </Link>
+                    </div>
 
+                    <div className="space-y-2 py-2">
+                      <div className="flex items-center text-xs font-bold text-[#8c8c8c] gap-2">
+                        {manga.type ? (
+                          <span className="w-fit rounded border border-[#345293] bg-gradient-to-br from-[#4F74C8] via-[#4065BA] to-[#2E51A2] px-1.5 py-0.5 text-[10px] font-black uppercase text-white shadow-sm dark:border-[#4065BA]/50 dark:shadow-[0_1px_8px_rgba(64,101,186,0.25)]">
+                            {manga.type}
+                          </span>
+                        ) : null}
+
+                        <span className="flex items-center gap-1 text-[#8c8c8c]">
+                          <Star className="h-3 w-3 fill-[#8c8c8c]" />
+                          {manga.score ? manga.score.toFixed(2) : "N/A"}
+                        </span>
+                        <span className="flex items-center gap-1 text-[#8c8c8c]">
+                          <Users className="h-3 w-3 text-[#8c8c8c]" />
+                          {formatMembers(manga.members)}
+                        </span>
+                      </div>
+
+                      <h3 className="line-clamp-3 text-white text-sm font-bold leading-tight">
+                        {manga.title}
+                      </h3>
+                    </div>
+                  </Link>
+
+                  <div className="absolute inset-0 pointer-events-none">
                     {watchlistEntry ? (
                       <>
-                        <div className="pointer-events-none absolute -right-[1px] -top-[1px] z-20 h-9 w-9 bg-black/90 [clip-path:polygon(100%_0,0_0,100%_100%)]" />
-                        <div className="pointer-events-none absolute -right-[1px] -top-[1px] z-30 p-0.5 text-white">
+                        <div className="absolute -right-[1px] -top-[1px] z-20 h-9 w-9 bg-black/90 [clip-path:polygon(100%_0,0_0,100%_100%)]" />
+                        <div className="absolute -right-[1px] -top-[1px] z-30 p-0.5 text-white">
                           <Bookmark className="h-4 w-4 fill-current" />
                         </div>
                       </>
                     ) : null}
-                  </div>
-
-                  <div className="space-y-2.5 p-3">
-                    <p className="text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-                      #{rankValue}
-                    </p>
-
-                    <div className="flex items-center text-sm gap-2">
-                      {manga.type ? (
-                        <span className="w-fit rounded border border-indigo-100 bg-indigo-50 px-1.5 py-0.5 text-[10px] font-black uppercase text-indigo-600 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-400">
-                          {manga.type}
-                        </span>
-                      ) : null}
-
-                      <span className="inline-flex items-center gap-1">
-                        <Star className="h-3.5 w-3.5 text-amber-500" />
-                        {manga.score ? manga.score.toFixed(2) : "N/A"}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Users className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
-                        {formatMembers(manga.members)}
-                      </span>
-                    </div>
-
-                    <Link
-                      href={detailHref}
-                      className="block text-sm font-bold leading-tight text-zinc-900 transition-colors hover:text-indigo-600 dark:text-zinc-50 dark:hover:text-indigo-400 md:text-base"
-                    >
-                      {manga.title}
-                    </Link>
                   </div>
                 </article>
               );
