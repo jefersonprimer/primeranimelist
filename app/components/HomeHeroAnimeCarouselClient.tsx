@@ -157,7 +157,7 @@ export function HomeHeroAnimeCarouselClient({
     <section className="relative z-0 w-full">
       <div className="mx-auto">
         <div
-          className="relative w-full overflow-hidden bg-zinc-900 h-[592.5px] sm:h-[844.84px] md:h-auto md:min-h-0 md:aspect-video"
+          className="relative w-full overflow-hidden bg-zinc-900 h-[600px] sm:h-[844.84px] md:h-auto md:min-h-0 md:aspect-video"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           style={{ touchAction: "pan-y" }}
