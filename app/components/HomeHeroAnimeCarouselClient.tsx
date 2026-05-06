@@ -185,7 +185,7 @@ export function HomeHeroAnimeCarouselClient({
           {/* Bottom fade into pure black */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black via-black/75 to-transparent md:h-24" />
 
-          <div className="absolute inset-0 flex items-end md:items-center justify-center md:justify-start mx-auto w-full max-w-7xl pb-4 md:px-12 lg:p-6.5 md:pb-24 md:py-10 lg:py-12 lg:-translate-y-20 xl:-translate-y-36">
+          <div className="absolute inset-0 flex items-end md:items-center justify-center md:justify-start mx-auto w-full max-w-7xl pb-6 md:px-12 lg:p-6.5 md:pb-24 md:py-10 lg:py-12 lg:-translate-y-20 xl:-translate-y-36">
             <div className="max-w-[390px] text-white text-center md:text-left flex flex-col items-center md:items-start">
               <Link
                 href={`/anime/${active.malId}/${slug}`}
