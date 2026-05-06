@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Play } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { RatingIcon10 } from "./icons/Rating10Icon";
 import { RatingIcon12 } from "./icons/Rating12Icon";
 import { RatingIcon14 } from "./icons/Rating14Icon";
@@ -68,8 +68,11 @@ export function HomeHeroAnimeCarouselClient({
 }: HomeHeroAnimeCarouselClientProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progressPercent, setProgressPercent] = useState(0);
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
   const total = items.length;
   const autoplayDurationMs = 10000;
+  const swipeThresholdPx = 50;
 
   const safeIndex = useMemo(() => {
     if (total === 0) return 0;
@@ -113,11 +116,48 @@ export function HomeHeroAnimeCarouselClient({
   const ratingIcon = getRatingIcon(active.rating);
   const genresText =
     active.genres.length > 0 ? active.genres.join(", ") : "N/A";
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0];
+    touchStartXRef.current = touch.clientX;
+    touchStartYRef.current = touch.clientY;
+  };
+  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (total <= 1 || touchStartXRef.current === null || touchStartYRef.current === null) {
+      touchStartXRef.current = null;
+      touchStartYRef.current = null;
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - touchStartXRef.current;
+    const deltaY = touch.clientY - touchStartYRef.current;
+    const absDeltaX = Math.abs(deltaX);
+    const absDeltaY = Math.abs(deltaY);
+
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+
+    if (absDeltaX < swipeThresholdPx || absDeltaX <= absDeltaY) {
+      return;
+    }
+
+    if (deltaX < 0) {
+      setCurrentIndex((prev) => (prev + 1) % total);
+      return;
+    }
+
+    setCurrentIndex((prev) => (prev - 1 + total) % total);
+  };
 
   return (
     <section className="relative z-0 w-full">
       <div className="mx-auto">
-        <div className="relative w-full overflow-hidden bg-zinc-900 h-[552.5px] sm:h-[844.84px] md:h-auto md:min-h-0 md:aspect-video">
+        <div
+          className="relative w-full overflow-hidden bg-zinc-900 h-[552.5px] sm:h-[844.84px] md:h-auto md:min-h-0 md:aspect-video"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          style={{ touchAction: "pan-y" }}
+        >
           <Image
             src={active.image_url}
             alt={active.title}
