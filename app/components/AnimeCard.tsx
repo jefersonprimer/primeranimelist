@@ -175,6 +175,11 @@ export function AnimeCard({
     >
       <div className="relative h-[82%] w-full overflow-hidden shadow-md transition-all duration-300 ease-in-out group-hover/card:h-full">
         {isInWatchlist ? <BadgeWatchlistIcon size={16} /> : null}
+        {ratingIcon ? (
+          <div className="absolute left-1 top-1 z-20 md:hidden">
+            {ratingIcon}
+          </div>
+        ) : null}
 
         {!isImageLoaded && (
           <div className="absolute inset-0 z-10 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
