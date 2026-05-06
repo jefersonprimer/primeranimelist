@@ -174,7 +174,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
           currentFilter={filter}
         />
 
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:hidden ">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 md:grid-cols-4 lg:hidden">
           {animeList.length > 0 ? (
             animeList.map((anime, index) => {
               const rankValue = filter

@@ -31,7 +31,7 @@ const AlphabeticalClient = ({
     <div className="mx-auto flex w-full max-w-[1130px] flex-col items-center px-6 py-15">
       <div className="mb-8 px-2 flex w-full items-center justify-between">
         <h1 className="m-0 p-0 text-[28px] font-bold font-lato text-left">
-          Alphabetical
+          Browse All Anime
         </h1>
         <div className="flex items-center">
           <SortDropdown currentLabel="Alphabetical" className="ml-4" />

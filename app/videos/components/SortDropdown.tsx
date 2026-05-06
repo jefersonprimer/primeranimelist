@@ -15,7 +15,7 @@ interface SortDropdownProps {
 }
 
 const sortOptions: SortOption[] = [
-  { href: "/videos/popular", label: "Most Popular" },
+  { href: "/videos/popular", label: "Popularity" },
   { href: "/videos/new", label: "Newest" },
   { href: "/videos/alphabetical", label: "Alphabetical" },
 ];
@@ -32,14 +32,14 @@ export default function SortDropdown({
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className={`flex items-center border-none p-2.5 text-[#A0A0A0] transition-colors hover:bg-[#23252B] hover:text-white hover:cursor-pointer ${
+        className={`flex items-center border-none gap-2 p-2.5 text-[#A0A0A0] transition-colors hover:bg-[#23252B] hover:text-white hover:cursor-pointer ${
           open ? "bg-[#23252B] text-white" : "bg-transparent"
         }`}
         aria-expanded={open}
         aria-haspopup="menu"
       >
         <svg
-          className="mr-2 h-4 w-4"
+          className="h-6 w-6"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           aria-hidden="true"
@@ -48,7 +48,9 @@ export default function SortDropdown({
         >
           <path d="M9 18a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2h6zM21 4a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2h18zm-6 7a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2h12z" />
         </svg>
-        <span className="text-sm font-bold uppercase">{currentLabel}</span>
+        <span className="hidden sm:flex text-sm font-bold uppercase">
+          {currentLabel}
+        </span>
       </button>
 
       {open && (

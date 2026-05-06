@@ -170,7 +170,7 @@ export function AnimeCardCompact({
   return (
     <Link
       href={`/anime/${malId}/${slug}`}
-      className="group/card relative block h-[300px] w-[166px] overflow-hidden transition-transform duration-200 hover:scale-105"
+      className="group/card relative block h-[365px] w-[190px] md:h-[300px] md:w-[166px] overflow-hidden transition-transform duration-200 hover:scale-105"
     >
       <div className="relative h-[82%] w-full overflow-hidden shadow-md transition-all duration-300 ease-in-out group-hover/card:h-full">
         {isInWatchlist ? (
