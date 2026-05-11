@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { SeasonAnimeCard } from "@/app/components/SeasonAnimeCard";
 import { FilterDropdown } from "@/app/components/FilterDropdown";
+import { DropdownIcon } from "@/app/components/icons/DropdownIcon";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,92 @@ function isSeason(value: string): value is Season {
 function titleCase(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
+
+const FilterIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+  </svg>
+);
+
+const SortIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="m3 16 4 4 4-4" />
+    <path d="M7 20V4" />
+    <path d="m21 8-4-4-4 4" />
+    <path d="M17 4v16" />
+  </svg>
+);
+
+const CalendarIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+    <line x1="16" x2="16" y1="2" y2="6" />
+    <line x1="8" x2="8" y1="2" y2="6" />
+    <line x1="3" x2="21" y1="10" y2="10" />
+  </svg>
+);
+
+const ChevronLeftIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="3"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="m15 18-6-6 6-6" />
+  </svg>
+);
+
+const ChevronRightIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="3"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="m9 18 6-6-6-6" />
+  </svg>
+);
 
 type SeasonAnimeItem = {
   malId: number;
@@ -90,7 +177,10 @@ function normalizeNames(values: NamedRelation[] | string[] | null | undefined) {
   if (!Array.isArray(values)) return [];
   return values
     .map((value) => (typeof value === "string" ? value : value.name))
-    .filter((value): value is string => typeof value === "string" && value.trim().length > 0);
+    .filter(
+      (value): value is string =>
+        typeof value === "string" && value.trim().length > 0,
+    );
 }
 
 function normalizeSeasonItems(payload: SeasonApiResponse): SeasonAnimeItem[] {
@@ -171,7 +261,11 @@ function seasonChartStartUtc(season: Season, year: number): Date {
   }
 }
 
-function isTvContinuing(item: SeasonAnimeItem, season: Season, year: number): boolean {
+function isTvContinuing(
+  item: SeasonAnimeItem,
+  season: Season,
+  year: number,
+): boolean {
   const raw = item.airedFrom;
   if (raw == null) return false;
   const aired = typeof raw === "string" ? new Date(raw) : raw;
@@ -190,7 +284,11 @@ function nonTvSectionKeyForType(type: string | null): NonTvSectionKey {
   return "other";
 }
 
-function groupSeasonItems(items: SeasonAnimeItem[], season: Season, year: number) {
+function groupSeasonItems(
+  items: SeasonAnimeItem[],
+  season: Season,
+  year: number,
+) {
   const buckets: Record<SeasonSectionKey, SeasonAnimeItem[]> = {
     tv_new: [],
     tv_continuing: [],
@@ -203,7 +301,9 @@ function groupSeasonItems(items: SeasonAnimeItem[], season: Season, year: number
   for (const item of items) {
     const t = (item.type ?? "").trim().toLowerCase();
     if (t === "tv") {
-      const key = isTvContinuing(item, season, year) ? "tv_continuing" : "tv_new";
+      const key = isTvContinuing(item, season, year)
+        ? "tv_continuing"
+        : "tv_new";
       buckets[key].push(item);
     } else {
       buckets[nonTvSectionKeyForType(item.type)].push(item);
@@ -232,10 +332,20 @@ const TYPE_FILTER_LABELS: Record<TypeFilter, string> = {
 
 function parseTypeFilter(raw: string | string[] | undefined): TypeFilter {
   const v = (Array.isArray(raw) ? raw[0] : raw)?.trim().toLowerCase() ?? "";
-  return (TYPE_FILTERS as readonly string[]).includes(v) ? (v as TypeFilter) : "all";
+  return (TYPE_FILTERS as readonly string[]).includes(v)
+    ? (v as TypeFilter)
+    : "all";
 }
 
-const SORT_OPTIONS = ["default", "members", "score", "start-date", "title", "studio", "licensor"] as const;
+const SORT_OPTIONS = [
+  "default",
+  "members",
+  "score",
+  "start-date",
+  "title",
+  "studio",
+  "licensor",
+] as const;
 type SortOption = (typeof SORT_OPTIONS)[number];
 
 const SORT_LABELS: Record<SortOption, string> = {
@@ -270,7 +380,9 @@ function parseBooleanFlag(raw: string | string[] | undefined) {
 
 function parseSortOption(raw: string | string[] | undefined): SortOption {
   const value = getSingleValue(raw)?.trim().toLowerCase() ?? "";
-  return (SORT_OPTIONS as readonly string[]).includes(value) ? (value as SortOption) : "default";
+  return (SORT_OPTIONS as readonly string[]).includes(value)
+    ? (value as SortOption)
+    : "default";
 }
 
 function parseOptionalFilter(raw: string | string[] | undefined) {
@@ -278,7 +390,11 @@ function parseOptionalFilter(raw: string | string[] | undefined) {
   return value ? value : null;
 }
 
-function buildSeasonPagePath(year: number, season: string, filters: SeasonFilters): string {
+function buildSeasonPagePath(
+  year: number,
+  season: string,
+  filters: SeasonFilters,
+): string {
   const path = `/anime/season/${year}/${season}`;
   const params = new URLSearchParams();
 
@@ -294,10 +410,15 @@ function buildSeasonPagePath(year: number, season: string, filters: SeasonFilter
   return query ? `${path}?${query}` : path;
 }
 
-function filterSectionsByType(sections: SeasonSection[], filter: TypeFilter): SeasonSection[] {
+function filterSectionsByType(
+  sections: SeasonSection[],
+  filter: TypeFilter,
+): SeasonSection[] {
   if (filter === "all") return sections;
   if (filter === "tv") {
-    return sections.filter((s) => s.key === "tv_new" || s.key === "tv_continuing");
+    return sections.filter(
+      (s) => s.key === "tv_new" || s.key === "tv_continuing",
+    );
   }
   return sections.filter((s) => s.key === filter);
 }
@@ -311,17 +432,26 @@ function normalizeText(value: string) {
   return value.trim().toLocaleLowerCase();
 }
 
-function matchesNamedFilter(values: string[] | null | undefined, selected: string | null) {
+function matchesNamedFilter(
+  values: string[] | null | undefined,
+  selected: string | null,
+) {
   if (!selected) return true;
   const target = normalizeText(selected);
   return (values ?? []).some((value) => normalizeText(value) === target);
 }
 
-function matchesAudienceFilters(item: SeasonAnimeItem, kids: boolean, r18: boolean) {
+function matchesAudienceFilters(
+  item: SeasonAnimeItem,
+  kids: boolean,
+  r18: boolean,
+) {
   if (!kids && !r18) return true;
 
   const rating = (item.rating ?? "").toLocaleLowerCase();
-  const genreValues = (item.genres ?? []).map((genre) => genre.toLocaleLowerCase());
+  const genreValues = (item.genres ?? []).map((genre) =>
+    genre.toLocaleLowerCase(),
+  );
   const kidsMatch = /kids|children|all ages/.test(rating);
   const r18Match = /^rx\b/.test(rating) || genreValues.includes("hentai");
 
@@ -332,7 +462,8 @@ function filterSeasonItems(items: SeasonAnimeItem[], filters: SeasonFilters) {
   return items.filter((item) => {
     if (!matchesNamedFilter(item.genres, filters.genre)) return false;
     if (!matchesNamedFilter(item.themes, filters.theme)) return false;
-    if (!matchesNamedFilter(item.demographics, filters.demographic)) return false;
+    if (!matchesNamedFilter(item.demographics, filters.demographic))
+      return false;
     if (!matchesAudienceFilters(item, filters.kids, filters.r18)) return false;
     return true;
   });
@@ -345,7 +476,10 @@ function compareNullableNumberDesc(a: number | null, b: number | null) {
   return b - a;
 }
 
-function compareNullableDateAsc(a: string | Date | null, b: string | Date | null) {
+function compareNullableDateAsc(
+  a: string | Date | null,
+  b: string | Date | null,
+) {
   const aTime = a ? new Date(a).getTime() : Number.POSITIVE_INFINITY;
   const bTime = b ? new Date(b).getTime() : Number.POSITIVE_INFINITY;
   return aTime - bTime;
@@ -377,11 +511,17 @@ function sortSeasonItems(items: SeasonAnimeItem[], sort: SortOption) {
       case "title":
         return compareTextAsc(a.title, b.title);
       case "studio": {
-        const diff = compareTextAsc(getFirstRelationValue(a.studios), getFirstRelationValue(b.studios));
+        const diff = compareTextAsc(
+          getFirstRelationValue(a.studios),
+          getFirstRelationValue(b.studios),
+        );
         return diff || compareTextAsc(a.title, b.title);
       }
       case "licensor": {
-        const diff = compareTextAsc(getFirstRelationValue(a.licensors), getFirstRelationValue(b.licensors));
+        const diff = compareTextAsc(
+          getFirstRelationValue(a.licensors),
+          getFirstRelationValue(b.licensors),
+        );
         return diff || compareTextAsc(a.title, b.title);
       }
       default:
@@ -390,7 +530,10 @@ function sortSeasonItems(items: SeasonAnimeItem[], sort: SortOption) {
   });
 }
 
-function getUniqueNamedOptions(items: SeasonAnimeItem[], key: "genres" | "themes" | "demographics") {
+function getUniqueNamedOptions(
+  items: SeasonAnimeItem[],
+  key: "genres" | "themes" | "demographics",
+) {
   const values = new Set<string>();
 
   for (const item of items) {
@@ -450,8 +593,12 @@ export default async function AnimeSeasonByYearPage({
 
   const data = (await res.json()) as SeasonApiResponse;
   const seasonItems = normalizeSeasonItems(data);
-  const availableYears = Array.isArray(data.availableYears) ? data.availableYears : [];
-  const previousAvailableYear = availableYears.filter((y) => y < year).sort((a, b) => b - a)[0];
+  const availableYears = Array.isArray(data.availableYears)
+    ? data.availableYears
+    : [];
+  const previousAvailableYear = availableYears
+    .filter((y) => y < year)
+    .sort((a, b) => b - a)[0];
   const showBackToCurrent = year !== new Date().getFullYear();
   const currentYear = new Date().getFullYear();
   const filteredItems = filterSeasonItems(seasonItems, filters);
@@ -470,81 +617,101 @@ export default async function AnimeSeasonByYearPage({
     filters.r18;
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-6">
+    <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-8">
-        <h1 className="text-4xl font-black tracking-tight text-zinc-900 dark:text-zinc-50 uppercase italic">
+        <h1 className="text-[28px] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
           Season Anime
         </h1>
 
-        <div className="flex flex-col gap-4 rounded-xl border border-zinc-200 bg-white/80 px-4 py-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/80">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center gap-3">
-              {previousAvailableYear ? (
-                <Link
-                  href={buildSeasonPagePath(previousAvailableYear, season, filters)}
-                  className="inline-flex items-center justify-center rounded-full border border-zinc-200 px-3 py-2 text-sm font-black text-zinc-700 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-900"
-                  aria-label="Go to previous year"
-                  title="Go to previous year"
-                >
-                  …
-                </Link>
-              ) : (
-                <span
-                  className="inline-flex items-center justify-center rounded-full border border-zinc-100 px-3 py-2 text-sm font-black text-zinc-300 dark:border-zinc-900 dark:text-zinc-700"
-                  aria-hidden="true"
-                >
-                  …
-                </span>
-              )}
+        {/* Filter & Navigation Card */}
+        <div className="relative z-20 flex flex-col gap-8 rounded-2xl border border-zinc-200 bg-white/70 backdrop-blur-xl p-6 shadow-xl shadow-zinc-200/50 dark:border-zinc-800 dark:bg-zinc-950/70 dark:shadow-none">
+          {/* Top Row: Year & Season Navigation */}
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between border-b border-zinc-100 pb-8 dark:border-zinc-800/50">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                {previousAvailableYear ? (
+                  <Link
+                    href={buildSeasonPagePath(
+                      previousAvailableYear,
+                      season,
+                      filters,
+                    )}
+                    className="p-2 rounded-lg text-zinc-600 hover:bg-white hover:text-indigo-600 hover:shadow-sm dark:text-zinc-400 dark:hover:bg-zinc-800 transition-all"
+                    aria-label="Previous year"
+                  >
+                    <ChevronLeftIcon />
+                  </Link>
+                ) : (
+                  <span className="p-2 text-zinc-300 dark:text-zinc-700">
+                    <ChevronLeftIcon />
+                  </span>
+                )}
 
-              <p className="mt-1 text-base font-bold text-zinc-900 dark:text-zinc-50">
-                {titleCase(season)} {year}
-              </p>
+                <div className="px-4 py-1 flex flex-col items-center min-w-[120px]">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                    Current Period
+                  </span>
+                  <span className="text-base font-bold text-zinc-900 dark:text-zinc-50">
+                    {titleCase(season)} {year}
+                  </span>
+                </div>
+
+                <Link
+                  href={buildSeasonPagePath(year + 1, season, filters)}
+                  className="p-2 rounded-lg text-zinc-600 hover:bg-white hover:text-indigo-600 hover:shadow-sm dark:text-zinc-400 dark:hover:bg-zinc-800 transition-all"
+                  aria-label="Next year"
+                >
+                  <ChevronRightIcon />
+                </Link>
+              </div>
 
               {showBackToCurrent && (
                 <Link
                   href={buildSeasonPagePath(currentYear, season, filters)}
-                  className="ml-1 inline-flex items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm font-black text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 dark:hover:bg-indigo-900"
-                  aria-label="Back to current year"
-                  title="Back to current year"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-50 text-indigo-700 text-sm font-black hover:bg-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-300 dark:hover:bg-indigo-900/50 transition-colors border border-indigo-100 dark:border-indigo-900"
                 >
-                  …
+                  <CalendarIcon />
+                  Current
                 </Link>
               )}
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <nav className="flex items-center p-1 bg-zinc-100 dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-x-auto no-scrollbar">
               {SEASONS.map((s) => {
                 const active = s === season;
                 return (
                   <Link
                     key={s}
-                    href={buildSeasonPagePath(year, s, { ...filters })}
-                    className={`inline-flex items-center rounded-full border px-4 py-2 text-sm font-black tracking-wide transition-colors ${
+                    href={buildSeasonPagePath(year, s, filters)}
+                    className={`flex-1 min-w-[90px] text-center px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
                       active
-                        ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
-                        : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900"
+                        ? "bg-white text-indigo-600 shadow-md shadow-indigo-200/20 dark:bg-zinc-800 dark:text-indigo-400 dark:shadow-none"
+                        : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
                     }`}
                   >
                     {s}
                   </Link>
                 );
               })}
-            </div>
+            </nav>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex flex-wrap gap-2">
+          {/* Bottom Row: Filters & Sort */}
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center p-1 bg-zinc-100/50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/50 overflow-x-auto no-scrollbar">
               {TYPE_FILTERS.map((tf) => {
                 const active = tf === filters.type;
                 return (
                   <Link
                     key={tf}
-                    href={buildSeasonPagePath(year, season, { ...filters, type: tf })}
-                    className={`inline-flex items-center rounded-full border px-4 py-2 text-sm font-black tracking-wide transition-colors ${
+                    href={buildSeasonPagePath(year, season, {
+                      ...filters,
+                      type: tf,
+                    })}
+                    className={`px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all ${
                       active
-                        ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
-                        : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900"
+                        ? "bg-white text-zinc-900 shadow-sm border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-50 dark:border-zinc-700"
+                        : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
                     }`}
                   >
                     {TYPE_FILTER_LABELS[tf]}
@@ -553,26 +720,34 @@ export default async function AnimeSeasonByYearPage({
               })}
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <FilterDropdown className="group relative">
-                <summary className="list-none cursor-pointer rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-black text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900">
-                  Sort: {SORT_LABELS[filters.sort]}
+                <summary className="list-none cursor-pointer flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-bold text-zinc-700 shadow-sm transition-all hover:border-indigo-300 hover:text-indigo-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-indigo-700 dark:hover:text-indigo-400">
+                  <SortIcon />
+                  <span>Sort: {SORT_LABELS[filters.sort]}</span>
+                  <DropdownIcon size={16} />
                 </summary>
-                <div className="absolute left-0 z-20 mt-2 min-w-56 rounded-xl border border-zinc-200 bg-white p-2 shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
+                <div className="absolute left-0 lg:left-auto lg:right-0 z-9999 mt-2 min-w-[220px] rounded-2xl border border-zinc-200 bg-white/95 backdrop-blur-xl p-2 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950/95">
                   <div className="flex flex-col gap-1">
                     {SORT_OPTIONS.map((option) => {
                       const active = option === filters.sort;
                       return (
                         <Link
                           key={option}
-                          href={buildSeasonPagePath(year, season, { ...filters, sort: option })}
-                          className={`rounded-lg px-3 py-2 text-sm font-bold transition-colors ${
+                          href={buildSeasonPagePath(year, season, {
+                            ...filters,
+                            sort: option,
+                          })}
+                          className={`flex items-center justify-between rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${
                             active
                               ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300"
-                              : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-900"
+                              : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100"
                           }`}
                         >
                           {SORT_LABELS[option]}
+                          {active && (
+                            <div className="h-1.5 w-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+                          )}
                         </Link>
                       );
                     })}
@@ -581,70 +756,99 @@ export default async function AnimeSeasonByYearPage({
               </FilterDropdown>
 
               <FilterDropdown className="group relative">
-                <summary className="list-none cursor-pointer rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-black text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900">
-                  Filter
+                <summary className="list-none cursor-pointer flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-bold text-zinc-700 shadow-sm transition-all hover:border-indigo-300 hover:text-indigo-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-indigo-700 dark:hover:text-indigo-400">
+                  <FilterIcon />
+                  <span>Advanced</span>
+                  {(filters.genre || filters.theme || filters.demographic) && (
+                    <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-indigo-600 px-1.5 text-[10px] font-black text-white">
+                      {
+                        [
+                          filters.genre,
+                          filters.theme,
+                          filters.demographic,
+                        ].filter(Boolean).length
+                      }
+                    </span>
+                  )}
+                  <DropdownIcon size={16} />
                 </summary>
-                <div className="absolute left-0 z-20 mt-2 w-[min(24rem,calc(100vw-4rem))] rounded-xl border border-zinc-200 bg-white p-4 shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
-                  <form method="get" className="flex flex-col gap-3">
-                    {filters.type !== "all" && <input type="hidden" name="type" value={filters.type} />}
-                    {filters.sort !== "default" && <input type="hidden" name="sort" value={filters.sort} />}
-                    {filters.kids && <input type="hidden" name="kids" value="1" />}
-                    {filters.r18 && <input type="hidden" name="r18" value="1" />}
+                <div className="absolute left-0 lg:left-auto lg:right-0 z-9999 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-zinc-200 bg-white/95 backdrop-blur-xl p-5 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950/95">
+                  <form method="get" className="flex flex-col gap-5">
+                    {filters.type !== "all" && (
+                      <input type="hidden" name="type" value={filters.type} />
+                    )}
+                    {filters.sort !== "default" && (
+                      <input type="hidden" name="sort" value={filters.sort} />
+                    )}
+                    {filters.kids && (
+                      <input type="hidden" name="kids" value="1" />
+                    )}
+                    {filters.r18 && (
+                      <input type="hidden" name="r18" value="1" />
+                    )}
 
-                    <label className="flex flex-col gap-1 text-sm font-bold text-zinc-700 dark:text-zinc-200">
-                      Genre
-                      <select
-                        name="genre"
-                        defaultValue={filters.genre ?? ""}
-                        className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200"
-                      >
-                        <option value="">All genres</option>
-                        {genreOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                    <div className="space-y-4">
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                          Genre
+                        </label>
+                        <select
+                          name="genre"
+                          defaultValue={filters.genre ?? ""}
+                          className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm font-bold text-zinc-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 outline-none transition-all"
+                        >
+                          <option value="">All Genres</option>
+                          {genreOptions.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                    <label className="flex flex-col gap-1 text-sm font-bold text-zinc-700 dark:text-zinc-200">
-                      Theme
-                      <select
-                        name="theme"
-                        defaultValue={filters.theme ?? ""}
-                        className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200"
-                      >
-                        <option value="">All themes</option>
-                        {themeOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                          Theme
+                        </label>
+                        <select
+                          name="theme"
+                          defaultValue={filters.theme ?? ""}
+                          className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm font-bold text-zinc-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 outline-none transition-all"
+                        >
+                          <option value="">All Themes</option>
+                          {themeOptions.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                    <label className="flex flex-col gap-1 text-sm font-bold text-zinc-700 dark:text-zinc-200">
-                      Demographic
-                      <select
-                        name="demographic"
-                        defaultValue={filters.demographic ?? ""}
-                        className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200"
-                      >
-                        <option value="">All demographics</option>
-                        {demographicOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                          Demographic
+                        </label>
+                        <select
+                          name="demographic"
+                          defaultValue={filters.demographic ?? ""}
+                          className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm font-bold text-zinc-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 outline-none transition-all"
+                        >
+                          <option value="">All Demographics</option>
+                          {demographicOptions.map((option) => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
 
-                    <div className="flex items-center gap-2 pt-1">
+                    <div className="flex items-center gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
                       <button
                         type="submit"
-                        className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-black text-white hover:bg-indigo-500"
+                        className="flex-1 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-indigo-600/20 hover:bg-indigo-500 hover:shadow-indigo-600/30 transition-all"
                       >
-                        Apply
+                        Apply Filters
                       </button>
                       <Link
                         href={buildSeasonPagePath(year, season, {
@@ -653,9 +857,9 @@ export default async function AnimeSeasonByYearPage({
                           theme: null,
                           demographic: null,
                         })}
-                        className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-black text-zinc-700 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-900"
+                        className="rounded-xl border border-zinc-200 px-4 py-2.5 text-sm font-bold text-zinc-600 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900 transition-all"
                       >
-                        Clear
+                        Reset
                       </Link>
                     </div>
                   </form>
@@ -663,109 +867,165 @@ export default async function AnimeSeasonByYearPage({
               </FilterDropdown>
 
               <FilterDropdown className="group relative">
-                <summary className="list-none cursor-pointer rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-black text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900">
-                  Rating
-                  {(filters.kids || filters.r18) ? `: ${[filters.kids ? "Kids" : null, filters.r18 ? "R18+" : null].filter(Boolean).join(", ")}` : ""}
+                <summary className="list-none cursor-pointer flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-bold text-zinc-700 shadow-sm transition-all hover:border-indigo-300 hover:text-indigo-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-indigo-700 dark:hover:text-indigo-400">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-zinc-100 text-[10px] font-black dark:bg-zinc-900">
+                    18
+                  </span>
+                  <span>Safety</span>
+                  {(filters.kids || filters.r18) && (
+                    <span className="flex h-2 w-2 rounded-full bg-indigo-600" />
+                  )}
+                  <DropdownIcon size={16} />
                 </summary>
-                <div className="absolute left-0 z-20 mt-2 min-w-64 rounded-xl border border-zinc-200 bg-white p-4 shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
-                  <form method="get" className="flex flex-col gap-3">
-                    {filters.type !== "all" && <input type="hidden" name="type" value={filters.type} />}
-                    {filters.sort !== "default" && <input type="hidden" name="sort" value={filters.sort} />}
-                    {filters.genre && <input type="hidden" name="genre" value={filters.genre} />}
-                    {filters.theme && <input type="hidden" name="theme" value={filters.theme} />}
-                    {filters.demographic && <input type="hidden" name="demographic" value={filters.demographic} />}
-
-                    <label className="flex items-center gap-2 text-sm font-bold text-zinc-700 dark:text-zinc-200">
+                <div className="absolute right-0 z-9999 mt-2 min-w-[200px] rounded-2xl border border-zinc-200 bg-white/95 backdrop-blur-xl p-4 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950/95">
+                  <form method="get" className="flex flex-col gap-4">
+                    {filters.type !== "all" && (
+                      <input type="hidden" name="type" value={filters.type} />
+                    )}
+                    {filters.sort !== "default" && (
+                      <input type="hidden" name="sort" value={filters.sort} />
+                    )}
+                    {filters.genre && (
+                      <input type="hidden" name="genre" value={filters.genre} />
+                    )}
+                    {filters.theme && (
+                      <input type="hidden" name="theme" value={filters.theme} />
+                    )}
+                    {filters.demographic && (
                       <input
-                        type="checkbox"
-                        name="kids"
-                        value="1"
-                        defaultChecked={filters.kids}
-                        className="h-4 w-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
+                        type="hidden"
+                        name="demographic"
+                        value={filters.demographic}
                       />
-                      Kids
-                    </label>
+                    )}
 
-                    <label className="flex items-center gap-2 text-sm font-bold text-zinc-700 dark:text-zinc-200">
-                      <input
-                        type="checkbox"
-                        name="r18"
-                        value="1"
-                        defaultChecked={filters.r18}
-                        className="h-4 w-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
-                      />
-                      R18+
-                    </label>
+                    <div className="space-y-3">
+                      <label className="flex items-center justify-between cursor-pointer group">
+                        <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                          Kids Friendly
+                        </span>
+                        <input
+                          type="checkbox"
+                          name="kids"
+                          value="1"
+                          defaultChecked={filters.kids}
+                          className="h-5 w-5 rounded-lg border-zinc-300 text-indigo-600 focus:ring-indigo-500/20 transition-all"
+                        />
+                      </label>
 
-                    <div className="flex items-center gap-2 pt-1">
+                      <label className="flex items-center justify-between cursor-pointer group">
+                        <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300 group-hover:text-red-500 transition-colors">
+                          Adult (R18+)
+                        </span>
+                        <input
+                          type="checkbox"
+                          name="r18"
+                          value="1"
+                          defaultChecked={filters.r18}
+                          className="h-5 w-5 rounded-lg border-zinc-300 text-red-600 focus:ring-red-500/20 transition-all"
+                        />
+                      </label>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
                       <button
                         type="submit"
-                        className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-black text-white hover:bg-indigo-500"
+                        className="flex-1 rounded-xl bg-zinc-900 px-4 py-2 text-sm font-black text-white hover:bg-black dark:bg-white dark:text-black dark:hover:bg-zinc-200 transition-all"
                       >
                         Apply
                       </button>
-                      <Link
-                        href={buildSeasonPagePath(year, season, { ...filters, kids: false, r18: false })}
-                        className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-black text-zinc-700 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-900"
-                      >
-                        Clear
-                      </Link>
                     </div>
                   </form>
                 </div>
               </FilterDropdown>
             </div>
-
-            
           </div>
 
-            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-              <span className="font-semibold text-zinc-500 dark:text-zinc-400">
-                Showing {filteredItems.length} of {seasonItems.length} titles
-              </span>
+          {/* Results Summary & Active Filters */}
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+            <div className="flex items-center gap-3">
               {hasExtraFilters && (
                 <Link
-                  href={buildSeasonPagePath(year, season, { ...filters, sort: "default", genre: null, theme: null, demographic: null, kids: false, r18: false })}
-                  className="rounded-full border border-zinc-200 px-3 py-1 text-xs font-black text-zinc-700 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-900"
+                  href={buildSeasonPagePath(year, season, {
+                    ...filters,
+                    sort: "default",
+                    genre: null,
+                    theme: null,
+                    demographic: null,
+                    kids: false,
+                    r18: false,
+                  })}
+                  className="text-[11px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
                 >
-                  Clear extra filters
+                  Reset All Filters
                 </Link>
               )}
             </div>
-
+          </div>
         </div>
 
         {seasonItems.length === 0 ? (
-          <div className="rounded-xl border border-zinc-200 bg-white px-6 py-12 text-center text-sm font-medium text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400">
-            No anime found for {titleCase(season)} {year}.
+          <div className="rounded-3xl border-2 border-dashed border-zinc-200 bg-white/50 px-6 py-20 text-center dark:border-zinc-800 dark:bg-zinc-950/50">
+            <div className="mx-auto w-16 h-16 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex items-center justify-center mb-4">
+              <CalendarIcon />
+            </div>
+            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-1">
+              No Anime Found
+            </h3>
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm">
+              We couldn't find any anime for {titleCase(season)} {year}.
+            </p>
           </div>
         ) : visibleSections.length === 0 ? (
-          <div className="rounded-xl border border-zinc-200 bg-white px-6 py-12 text-center text-sm font-medium text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400">
-            No {TYPE_FILTER_LABELS[filters.type]} titles for {titleCase(season)} {year}.{" "}
+          <div className="rounded-3xl border-2 border-dashed border-zinc-200 bg-white/50 px-6 py-20 text-center dark:border-zinc-800 dark:bg-zinc-950/50">
+            <div className="mx-auto w-16 h-16 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex items-center justify-center mb-4">
+              <FilterIcon />
+            </div>
+            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-1">
+              No Matches
+            </h3>
+            <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-6">
+              No {TYPE_FILTER_LABELS[filters.type]} titles match your current
+              filters.
+            </p>
             <Link
-              href={buildSeasonPagePath(year, season, { ...filters, type: "all" })}
-              className="font-bold text-indigo-600 underline-offset-2 hover:underline dark:text-indigo-400"
+              href={buildSeasonPagePath(year, season, {
+                ...filters,
+                type: "all",
+              })}
+              className="inline-flex px-6 py-3 rounded-2xl bg-indigo-600 text-white font-black text-sm hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20"
             >
-              Show all
+              Show All Types
             </Link>
           </div>
         ) : (
-          <div className="flex flex-col gap-12">
+          <div className="flex flex-col gap-16">
             {visibleSections.map((section) => (
-              <section key={section.key} aria-labelledby={`season-section-${section.key}`}>
-                <h2
-                  id={`season-section-${section.key}`}
-                  className="flex items-center justify-center mb-4 text-sm bg-[#333333] tracking-wide text-[#e0e0e0] p-2"
-                >
-                  {section.label}
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <section
+                key={section.key}
+                aria-labelledby={`season-section-${section.key}`}
+              >
+                <div className="flex items-center gap-4 mb-8">
+                  <h2
+                    id={`season-section-${section.key}`}
+                    className="text-lg font-black uppercase tracking-[0.2em] text-zinc-900 dark:text-zinc-50"
+                  >
+                    {section.label}
+                  </h2>
+                  <div className="h-px flex-1 bg-gradient-to-r from-zinc-200 to-transparent dark:from-zinc-800" />
+                  <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                    {section.items.length} Shows
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {section.items.map((anime) => (
                     <SeasonAnimeCard
                       key={anime.malId}
                       anime={{
                         ...anime,
-                        airedFrom: anime.airedFrom ? new Date(anime.airedFrom) : null
+                        airedFrom: anime.airedFrom
+                          ? new Date(anime.airedFrom)
+                          : null,
                       }}
                     />
                   ))}
