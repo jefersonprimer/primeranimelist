@@ -80,7 +80,7 @@ export function TopFilters({
               key={item.value ?? "all"}
               href={getFilterHref(item.value)}
               aria-current={isActive ? "page" : undefined}
-              className={`inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-bold transition-colors ${
+              className={`inline-flex items-center rounded-full border px-2 py-1 text-sm font-semibold transition-colors ${
                 isActive
                   ? "border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
                   : "border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"

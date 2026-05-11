@@ -31,6 +31,7 @@ interface MangaWatchlistButtonProps {
   triggerLabel?: string;
   triggerClassName?: string;
   initialEntry?: MangaWatchlistEntry | null;
+  showIcon?: boolean;
 }
 
 const defaultEntry: MangaWatchlistEntry = {
@@ -50,6 +51,7 @@ export function MangaWatchlistButton({
   triggerLabel,
   triggerClassName,
   initialEntry = null,
+  showIcon = true,
 }: MangaWatchlistButtonProps) {
   const router = useRouter();
   const { user, loading } = useAuth();
@@ -239,10 +241,12 @@ export function MangaWatchlistButton({
         }
         aria-label={hasSavedEntry ? "Edit manga watchlist entry" : "Add manga to watchlist"}
       >
-        <Bookmark
-          size={18}
-          className={hasSavedEntry ? "fill-indigo-500 text-indigo-500" : ""}
-        />
+        {showIcon && (
+          <Bookmark
+            size={18}
+            className={hasSavedEntry ? "fill-indigo-500 text-indigo-500" : ""}
+          />
+        )}
         {triggerLabel ? <span>{triggerLabel}</span> : null}
       </button>
 

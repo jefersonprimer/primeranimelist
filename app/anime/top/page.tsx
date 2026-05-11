@@ -269,26 +269,23 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
           )}
         </div>
 
-        <div className="hidden w-full overflow-x-auto rounded-xl border border-zinc-200 shadow-sm overflow-hidden dark:border-zinc-800 lg:block">
+        <div className="hidden w-full overflow-x-auto border border-zinc-200 shadow-sm overflow-hidden dark:border-zinc-800 lg:block">
           <table className="w-full text-left border-collapse bg-white dark:bg-zinc-950">
             <thead className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
               <tr>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm w-24">
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm w-24 border-r border-zinc-200 dark:border-zinc-800">
                   Rank
                 </th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm w-32">
-                  Image
-                </th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm">
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm border-r border-zinc-200 dark:border-zinc-800">
                   Title
                 </th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-32">
-                  Score
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-32 border-r border-zinc-200 dark:border-zinc-800">
+                  MAL Score
                 </th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-40">
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-40 border-r border-zinc-200 dark:border-zinc-800">
                   Your Score
                 </th>
-                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-32">
+                <th className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-50 tracking-wider text-sm text-center w-40">
                   Status
                 </th>
               </tr>
@@ -303,7 +300,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                       key={anime.id}
                       className="hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
                     >
-                      <td className="px-6 py-8 align-middle">
+                      <td className="px-6 py-8 align-middle border-r border-zinc-200 dark:border-zinc-800">
                         <span className="text-3xl font-black text-zinc-400 dark:text-zinc-600">
                           #
                           {filter
@@ -313,73 +310,74 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                               startRank + index}
                         </span>
                       </td>
-                      <td className="px-6 py-4 align-middle">
-                        <Link
-                          href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`}
-                        >
-                          {anime.imageUrl ? (
-                            <div className="relative h-28 w-20 overflow-hidden border border-zinc-200 shadow-sm dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
-                              <Image
-                                src={anime.imageUrl}
-                                alt={anime.title}
-                                fill
-                                className="object-cover"
-                                sizes="80px"
-                              />
-                            </div>
-                          ) : (
-                            <div className="flex h-28 w-20 items-center justify-center rounded bg-zinc-200 dark:bg-zinc-800">
-                              <span className="text-[10px] text-zinc-400">
-                                No image
-                              </span>
-                            </div>
-                          )}
-                        </Link>
-                      </td>
-                      <td className="px-6 py-4 align-middle">
-                        <div className="flex flex-col gap-1">
+                      <td className="px-6 py-4 align-middle border-r border-zinc-200 dark:border-zinc-800">
+                        <div className="flex gap-4">
                           <Link
                             href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`}
-                            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                            className="flex-shrink-0"
                           >
-                            <h3 className="text-lg font-bold leading-tight text-zinc-900 dark:text-zinc-50">
-                              {anime.title}
-                            </h3>
+                            {anime.imageUrl ? (
+                              <div className="relative h-28 w-20 overflow-hidden border border-zinc-200 shadow-sm dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+                                <Image
+                                  src={anime.imageUrl}
+                                  alt={anime.title}
+                                  fill
+                                  className="object-cover"
+                                  sizes="80px"
+                                />
+                              </div>
+                            ) : (
+                              <div className="flex h-28 w-20 items-center justify-center rounded bg-zinc-200 dark:bg-zinc-800">
+                                <span className="text-[10px] text-zinc-400">
+                                  No image
+                                </span>
+                              </div>
+                            )}
                           </Link>
-                          {anime.titleJapanese && (
-                            <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                              {anime.titleJapanese}
-                            </p>
-                          )}
-                          <div className="mt-1.5 flex flex-wrap gap-2">
-                            {anime.type && (
-                              <span className="rounded border border-indigo-100 bg-indigo-50 px-1.5 py-0.5 text-[9px] font-black uppercase text-indigo-600 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-400">
-                                {anime.type}
-                              </span>
-                            )}
-                            {anime.episodes && (
-                              <span className="rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
-                                {anime.episodes} eps
-                              </span>
-                            )}
-                          </div>
-                          {(anime.airedFrom || anime.airedTo) && (
-                            <p className="mt-0.5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">
-                              {formatDate(anime.airedFrom)}
-                              {anime.airedTo
-                                ? ` - ${formatDate(anime.airedTo)}`
-                                : ""}
-                            </p>
-                          )}
-                          {anime.members !== null &&
-                            anime.members !== undefined && (
-                              <p className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500">
-                                {formatMembers(anime.members)} members
+                          <div className="flex flex-col gap-1">
+                            <Link
+                              href={`/anime/${anime.malId}/${encodeURIComponent(anime.title)}`}
+                              className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                            >
+                              <h3 className="text-lg font-bold leading-tight text-zinc-900 dark:text-zinc-50">
+                                {anime.title}
+                              </h3>
+                            </Link>
+                            {anime.titleJapanese && (
+                              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                                {anime.titleJapanese}
                               </p>
                             )}
+                            <div className="mt-1.5 flex flex-wrap gap-2">
+                              {anime.type && (
+                                <span className="rounded border border-indigo-100 bg-indigo-50 px-1.5 py-0.5 text-[9px] font-black uppercase text-indigo-600 dark:border-indigo-900 dark:bg-indigo-950 dark:text-indigo-400">
+                                  {anime.type}
+                                </span>
+                              )}
+                              {anime.episodes && (
+                                <span className="rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+                                  {anime.episodes} eps
+                                </span>
+                              )}
+                            </div>
+                            {(anime.airedFrom || anime.airedTo) && (
+                              <p className="mt-0.5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">
+                                {formatDate(anime.airedFrom)}
+                                {anime.airedTo
+                                  ? ` - ${formatDate(anime.airedTo)}`
+                                  : ""}
+                              </p>
+                            )}
+                            {anime.members !== null &&
+                              anime.members !== undefined && (
+                                <p className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500">
+                                  {formatMembers(anime.members)} members
+                                </p>
+                              )}
+                          </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-center align-middle">
+                      <td className="px-6 py-4 text-center align-middle border-r border-zinc-200 dark:border-zinc-800">
                         <div className="inline-flex flex-col items-center">
                           <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400">
                             {anime.score ? anime.score.toFixed(2) : "N/A"}
@@ -389,7 +387,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-center align-middle">
+                      <td className="px-6 py-4 text-center align-middle border-r border-zinc-200 dark:border-zinc-800">
                         {watchlistEntry ? (
                           <span className="text-base font-black text-zinc-900 dark:text-zinc-50">
                             {watchlistEntry.score ?? "N/A"}
@@ -411,7 +409,8 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                             title={anime.title}
                             episodes={anime.episodes}
                             triggerLabel="Add to my list"
-                            triggerClassName="inline-flex items-center justify-center rounded-full border border-indigo-300 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 transition-colors hover:border-indigo-400 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 dark:hover:border-indigo-700 dark:hover:bg-indigo-900"
+                            showIcon={false}
+                            triggerClassName="inline-flex items-center justify-center rounded-sm border border-indigo-300 bg-indigo-50 px-2 py-1 text-sm font-medium text-indigo-700 transition-colors hover:border-indigo-400 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 dark:hover:border-indigo-700 dark:hover:bg-indigo-900 hover:cursor-pointer"
                           />
                         )}
                       </td>
@@ -421,7 +420,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
               ) : (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={5}
                     className="px-6 py-12 text-center text-sm font-medium text-zinc-500 dark:text-zinc-400"
                   >
                     No ranked anime available for this page.

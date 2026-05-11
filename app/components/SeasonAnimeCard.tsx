@@ -194,8 +194,9 @@ export function SeasonAnimeCard({ anime }: SeasonAnimeCardProps) {
               malId={anime.malId}
               title={anime.title}
               episodes={anime.episodes}
+              showIcon={false}
               triggerLabel="Add to my list"
-              triggerClassName="flex items-center gap-2 text-xs bg-[#3F5893] px-2 py-1 hover:cursor-pointer"
+              triggerClassName="flex items-center gap-2 text-sm rounded-sm bg-[#3F5893] px-2 py-1 hover:cursor-pointer"
             />
           </div>
         </div>

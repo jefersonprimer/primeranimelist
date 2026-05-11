@@ -36,6 +36,7 @@ interface WatchlistButtonProps {
   triggerClassName?: string;
   initialEntry?: WatchlistEntry | null;
   size?: number;
+  showIcon?: boolean;
 }
 
 const defaultEntry: WatchlistEntry = {
@@ -55,6 +56,7 @@ export function WatchlistButton({
   triggerClassName,
   initialEntry = null,
   size = 24,
+  showIcon = true,
 }: WatchlistButtonProps) {
   const router = useRouter();
   const { user, loading } = useAuth();
@@ -274,13 +276,15 @@ export function WatchlistButton({
           hasSavedEntry ? "Edit watchlist entry" : "Add anime to watchlist"
         }
       >
-        <Bookmark
-          size={size}
-          className={
-            hasSavedEntry ? "fill-[#2E51A2] text-[#2E51A2]" : "text-[#2E51A2]"
-          }
-        />
-        {triggerLabel ? <span>{triggerLabel}</span> : null}
+        {showIcon && (
+          <Bookmark
+            size={size}
+            className={
+              hasSavedEntry ? "fill-[#2E51A2] text-[#2E51A2]" : "text-[#2E51A2]"
+            }
+          />
+        )}
+        {triggerLabel ? <span className="text-sm">{triggerLabel}</span> : null}
       </button>
 
       {mounted && isOpen
