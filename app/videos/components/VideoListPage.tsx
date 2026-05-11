@@ -155,7 +155,7 @@ export default function VideoListPage({
     <div className="mx-auto flex w-full max-w-[1130px] flex-col px-6 py-15">
       <div className="mb-8 flex flex-col gap-6">
         <div className="flex items-center justify-between gap-4">
-          <h1 className="m-0 p-0 text-left font-lato text-[1.8rem] font-medium">
+          <h1 className="m-0 p-0 text-left font-lato text-[22px] sm:text-[28px] font-medium">
             {title}
           </h1>
 

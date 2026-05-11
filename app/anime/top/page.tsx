@@ -158,21 +158,23 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
   return (
     <div className="max-w-7xl mx-auto py-12 px-6">
       <div className="flex flex-col">
-        <div>
-          <h1 className="text-[28px] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Top Anime
-          </h1>
-          <div className="flex items-center my-2 gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-            <span>Updated twice a day.</span>
-            <TopRankingInfoModal />
+        <div className="flex flex-row items-center justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-[22px] sm:text-[28px] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+              Top Anime
+            </h1>
+            <div className="flex items-center my-2 gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+              <span>Updated twice a day.</span>
+              <TopRankingInfoModal />
+            </div>
           </div>
-        </div>
 
-        <TopFilters
-          basePath="/anime/top"
-          filters={FILTERS}
-          currentFilter={filter}
-        />
+          <TopFilters
+            basePath="/anime/top"
+            filters={FILTERS}
+            currentFilter={filter}
+          />
+        </div>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 md:grid-cols-4 lg:hidden">
           {animeList.length > 0 ? (

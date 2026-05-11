@@ -22,7 +22,7 @@ export default function GenreOverviewPage({
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-15">
       <section className="flex flex-col items-center justify-center">
         <div className="flex max-w-3xl flex-col">
-          <h1 className="text-center text-[28px] font-bold text-zinc-50">
+          <h1 className="text-center text-[22px] sm:text-[28px] font-bold text-zinc-50">
             {genreInfo.label}
           </h1>
           <p className="text-sm font-normal leading-7 text-zinc-300">
