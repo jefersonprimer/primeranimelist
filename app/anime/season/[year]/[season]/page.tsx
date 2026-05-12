@@ -627,8 +627,8 @@ export default async function AnimeSeasonByYearPage({
         <div className="relative z-20 flex flex-col gap-2 border border-zinc-200 bg-white/70 backdrop-blur-xl p-2 shadow-zinc-200/50 dark:border-zinc-800 dark:bg-zinc-950/70 dark:shadow-none">
           {/* Top Row: Year & Season Navigation */}
           <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between border-b border-zinc-100 pb-2 dark:border-zinc-800/50">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800">
+            <div className="flex items-center gap-4 flex-1">
+              <div className="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex-1 lg:flex-none overflow-x-auto no-scrollbar">
                 {previousAvailableYear ? (
                   <Link
                     href={buildSeasonPagePath(
@@ -636,29 +636,39 @@ export default async function AnimeSeasonByYearPage({
                       season,
                       filters,
                     )}
-                    className="p-2 rounded-lg text-zinc-600 hover:bg-white hover:text-indigo-600 hover:shadow-sm dark:text-zinc-400 dark:hover:bg-zinc-800 transition-all"
+                    className="p-2.5 rounded-xl text-zinc-600 hover:bg-white hover:text-indigo-600 hover:shadow-sm dark:text-zinc-400 dark:hover:bg-zinc-800 transition-all flex-shrink-0"
                     aria-label="Previous year"
                   >
                     <ChevronLeftIcon />
                   </Link>
                 ) : (
-                  <span className="p-2 text-zinc-300 dark:text-zinc-700">
+                  <span className="p-2.5 text-zinc-300 dark:text-zinc-700 flex-shrink-0">
                     <ChevronLeftIcon />
                   </span>
                 )}
 
-                <div className="px-4 py-1 flex flex-col items-center min-w-[120px]">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-                    Current Period
-                  </span>
-                  <span className="text-base font-bold text-zinc-900 dark:text-zinc-50">
-                    {titleCase(season)} {year}
-                  </span>
+                <div className="flex items-center gap-1">
+                  {SEASONS.map((s) => {
+                    const active = s === season;
+                    return (
+                      <Link
+                        key={s}
+                        href={buildSeasonPagePath(year, s, filters)}
+                        className={`min-w-[120px] text-center px-4 py-2.5 rounded-xl text-xs font-black tracking-widest transition-all whitespace-nowrap ${
+                          active
+                            ? "bg-white text-indigo-600 shadow-md shadow-indigo-200/20 dark:bg-zinc-800 dark:text-indigo-400 dark:shadow-none"
+                            : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
+                        }`}
+                      >
+                        {titleCase(s)} {year}
+                      </Link>
+                    );
+                  })}
                 </div>
 
                 <Link
                   href={buildSeasonPagePath(year + 1, season, filters)}
-                  className="p-2 rounded-lg text-zinc-600 hover:bg-white hover:text-indigo-600 hover:shadow-sm dark:text-zinc-400 dark:hover:bg-zinc-800 transition-all"
+                  className="p-2.5 rounded-xl text-zinc-600 hover:bg-white hover:text-indigo-600 hover:shadow-sm dark:text-zinc-400 dark:hover:bg-zinc-800 transition-all flex-shrink-0"
                   aria-label="Next year"
                 >
                   <ChevronRightIcon />
@@ -668,32 +678,13 @@ export default async function AnimeSeasonByYearPage({
               {showBackToCurrent && (
                 <Link
                   href={buildSeasonPagePath(currentYear, season, filters)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-50 text-indigo-700 text-sm font-black hover:bg-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-300 dark:hover:bg-indigo-900/50 transition-colors border border-indigo-100 dark:border-indigo-900"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-50 text-indigo-700 text-sm font-black hover:bg-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-300 dark:hover:bg-indigo-900/50 transition-colors border border-indigo-100 dark:border-indigo-900 flex-shrink-0"
                 >
                   <CalendarIcon />
                   Current
                 </Link>
               )}
             </div>
-
-            <nav className="flex items-center p-1 bg-zinc-100 dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-x-auto no-scrollbar">
-              {SEASONS.map((s) => {
-                const active = s === season;
-                return (
-                  <Link
-                    key={s}
-                    href={buildSeasonPagePath(year, s, filters)}
-                    className={`flex-1 min-w-[90px] text-center px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-                      active
-                        ? "bg-white text-indigo-600 shadow-md shadow-indigo-200/20 dark:bg-zinc-800 dark:text-indigo-400 dark:shadow-none"
-                        : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
-                    }`}
-                  >
-                    {s}
-                  </Link>
-                );
-              })}
-            </nav>
           </div>
 
           {/* Bottom Row: Filters & Sort */}
