@@ -30,7 +30,7 @@ export default async function SeasonArchivePage(
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-2">
-          <h1 className="text-[28px] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-[22px] sm:text-[28px] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
             Season archive
           </h1>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
