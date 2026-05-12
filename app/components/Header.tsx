@@ -252,13 +252,13 @@ export default function Header() {
                                 Release Calendar
                               </Link>
                               <Link
-                                href="/anime/music"
+                                href="/anime/season/archive"
                                 onClick={() =>
                                   setIsCategoriesDropdownOpen(false)
                                 }
                                 className="text-sm font-bold text-[#f8f8f8] hover:text-white hover:bg-[#272727] py-2 px-4 transition-colors"
                               >
-                                Music Videos & Concerts
+                                Simulcast Season
                               </Link>
                             </div>
 

@@ -3,7 +3,16 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { SeasonAnimeCard } from "@/app/components/SeasonAnimeCard";
 import { FilterDropdown } from "@/app/components/FilterDropdown";
+
 import { DropdownIcon } from "@/app/components/icons/DropdownIcon";
+import {
+  ArrowDownUp,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  FilterIcon,
+} from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -17,92 +26,6 @@ function isSeason(value: string): value is Season {
 function titleCase(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
-
-const FilterIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-  </svg>
-);
-
-const SortIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="m3 16 4 4 4-4" />
-    <path d="M7 20V4" />
-    <path d="m21 8-4-4-4 4" />
-    <path d="M17 4v16" />
-  </svg>
-);
-
-const CalendarIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-    <line x1="16" x2="16" y1="2" y2="6" />
-    <line x1="8" x2="8" y1="2" y2="6" />
-    <line x1="3" x2="21" y1="10" y2="10" />
-  </svg>
-);
-
-const ChevronLeftIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="3"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="m15 18-6-6 6-6" />
-  </svg>
-);
-
-const ChevronRightIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="3"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="m9 18 6-6-6-6" />
-  </svg>
-);
 
 type SeasonAnimeItem = {
   malId: number;
@@ -599,8 +522,6 @@ export default async function AnimeSeasonByYearPage({
   const previousAvailableYear = availableYears
     .filter((y) => y < year)
     .sort((a, b) => b - a)[0];
-  const showBackToCurrent = year !== new Date().getFullYear();
-  const currentYear = new Date().getFullYear();
   const filteredItems = filterSeasonItems(seasonItems, filters);
   const sortedItems = sortSeasonItems(filteredItems, filters.sort);
   const allSections = groupSeasonItems(sortedItems, season, year);
@@ -639,11 +560,11 @@ export default async function AnimeSeasonByYearPage({
                     className="p-2.5 rounded-xl text-zinc-600 hover:bg-white hover:text-indigo-600 hover:shadow-sm dark:text-zinc-400 dark:hover:bg-zinc-800 transition-all flex-shrink-0"
                     aria-label="Previous year"
                   >
-                    <ChevronLeftIcon />
+                    <ChevronLeft size={20} />
                   </Link>
                 ) : (
                   <span className="p-2.5 text-zinc-300 dark:text-zinc-700 flex-shrink-0">
-                    <ChevronLeftIcon />
+                    <ChevronRight size={20} />
                   </span>
                 )}
 
@@ -671,19 +592,9 @@ export default async function AnimeSeasonByYearPage({
                   className="p-2.5 rounded-xl text-zinc-600 hover:bg-white hover:text-indigo-600 hover:shadow-sm dark:text-zinc-400 dark:hover:bg-zinc-800 transition-all flex-shrink-0"
                   aria-label="Next year"
                 >
-                  <ChevronRightIcon />
+                  <ChevronRight size={20} />
                 </Link>
               </div>
-
-              {showBackToCurrent && (
-                <Link
-                  href={buildSeasonPagePath(currentYear, season, filters)}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-50 text-indigo-700 text-sm font-black hover:bg-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-300 dark:hover:bg-indigo-900/50 transition-colors border border-indigo-100 dark:border-indigo-900 flex-shrink-0"
-                >
-                  <CalendarIcon />
-                  Current
-                </Link>
-              )}
             </div>
           </div>
 
@@ -714,7 +625,7 @@ export default async function AnimeSeasonByYearPage({
             <div className="flex flex-wrap items-center gap-3">
               <FilterDropdown className="group relative">
                 <summary className="list-none cursor-pointer flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-bold text-zinc-700 shadow-sm transition-all hover:border-indigo-300 hover:text-indigo-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-indigo-700 dark:hover:text-indigo-400">
-                  <SortIcon />
+                  <ArrowDownUp size={20} />
                   <span>Sort: {SORT_LABELS[filters.sort]}</span>
                   <DropdownIcon size={16} />
                 </summary>
@@ -748,7 +659,7 @@ export default async function AnimeSeasonByYearPage({
 
               <FilterDropdown className="group relative">
                 <summary className="list-none cursor-pointer flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-bold text-zinc-700 shadow-sm transition-all hover:border-indigo-300 hover:text-indigo-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-indigo-700 dark:hover:text-indigo-400">
-                  <FilterIcon />
+                  <Filter size={20} />
                   <span>Advanced</span>
                   {(filters.genre || filters.theme || filters.demographic) && (
                     <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-indigo-600 px-1.5 text-[10px] font-black text-white">
@@ -958,7 +869,7 @@ export default async function AnimeSeasonByYearPage({
         {seasonItems.length === 0 ? (
           <div className="rounded-3xl border-2 border-dashed border-zinc-200 bg-white/50 px-6 py-20 text-center dark:border-zinc-800 dark:bg-zinc-950/50">
             <div className="mx-auto w-16 h-16 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex items-center justify-center mb-4">
-              <CalendarIcon />
+              <Calendar size={16} />
             </div>
             <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-1">
               No Anime Found
@@ -970,7 +881,7 @@ export default async function AnimeSeasonByYearPage({
         ) : visibleSections.length === 0 ? (
           <div className="rounded-3xl border-2 border-dashed border-zinc-200 bg-white/50 px-6 py-20 text-center dark:border-zinc-800 dark:bg-zinc-950/50">
             <div className="mx-auto w-16 h-16 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex items-center justify-center mb-4">
-              <FilterIcon />
+              <FilterIcon size={16} />
             </div>
             <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-1">
               No Matches
