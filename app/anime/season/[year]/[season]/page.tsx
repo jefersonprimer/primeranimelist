@@ -6,12 +6,7 @@ import { FilterDropdown } from "@/app/components/FilterDropdown";
 import { listSeasonStats } from "@/lib/services/anime.service";
 
 import { DropdownIcon } from "@/app/components/icons/DropdownIcon";
-import {
-  ArrowDownUp,
-  Calendar,
-  Filter,
-  FilterIcon,
-} from "lucide-react";
+import { ArrowDownUp, Calendar, Filter, FilterIcon } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -580,30 +575,26 @@ export default async function AnimeSeasonByYearPage({
   return (
     <div className="relative min-h-screen">
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_-20%,#3b82f610,transparent)] pointer-events-none" />
-      
+
       <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 relative">
         <div className="flex flex-col gap-10">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 border-b border-white/5 pb-10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6  pb-10">
             <div className="space-y-1.5">
-              <h1 className="text-3xl font-black tracking-tight text-white">
+              <h1 className="text-[22px] sm:text-[28px] font-black tracking-tight text-white">
                 Season Anime
               </h1>
-              <p className="text-sm font-medium text-[#A0A0A0]">
-                Explore every anime season ever released.
-              </p>
             </div>
 
             <div className="relative z-20 flex flex-wrap items-center lg:justify-end gap-1">
               <FilterDropdown className="group relative">
                 <summary className="list-none cursor-pointer flex items-center border-none gap-2 p-2.5 text-[#A0A0A0] transition-colors hover:bg-[#23252B] hover:text-white group-open:bg-[#23252B] group-open:text-white">
-                  <Calendar size={20} />
                   <span className="text-sm font-bold uppercase whitespace-nowrap">
                     {season} {year}
                   </span>
-                  <DropdownIcon size={16} />
+                  <DropdownIcon size={24} />
                 </summary>
-                <div className="absolute right-0 z-9999 mt-0.5 max-h-[70vh] overflow-y-auto no-scrollbar w-[240px] bg-[#23252B] shadow-2xl">
-                  <div className="flex flex-col">
+                <div className="absolute right-0 z-9999 max-h-[70vh] overflow-y-auto no-scrollbar w-[240px] bg-[#23252B] shadow-2xl">
+                  <div className="flex flex-col py-2">
                     {availableYears.flatMap((y) =>
                       [...SEASONS].reverse().map((s) => {
                         const active = s === season && y === year;
@@ -618,12 +609,13 @@ export default async function AnimeSeasonByYearPage({
                                 : "text-[#A0A0A0] hover:bg-[#1D1E22] hover:text-white"
                             }`}
                           >
-                            <span className="capitalize">{s} {y}</span>
+                            <span className="capitalize">
+                              {s} {y}
+                            </span>
                             <div className="flex items-center gap-2">
-                              <span className="text-[10px] font-medium opacity-50">{count}</span>
-                              {active && (
-                                <div className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
-                              )}
+                              <span className="text-[10px] font-medium opacity-50">
+                                {count}
+                              </span>
                             </div>
                           </Link>
                         );
@@ -639,9 +631,9 @@ export default async function AnimeSeasonByYearPage({
                   <span className="text-sm font-bold uppercase whitespace-nowrap">
                     Type: {TYPE_FILTER_LABELS[filters.type]}
                   </span>
-                  <DropdownIcon size={16} />
+                  <DropdownIcon size={24} />
                 </summary>
-                <div className="absolute right-0 z-9999 mt-0.5 min-w-[200px] bg-[#23252B] py-2.5 shadow-2xl">
+                <div className="absolute right-0 z-9999 min-w-[200px] bg-[#23252B] py-2.5 shadow-2xl">
                   <div className="flex flex-col">
                     {TYPE_FILTERS.map((tf) => {
                       const active = tf === filters.type;
@@ -652,16 +644,13 @@ export default async function AnimeSeasonByYearPage({
                             ...filters,
                             type: tf,
                           })}
-                          className={`flex items-center justify-between px-3 py-2 text-sm font-bold uppercase transition-all ${
+                          className={`flex items-center justify-between px-3 py-2 text-sm font-bold transition-all ${
                             active
                               ? "bg-[#1D1E22] text-white"
                               : "text-[#A0A0A0] hover:bg-[#1D1E22] hover:text-white"
                           }`}
                         >
                           {TYPE_FILTER_LABELS[tf]}
-                          {active && (
-                            <div className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
-                          )}
                         </Link>
                       );
                     })}
@@ -675,9 +664,9 @@ export default async function AnimeSeasonByYearPage({
                   <span className="text-sm font-bold uppercase whitespace-nowrap">
                     Sort: {SORT_LABELS[filters.sort]}
                   </span>
-                  <DropdownIcon size={16} />
+                  <DropdownIcon size={24} />
                 </summary>
-                <div className="absolute right-0 z-9999 mt-0.5 min-w-[200px] bg-[#23252B] py-2.5 shadow-2xl">
+                <div className="absolute right-0 z-9999 min-w-[200px] bg-[#23252B] py-2.5 shadow-2xl">
                   <div className="flex flex-col">
                     {SORT_OPTIONS.map((option) => {
                       const active = option === filters.sort;
@@ -688,16 +677,13 @@ export default async function AnimeSeasonByYearPage({
                             ...filters,
                             sort: option,
                           })}
-                          className={`flex items-center justify-between px-3 py-2 text-sm font-bold uppercase transition-all ${
+                          className={`flex items-center justify-between px-3 py-2 text-sm font-bold transition-all ${
                             active
                               ? "bg-[#1D1E22] text-white"
                               : "text-[#A0A0A0] hover:bg-[#1D1E22] hover:text-white"
                           }`}
                         >
                           {SORT_LABELS[option]}
-                          {active && (
-                            <div className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
-                          )}
                         </Link>
                       );
                     })}
@@ -707,8 +693,19 @@ export default async function AnimeSeasonByYearPage({
 
               <FilterDropdown className="group relative">
                 <summary className="list-none cursor-pointer flex items-center border-none gap-2 p-2.5 text-[#A0A0A0] transition-colors hover:bg-[#23252B] hover:text-white group-open:bg-[#23252B] group-open:text-white">
-                  <Filter size={20} />
-                  <span className="text-sm font-bold uppercase whitespace-nowrap">Advanced</span>
+                  <svg
+                    className="h-6 w-6"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    role="img"
+                    fill="currentColor"
+                  >
+                    <path d="M9 18a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2h6zM21 4a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2h18zm-6 7a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2h12z" />
+                  </svg>
+                  <span className="text-sm font-bold uppercase whitespace-nowrap">
+                    Advanced
+                  </span>
                   {(filters.genre || filters.theme || filters.demographic) && (
                     <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-indigo-600 px-1.5 text-[10px] font-black text-white">
                       {
@@ -720,9 +717,9 @@ export default async function AnimeSeasonByYearPage({
                       }
                     </span>
                   )}
-                  <DropdownIcon size={16} />
+                  <DropdownIcon size={24} />
                 </summary>
-                <div className="absolute right-0 z-9999 mt-0.5 w-[300px] bg-[#23252B] p-5 shadow-2xl">
+                <div className="absolute right-0 z-9999 w-[300px] bg-[#23252B] p-5 shadow-2xl">
                   <form method="get" className="flex flex-col gap-6">
                     {filters.type !== "all" && (
                       <input type="hidden" name="type" value={filters.type} />
@@ -796,7 +793,7 @@ export default async function AnimeSeasonByYearPage({
                     <div className="flex items-center gap-2 pt-2 border-t border-white/5">
                       <button
                         type="submit"
-                        className="flex-1 rounded-lg bg-indigo-600 px-4 py-2.5 text-xs font-black uppercase text-white hover:bg-indigo-500 transition-all"
+                        className="flex-1 bg-indigo-600 px-4 py-2.5 text-xs font-black uppercase text-white hover:bg-indigo-500 transition-all hover:cursor-pointer"
                       >
                         Apply Filters
                       </button>
@@ -807,7 +804,7 @@ export default async function AnimeSeasonByYearPage({
                           theme: null,
                           demographic: null,
                         })}
-                        className="rounded-lg border border-white/10 px-4 py-2.5 text-xs font-black uppercase text-[#A0A0A0] hover:bg-white/5 hover:text-white transition-all"
+                        className="border border-white/10 px-4 py-2.5 text-xs font-black uppercase text-[#A0A0A0] hover:bg-white/5 hover:text-white transition-all"
                       >
                         Reset
                       </Link>
@@ -821,13 +818,15 @@ export default async function AnimeSeasonByYearPage({
                   <span className="flex h-5 w-5 items-center justify-center rounded bg-white/10 text-[10px] font-black text-white">
                     18
                   </span>
-                  <span className="text-sm font-bold uppercase whitespace-nowrap">Safety</span>
+                  <span className="text-sm font-bold uppercase whitespace-nowrap">
+                    Safety
+                  </span>
                   {(filters.kids || filters.r18) && (
                     <span className="flex h-1.5 w-1.5 rounded-full bg-indigo-500" />
                   )}
-                  <DropdownIcon size={16} />
+                  <DropdownIcon size={24} />
                 </summary>
-                <div className="absolute right-0 z-9999 mt-0.5 min-w-[200px] bg-[#23252B] p-4 shadow-2xl">
+                <div className="absolute right-0 z-9999 min-w-[200px] bg-[#23252B] p-4 shadow-2xl">
                   <form method="get" className="flex flex-col gap-4">
                     {filters.type !== "all" && (
                       <input type="hidden" name="type" value={filters.type} />
@@ -880,7 +879,7 @@ export default async function AnimeSeasonByYearPage({
                     <div className="flex items-center gap-2 pt-2 border-t border-white/5">
                       <button
                         type="submit"
-                        className="flex-1 rounded-lg bg-white text-black px-4 py-2 text-xs font-black uppercase hover:bg-zinc-200 transition-all"
+                        className="flex-1 bg-white text-black px-4 py-2 text-xs font-black uppercase hover:bg-zinc-200 transition-all"
                       >
                         Apply
                       </button>
@@ -892,7 +891,7 @@ export default async function AnimeSeasonByYearPage({
           </div>
 
           {/* Results Summary & Active Filters */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pt-2 -mt-14">
+          <div className="flex flex-wrap items-center justify-between gap-4 py-2 -mt-14">
             <div className="flex items-center gap-3">
               {hasExtraFilters && (
                 <Link
@@ -905,7 +904,7 @@ export default async function AnimeSeasonByYearPage({
                     kids: false,
                     r18: false,
                   })}
-                  className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300 transition-colors"
+                  className="text-xs font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300 transition-colors hover:cursor-pointer"
                 >
                   Reset All Filters
                 </Link>
@@ -931,9 +930,7 @@ export default async function AnimeSeasonByYearPage({
             <div className="mx-auto w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-6">
               <FilterIcon size={20} className="text-white/20" />
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">
-              No Matches
-            </h3>
+            <h3 className="text-xl font-bold text-white mb-2">No Matches</h3>
             <p className="text-[#A0A0A0] text-sm mb-8">
               No {TYPE_FILTER_LABELS[filters.type]} titles match your current
               filters.
