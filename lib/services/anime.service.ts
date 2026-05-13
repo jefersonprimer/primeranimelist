@@ -596,6 +596,26 @@ export async function listAvailableAnimeYears() {
   return rows.map((row) => row.year!).filter((year): year is number => Number.isFinite(year));
 }
 
+export async function listSeasonStats() {
+  await ensureDatabase();
+
+  const rows = await db
+    .select({
+      year: anime.year,
+      season: anime.season,
+      count: count(),
+    })
+    .from(anime)
+    .where(and(isNotNull(anime.year), isNotNull(anime.season)))
+    .groupBy(anime.year, anime.season);
+
+  return rows.map((row) => ({
+    year: row.year!,
+    season: row.season!,
+    count: row.count,
+  }));
+}
+
 export async function listAnimeBySeasonYear({ season, year, limit = 200 }: ListAnimeBySeasonYearOptions) {
   await ensureDatabase();
 

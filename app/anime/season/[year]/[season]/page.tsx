@@ -545,7 +545,7 @@ export default async function AnimeSeasonByYearPage({
         </h1>
 
         {/* Filter & Navigation Card */}
-        <div className="relative z-20 flex flex-col gap-2 border border-zinc-200 bg-white/70 backdrop-blur-xl p-2 shadow-zinc-200/50 dark:border-zinc-800 dark:bg-zinc-950/70 dark:shadow-none">
+        <div className="relative z-20 flex flex-col gap-2">
           {/* Top Row: Year & Season Navigation */}
           <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between border-b border-zinc-100 pb-2 dark:border-zinc-800/50">
             <div className="flex items-center gap-4 flex-1">
