@@ -347,7 +347,7 @@ export default async function AnimeListPage(props: PageProps<"/anime/top">) {
                             </Link>
                             {anime.titleJapanese && (
                               <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                                {anime.titleJapanese}
+                                {anime.titleEnglish}
                               </p>
                             )}
                             <div className="mt-1.5 flex flex-wrap gap-2">

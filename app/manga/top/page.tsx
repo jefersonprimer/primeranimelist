@@ -295,7 +295,7 @@ export default async function MangaListPage(props: PageProps<"/manga/top">) {
                             </Link>
                             {manga.titleJapanese && (
                               <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                                {manga.titleJapanese}
+                                {manga.titleEnglish}
                               </p>
                             )}
                             <div className="mt-1.5 flex flex-wrap gap-2">
