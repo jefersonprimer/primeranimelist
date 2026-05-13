@@ -3,13 +3,12 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { SeasonAnimeCard } from "@/app/components/SeasonAnimeCard";
 import { FilterDropdown } from "@/app/components/FilterDropdown";
+import { listSeasonStats } from "@/lib/services/anime.service";
 
 import { DropdownIcon } from "@/app/components/icons/DropdownIcon";
 import {
   ArrowDownUp,
   Calendar,
-  ChevronLeft,
-  ChevronRight,
   Filter,
   FilterIcon,
 } from "lucide-react";
@@ -469,6 +468,40 @@ function getUniqueNamedOptions(
   return [...values].sort((a, b) => compareTextAsc(a, b));
 }
 
+const SEASON_CONFIG: Record<
+  Season,
+  { label: string; color: string; bg: string; border: string; dot: string }
+> = {
+  winter: {
+    label: "Winter",
+    color: "text-blue-400",
+    bg: "from-blue-500/10",
+    border: "border-blue-500/20",
+    dot: "bg-blue-400",
+  },
+  spring: {
+    label: "Spring",
+    color: "text-green-400",
+    bg: "from-green-500/10",
+    border: "border-green-500/20",
+    dot: "bg-green-400",
+  },
+  summer: {
+    label: "Summer",
+    color: "text-orange-400",
+    bg: "from-orange-500/10",
+    border: "border-orange-500/20",
+    dot: "bg-orange-400",
+  },
+  fall: {
+    label: "Fall",
+    color: "text-red-400",
+    bg: "from-red-500/10",
+    border: "border-red-500/20",
+    dot: "bg-red-400",
+  },
+};
+
 export default async function AnimeSeasonByYearPage({
   params,
   searchParams,
@@ -508,7 +541,11 @@ export default async function AnimeSeasonByYearPage({
   apiUrl.searchParams.set("season", season);
   apiUrl.searchParams.set("year", `${year}`);
 
-  const res = await fetch(apiUrl.toString(), { cache: "no-store" });
+  const [res, stats] = await Promise.all([
+    fetch(apiUrl.toString(), { cache: "no-store" }),
+    listSeasonStats(),
+  ]);
+
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`Failed to load season anime (${res.status}): ${text}`);
@@ -519,9 +556,12 @@ export default async function AnimeSeasonByYearPage({
   const availableYears = Array.isArray(data.availableYears)
     ? data.availableYears
     : [];
-  const previousAvailableYear = availableYears
-    .filter((y) => y < year)
-    .sort((a, b) => b - a)[0];
+
+  const statsMap = new Map<string, number>();
+  for (const s of stats) {
+    statsMap.set(`${s.year}-${s.season}`, s.count);
+  }
+
   const filteredItems = filterSeasonItems(seasonItems, filters);
   const sortedItems = sortSeasonItems(filteredItems, filters.sort);
   const allSections = groupSeasonItems(sortedItems, season, year);
@@ -538,117 +578,89 @@ export default async function AnimeSeasonByYearPage({
     filters.r18;
 
   return (
-    <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-8">
-        <h1 className="text-[28px] font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Season Anime
-        </h1>
-
-        {/* Filter & Navigation Card */}
-        <div className="relative z-20 flex flex-col gap-2">
-          {/* Top Row: Year & Season Navigation */}
-          <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between border-b border-zinc-100 pb-2 dark:border-zinc-800/50">
-            <div className="flex items-center gap-4 flex-1">
-              <div className="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex-1 lg:flex-none overflow-x-auto no-scrollbar">
-                {previousAvailableYear ? (
-                  <Link
-                    href={buildSeasonPagePath(
-                      previousAvailableYear,
-                      season,
-                      filters,
-                    )}
-                    className="p-2.5 rounded-xl text-zinc-600 hover:bg-white hover:text-indigo-600 hover:shadow-sm dark:text-zinc-400 dark:hover:bg-zinc-800 transition-all flex-shrink-0"
-                    aria-label="Previous year"
-                  >
-                    <ChevronLeft size={20} />
-                  </Link>
-                ) : (
-                  <span className="p-2.5 text-zinc-300 dark:text-zinc-700 flex-shrink-0">
-                    <ChevronRight size={20} />
-                  </span>
-                )}
-
-                <div className="flex items-center gap-1">
-                  {SEASONS.map((s) => {
-                    const active = s === season;
-                    return (
-                      <Link
-                        key={s}
-                        href={buildSeasonPagePath(year, s, filters)}
-                        className={`min-w-[120px] text-center px-4 py-2.5 rounded-xl text-xs font-black tracking-widest transition-all whitespace-nowrap ${
-                          active
-                            ? "bg-white text-indigo-600 shadow-md shadow-indigo-200/20 dark:bg-zinc-800 dark:text-indigo-400 dark:shadow-none"
-                            : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
-                        }`}
-                      >
-                        {titleCase(s)} {year}
-                      </Link>
-                    );
-                  })}
-                </div>
-
-                <Link
-                  href={buildSeasonPagePath(year + 1, season, filters)}
-                  className="p-2.5 rounded-xl text-zinc-600 hover:bg-white hover:text-indigo-600 hover:shadow-sm dark:text-zinc-400 dark:hover:bg-zinc-800 transition-all flex-shrink-0"
-                  aria-label="Next year"
-                >
-                  <ChevronRight size={20} />
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Row: Filters & Sort */}
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center p-1 bg-zinc-100/50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/50 overflow-x-auto no-scrollbar">
-              {TYPE_FILTERS.map((tf) => {
-                const active = tf === filters.type;
-                return (
-                  <Link
-                    key={tf}
-                    href={buildSeasonPagePath(year, season, {
-                      ...filters,
-                      type: tf,
-                    })}
-                    className={`px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all ${
-                      active
-                        ? "bg-white text-zinc-900 shadow-sm border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-50 dark:border-zinc-700"
-                        : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
-                    }`}
-                  >
-                    {TYPE_FILTER_LABELS[tf]}
-                  </Link>
-                );
-              })}
+    <div className="relative min-h-screen">
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_-20%,#3b82f610,transparent)] pointer-events-none" />
+      
+      <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 relative">
+        <div className="flex flex-col gap-10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 border-b border-white/5 pb-10">
+            <div className="space-y-1.5">
+              <h1 className="text-3xl font-black tracking-tight text-white">
+                Season Anime
+              </h1>
+              <p className="text-sm font-medium text-[#A0A0A0]">
+                Explore every anime season ever released.
+              </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="relative z-20 flex flex-wrap items-center lg:justify-end gap-1">
               <FilterDropdown className="group relative">
-                <summary className="list-none cursor-pointer flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-bold text-zinc-700 shadow-sm transition-all hover:border-indigo-300 hover:text-indigo-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-indigo-700 dark:hover:text-indigo-400">
-                  <ArrowDownUp size={20} />
-                  <span>Sort: {SORT_LABELS[filters.sort]}</span>
+                <summary className="list-none cursor-pointer flex items-center border-none gap-2 p-2.5 text-[#A0A0A0] transition-colors hover:bg-[#23252B] hover:text-white group-open:bg-[#23252B] group-open:text-white">
+                  <Calendar size={20} />
+                  <span className="text-sm font-bold uppercase whitespace-nowrap">
+                    {season} {year}
+                  </span>
                   <DropdownIcon size={16} />
                 </summary>
-                <div className="absolute left-0 lg:left-auto lg:right-0 z-9999 mt-2 min-w-[220px] rounded-2xl border border-zinc-200 bg-white/95 backdrop-blur-xl p-2 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950/95">
-                  <div className="flex flex-col gap-1">
-                    {SORT_OPTIONS.map((option) => {
-                      const active = option === filters.sort;
+                <div className="absolute right-0 z-9999 mt-0.5 max-h-[70vh] overflow-y-auto no-scrollbar w-[240px] bg-[#23252B] shadow-2xl">
+                  <div className="flex flex-col">
+                    {availableYears.flatMap((y) =>
+                      [...SEASONS].reverse().map((s) => {
+                        const active = s === season && y === year;
+                        const count = statsMap.get(`${y}-${s}`) ?? 0;
+                        return (
+                          <Link
+                            key={`${y}-${s}`}
+                            href={buildSeasonPagePath(y, s, filters)}
+                            className={`flex items-center justify-between px-3 py-2 text-sm font-bold uppercase transition-all ${
+                              active
+                                ? "bg-[#1D1E22] text-white"
+                                : "text-[#A0A0A0] hover:bg-[#1D1E22] hover:text-white"
+                            }`}
+                          >
+                            <span className="capitalize">{s} {y}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-medium opacity-50">{count}</span>
+                              {active && (
+                                <div className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
+                              )}
+                            </div>
+                          </Link>
+                        );
+                      }),
+                    )}
+                  </div>
+                </div>
+              </FilterDropdown>
+
+              <FilterDropdown className="group relative">
+                <summary className="list-none cursor-pointer flex items-center border-none gap-2 p-2.5 text-[#A0A0A0] transition-colors hover:bg-[#23252B] hover:text-white group-open:bg-[#23252B] group-open:text-white">
+                  <FilterIcon size={20} />
+                  <span className="text-sm font-bold uppercase whitespace-nowrap">
+                    Type: {TYPE_FILTER_LABELS[filters.type]}
+                  </span>
+                  <DropdownIcon size={16} />
+                </summary>
+                <div className="absolute right-0 z-9999 mt-0.5 min-w-[200px] bg-[#23252B] py-2.5 shadow-2xl">
+                  <div className="flex flex-col">
+                    {TYPE_FILTERS.map((tf) => {
+                      const active = tf === filters.type;
                       return (
                         <Link
-                          key={option}
+                          key={tf}
                           href={buildSeasonPagePath(year, season, {
                             ...filters,
-                            sort: option,
+                            type: tf,
                           })}
-                          className={`flex items-center justify-between rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${
+                          className={`flex items-center justify-between px-3 py-2 text-sm font-bold uppercase transition-all ${
                             active
-                              ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300"
-                              : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100"
+                              ? "bg-[#1D1E22] text-white"
+                              : "text-[#A0A0A0] hover:bg-[#1D1E22] hover:text-white"
                           }`}
                         >
-                          {SORT_LABELS[option]}
+                          {TYPE_FILTER_LABELS[tf]}
                           {active && (
-                            <div className="h-1.5 w-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+                            <div className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
                           )}
                         </Link>
                       );
@@ -658,9 +670,45 @@ export default async function AnimeSeasonByYearPage({
               </FilterDropdown>
 
               <FilterDropdown className="group relative">
-                <summary className="list-none cursor-pointer flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-bold text-zinc-700 shadow-sm transition-all hover:border-indigo-300 hover:text-indigo-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-indigo-700 dark:hover:text-indigo-400">
+                <summary className="list-none cursor-pointer flex items-center border-none gap-2 p-2.5 text-[#A0A0A0] transition-colors hover:bg-[#23252B] hover:text-white group-open:bg-[#23252B] group-open:text-white">
+                  <ArrowDownUp size={20} />
+                  <span className="text-sm font-bold uppercase whitespace-nowrap">
+                    Sort: {SORT_LABELS[filters.sort]}
+                  </span>
+                  <DropdownIcon size={16} />
+                </summary>
+                <div className="absolute right-0 z-9999 mt-0.5 min-w-[200px] bg-[#23252B] py-2.5 shadow-2xl">
+                  <div className="flex flex-col">
+                    {SORT_OPTIONS.map((option) => {
+                      const active = option === filters.sort;
+                      return (
+                        <Link
+                          key={option}
+                          href={buildSeasonPagePath(year, season, {
+                            ...filters,
+                            sort: option,
+                          })}
+                          className={`flex items-center justify-between px-3 py-2 text-sm font-bold uppercase transition-all ${
+                            active
+                              ? "bg-[#1D1E22] text-white"
+                              : "text-[#A0A0A0] hover:bg-[#1D1E22] hover:text-white"
+                          }`}
+                        >
+                          {SORT_LABELS[option]}
+                          {active && (
+                            <div className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              </FilterDropdown>
+
+              <FilterDropdown className="group relative">
+                <summary className="list-none cursor-pointer flex items-center border-none gap-2 p-2.5 text-[#A0A0A0] transition-colors hover:bg-[#23252B] hover:text-white group-open:bg-[#23252B] group-open:text-white">
                   <Filter size={20} />
-                  <span>Advanced</span>
+                  <span className="text-sm font-bold uppercase whitespace-nowrap">Advanced</span>
                   {(filters.genre || filters.theme || filters.demographic) && (
                     <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-indigo-600 px-1.5 text-[10px] font-black text-white">
                       {
@@ -674,8 +722,8 @@ export default async function AnimeSeasonByYearPage({
                   )}
                   <DropdownIcon size={16} />
                 </summary>
-                <div className="absolute left-0 lg:left-auto lg:right-0 z-9999 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-zinc-200 bg-white/95 backdrop-blur-xl p-5 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950/95">
-                  <form method="get" className="flex flex-col gap-5">
+                <div className="absolute right-0 z-9999 mt-0.5 w-[300px] bg-[#23252B] p-5 shadow-2xl">
+                  <form method="get" className="flex flex-col gap-6">
                     {filters.type !== "all" && (
                       <input type="hidden" name="type" value={filters.type} />
                     )}
@@ -690,14 +738,14 @@ export default async function AnimeSeasonByYearPage({
                     )}
 
                     <div className="space-y-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[11px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-[#A0A0A0]">
                           Genre
                         </label>
                         <select
                           name="genre"
                           defaultValue={filters.genre ?? ""}
-                          className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm font-bold text-zinc-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 outline-none transition-all"
+                          className="w-full rounded-lg border border-white/10 bg-[#1D1E22] px-4 py-2.5 text-sm font-bold text-white outline-none transition-all focus:border-indigo-500"
                         >
                           <option value="">All Genres</option>
                           {genreOptions.map((option) => (
@@ -708,14 +756,14 @@ export default async function AnimeSeasonByYearPage({
                         </select>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <label className="text-[11px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-[#A0A0A0]">
                           Theme
                         </label>
                         <select
                           name="theme"
                           defaultValue={filters.theme ?? ""}
-                          className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm font-bold text-zinc-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 outline-none transition-all"
+                          className="w-full rounded-lg border border-white/10 bg-[#1D1E22] px-4 py-2.5 text-sm font-bold text-white outline-none transition-all focus:border-indigo-500"
                         >
                           <option value="">All Themes</option>
                           {themeOptions.map((option) => (
@@ -726,14 +774,14 @@ export default async function AnimeSeasonByYearPage({
                         </select>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <label className="text-[11px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-[#A0A0A0]">
                           Demographic
                         </label>
                         <select
                           name="demographic"
                           defaultValue={filters.demographic ?? ""}
-                          className="w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm font-bold text-zinc-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 outline-none transition-all"
+                          className="w-full rounded-lg border border-white/10 bg-[#1D1E22] px-4 py-2.5 text-sm font-bold text-white outline-none transition-all focus:border-indigo-500"
                         >
                           <option value="">All Demographics</option>
                           {demographicOptions.map((option) => (
@@ -745,10 +793,10 @@ export default async function AnimeSeasonByYearPage({
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                    <div className="flex items-center gap-2 pt-2 border-t border-white/5">
                       <button
                         type="submit"
-                        className="flex-1 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-indigo-600/20 hover:bg-indigo-500 hover:shadow-indigo-600/30 transition-all"
+                        className="flex-1 rounded-lg bg-indigo-600 px-4 py-2.5 text-xs font-black uppercase text-white hover:bg-indigo-500 transition-all"
                       >
                         Apply Filters
                       </button>
@@ -759,7 +807,7 @@ export default async function AnimeSeasonByYearPage({
                           theme: null,
                           demographic: null,
                         })}
-                        className="rounded-xl border border-zinc-200 px-4 py-2.5 text-sm font-bold text-zinc-600 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900 transition-all"
+                        className="rounded-lg border border-white/10 px-4 py-2.5 text-xs font-black uppercase text-[#A0A0A0] hover:bg-white/5 hover:text-white transition-all"
                       >
                         Reset
                       </Link>
@@ -769,17 +817,17 @@ export default async function AnimeSeasonByYearPage({
               </FilterDropdown>
 
               <FilterDropdown className="group relative">
-                <summary className="list-none cursor-pointer flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-bold text-zinc-700 shadow-sm transition-all hover:border-indigo-300 hover:text-indigo-600 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-indigo-700 dark:hover:text-indigo-400">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-zinc-100 text-[10px] font-black dark:bg-zinc-900">
+                <summary className="list-none cursor-pointer flex items-center border-none gap-2 p-2.5 text-[#A0A0A0] transition-colors hover:bg-[#23252B] hover:text-white group-open:bg-[#23252B] group-open:text-white">
+                  <span className="flex h-5 w-5 items-center justify-center rounded bg-white/10 text-[10px] font-black text-white">
                     18
                   </span>
-                  <span>Safety</span>
+                  <span className="text-sm font-bold uppercase whitespace-nowrap">Safety</span>
                   {(filters.kids || filters.r18) && (
-                    <span className="flex h-2 w-2 rounded-full bg-indigo-600" />
+                    <span className="flex h-1.5 w-1.5 rounded-full bg-indigo-500" />
                   )}
                   <DropdownIcon size={16} />
                 </summary>
-                <div className="absolute right-0 z-9999 mt-2 min-w-[200px] rounded-2xl border border-zinc-200 bg-white/95 backdrop-blur-xl p-4 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950/95">
+                <div className="absolute right-0 z-9999 mt-0.5 min-w-[200px] bg-[#23252B] p-4 shadow-2xl">
                   <form method="get" className="flex flex-col gap-4">
                     {filters.type !== "all" && (
                       <input type="hidden" name="type" value={filters.type} />
@@ -802,8 +850,8 @@ export default async function AnimeSeasonByYearPage({
                     )}
 
                     <div className="space-y-3">
-                      <label className="flex items-center justify-between cursor-pointer group">
-                        <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      <label className="flex items-center justify-between cursor-pointer group/label">
+                        <span className="text-xs font-bold uppercase text-[#A0A0A0] group-hover/label:text-white transition-colors">
                           Kids Friendly
                         </span>
                         <input
@@ -811,12 +859,12 @@ export default async function AnimeSeasonByYearPage({
                           name="kids"
                           value="1"
                           defaultChecked={filters.kids}
-                          className="h-5 w-5 rounded-lg border-zinc-300 text-indigo-600 focus:ring-indigo-500/20 transition-all"
+                          className="h-4 w-4 rounded border-white/10 bg-white/5 text-indigo-600 focus:ring-0"
                         />
                       </label>
 
-                      <label className="flex items-center justify-between cursor-pointer group">
-                        <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300 group-hover:text-red-500 transition-colors">
+                      <label className="flex items-center justify-between cursor-pointer group/label">
+                        <span className="text-xs font-bold uppercase text-[#A0A0A0] group-hover/label:text-red-400 transition-colors">
                           Adult (R18+)
                         </span>
                         <input
@@ -824,15 +872,15 @@ export default async function AnimeSeasonByYearPage({
                           name="r18"
                           value="1"
                           defaultChecked={filters.r18}
-                          className="h-5 w-5 rounded-lg border-zinc-300 text-red-600 focus:ring-red-500/20 transition-all"
+                          className="h-4 w-4 rounded border-white/10 bg-white/5 text-red-600 focus:ring-0"
                         />
                       </label>
                     </div>
 
-                    <div className="flex items-center gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                    <div className="flex items-center gap-2 pt-2 border-t border-white/5">
                       <button
                         type="submit"
-                        className="flex-1 rounded-xl bg-zinc-900 px-4 py-2 text-sm font-black text-white hover:bg-black dark:bg-white dark:text-black dark:hover:bg-zinc-200 transition-all"
+                        className="flex-1 rounded-lg bg-white text-black px-4 py-2 text-xs font-black uppercase hover:bg-zinc-200 transition-all"
                       >
                         Apply
                       </button>
@@ -844,7 +892,7 @@ export default async function AnimeSeasonByYearPage({
           </div>
 
           {/* Results Summary & Active Filters */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-2 -mt-14">
             <div className="flex items-center gap-3">
               {hasExtraFilters && (
                 <Link
@@ -857,7 +905,7 @@ export default async function AnimeSeasonByYearPage({
                     kids: false,
                     r18: false,
                   })}
-                  className="text-[11px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
+                  className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300 transition-colors"
                 >
                   Reset All Filters
                 </Link>
@@ -867,26 +915,26 @@ export default async function AnimeSeasonByYearPage({
         </div>
 
         {seasonItems.length === 0 ? (
-          <div className="rounded-3xl border-2 border-dashed border-zinc-200 bg-white/50 px-6 py-20 text-center dark:border-zinc-800 dark:bg-zinc-950/50">
-            <div className="mx-auto w-16 h-16 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex items-center justify-center mb-4">
-              <Calendar size={16} />
+          <div className="rounded-3xl border border-white/5 bg-white/[0.02] px-6 py-24 text-center">
+            <div className="mx-auto w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-6">
+              <Calendar size={20} className="text-white/20" />
             </div>
-            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-1">
+            <h3 className="text-xl font-bold text-white mb-2">
               No Anime Found
             </h3>
-            <p className="text-zinc-500 dark:text-zinc-400 text-sm">
+            <p className="text-[#A0A0A0] text-sm">
               We couldn't find any anime for {titleCase(season)} {year}.
             </p>
           </div>
         ) : visibleSections.length === 0 ? (
-          <div className="rounded-3xl border-2 border-dashed border-zinc-200 bg-white/50 px-6 py-20 text-center dark:border-zinc-800 dark:bg-zinc-950/50">
-            <div className="mx-auto w-16 h-16 bg-zinc-100 dark:bg-zinc-900 rounded-2xl flex items-center justify-center mb-4">
-              <FilterIcon size={16} />
+          <div className="rounded-3xl border border-white/5 bg-white/[0.02] px-6 py-24 text-center">
+            <div className="mx-auto w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-6">
+              <FilterIcon size={20} className="text-white/20" />
             </div>
-            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-1">
+            <h3 className="text-xl font-bold text-white mb-2">
               No Matches
             </h3>
-            <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-6">
+            <p className="text-[#A0A0A0] text-sm mb-8">
               No {TYPE_FILTER_LABELS[filters.type]} titles match your current
               filters.
             </p>
@@ -895,31 +943,31 @@ export default async function AnimeSeasonByYearPage({
                 ...filters,
                 type: "all",
               })}
-              className="inline-flex px-6 py-3 rounded-2xl bg-indigo-600 text-white font-black text-sm hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20"
+              className="inline-flex px-8 py-3.5 rounded-xl bg-indigo-600 text-white font-black uppercase text-xs hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/20"
             >
               Show All Types
             </Link>
           </div>
         ) : (
-          <div className="flex flex-col gap-16">
+          <div className="flex flex-col gap-24">
             {visibleSections.map((section) => (
               <section
                 key={section.key}
                 aria-labelledby={`season-section-${section.key}`}
               >
-                <div className="flex items-center gap-4 mb-8">
+                <div className="flex items-center gap-6 mb-10">
                   <h2
                     id={`season-section-${section.key}`}
-                    className="text-lg font-black uppercase tracking-[0.2em] text-zinc-900 dark:text-zinc-50"
+                    className="text-sm font-black uppercase tracking-[0.3em] text-white/40"
                   >
                     {section.label}
                   </h2>
-                  <div className="h-px flex-1 bg-gradient-to-r from-zinc-200 to-transparent dark:from-zinc-800" />
-                  <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                  <div className="h-px flex-1 bg-white/5" />
+                  <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">
                     {section.items.length} Shows
                   </span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                   {section.items.map((anime) => (
                     <SeasonAnimeCard
                       key={anime.malId}
